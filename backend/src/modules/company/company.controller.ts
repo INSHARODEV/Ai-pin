@@ -9,6 +9,7 @@ import { Request } from 'express';
 import { MongoDbId } from 'src/common/DTOS/mongodb-Id.dto';
 import { ParseMongoIdPipe } from 'src/common/pipes/parse-mongodb-id.pipe';
 import { Role } from 'src/shared/ROLES';
+import { PermissonsGuard } from 'src/common/guards/permissons/permissons.guard';
   @UseGuards(AuthGuard)
 @Controller('company')
 export class CompanyController {
@@ -33,20 +34,22 @@ export class CompanyController {
   }
 
   @Get(':id')
-  @UseGuards(RoleMixin([Role.ADMIN ,Role.MANAGER] ))
+  @UseGuards(RoleMixin([Role.ADMIN]  ),PermissonsGuard)
   findOne(@Param('id') id: string,@Req() req :Request) {
+    
     return this.companyService.findOne(id,{ 
       role:Role.MANAGER,firstName: req['user'].firstName});
   }
 
   @Put(':id')
-  @UseGuards(RoleMixin([ Role.MANAGER,Role.ADMIN] ))
+  @UseGuards(RoleMixin([ Role.ADMIN] ),PermissonsGuard)
   async update(@Param('id',new ParseMongoIdPipe()) id: MongoDbId, @Body() updateCompanyDto: UpdateCompanyDto,@Req() req :Request) {
     return await  this.companyService.update(id, updateCompanyDto,{ 
       role:Role.MANAGER,firstName: req['user'].firstName});
   }
 
   @Delete(':id')
+  @UseGuards(RoleMixin([ Role.MANAGER] ))
   remove(@Param('id') id: string) {
     return this.companyService.remove(+id);
   }

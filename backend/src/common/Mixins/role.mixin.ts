@@ -7,7 +7,7 @@ export const RoleMixin=(role:Role[])=>{
         canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
             const req=context.switchToHttp().getRequest()
             const user=req.user
-            console.log(user)
+          //  console.log(user)
             if(role.some(role=>role===user.role)){
                 return true
             }
