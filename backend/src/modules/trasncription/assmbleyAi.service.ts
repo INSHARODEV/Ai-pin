@@ -17,7 +17,7 @@ export class AssmbleyAI {
         method: 'POST',
         body: file.buffer,
         headers: {
-          'authorization': process.env.ASSMBLEY_AI_API_KEY as string, // Remove Bearer prefix for upload
+          'authorization': process.env.ASSMBLEY_AI_API_KEY as string,  
         },
       });
 

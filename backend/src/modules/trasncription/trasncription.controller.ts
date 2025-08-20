@@ -1,4 +1,4 @@
-import { Controller, Post, UploadedFile, UseInterceptors, Logger, Req, Inject } from '@nestjs/common';
+import { Controller, Post, UploadedFile, UseInterceptors, Logger, Req, Inject, UseGuards } from '@nestjs/common';
 import { TrasncriptionService } from './trasncription.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AudioPipe } from './pipes/audio.pipe';
@@ -8,6 +8,7 @@ import { ChatGpt } from './ChtGPT.servcie';
 import { exponentialBackoff } from 'src/common/utils/exponantioateBackoff';
 import { createTransiptionDto } from './dto/create-trasition-dto';
 import { Request } from 'express';
+import { AuthGuard } from 'src/common/guards/auth/auth.gurd';
 
 @Controller('trasncriptions')
 export class TrasncriptionController {
@@ -19,6 +20,7 @@ export class TrasncriptionController {
   ) {}
 
   @Post()
+  @UseGuards(AuthGuard)
   @UseInterceptors(FileInterceptor('audio-file'))
   async transcripe(@UploadedFile( AudioPipe) {file,fileName}:any,
 @Req() req:Request) {
