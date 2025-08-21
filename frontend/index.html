@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Conversation Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 20px;
+      background: #fff;
+      font-weight: bold;
+      font-size: 20px;
+      border-bottom: 1px solid #eee;
+    }
+    .container {
+      display: flex;
+      height: calc(100vh - 70px);
+    }
+    .sidebar {
+      width: 200px;
+      border-right: 1px solid #eee;
+      padding: 20px;
+    }
+    .sidebar div {
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .sidebar div.active {
+      background-color: #e7e8ff;
+      font-weight: bold;
+    }
+    .main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: row;
+    }
+    .insights {
+      width: 50%;
+      padding: 20px;
+      border-right: 1px solid #eee;
+    }
+    .score {
+      background-color: #ffe5e5;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 24px;
+      color: #e53935;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .transcript {
+      flex-grow: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .message {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: flex-start;
+    }
+    .avatar {
+      background: #002acc;
+      color: white;
+      border-radius: 50%;
+      padding: 10px;
+      font-size: 12px;
+      margin-right: 10px;
+      text-align: center;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .message.customer .avatar {
+      background: #dcdffa;
+      color: #000;
+    }
+    .message-content {
+      background: #f9f9f9;
+      padding: 10px 15px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header>Today 26 May, 2025</header>
+  <div class="container">
+    <div class="sidebar">
+      <div class="active">Conversation 9</div>
+      <div>Conversation 8</div>
+      <div>Conversation 7</div>
+      <div>Conversation 6</div>
+      <div>Conversation 5</div>
+      <div>Conversation 4</div>
+      <div>Conversation 3</div>
+      <div>Conversation 2</div>
+    </div>
+    <div class="main">
+      <div class="insights">
+        <div class="score">Total Score:<br><strong>8</strong></div>
+        <label>Conversation Summary</label>
+        <select style="width: 100%; padding: 10px; margin-top: 10px;">
+          <option>Conversation Summary</option>
+        </select>
+      </div>
+      <div class="transcript">
+        <div class="message">
+          <div class="avatar">Logo</div>
+          <div class="message-content"><strong>Sales:</strong> Hello, How are you?</div>
+        </div>
+        <div class="message">
+          <div class="avatar">Logo</div>
+          <div class="message-content"><strong>Sales:</strong> Hello, How are you?</div>
+        </div>
+        <div class="message customer">
+          <div class="avatar">👤</div>
+          <div class="message-content"><strong>Customer:</strong> I’m fine thank you! I need to know how much is this?</div>
+        </div>
+        <div class="message">
+          <div class="avatar">Logo</div>
+          <div class="message-content"><strong>Sales:</strong> Hello, How are you?</div>
+        </div>
+        <div class="message customer">
+          <div class="avatar">👤</div>
+          <div class="message-content"><strong>Customer:</strong> I’m fine thank you! I need to know how much is this?</div>
+        </div>
+        <div class="message customer">
+          <div class="avatar">👤</div>
+          <div class="message-content"><strong>Customer:</strong> I’m fine thank you! I need to know how much is this?</div>
+        </div>
+        <div class="message">
+          <div class="avatar">Logo</div>
+          <div class="message-content"><strong>Sales:</strong> Hello, How are you?</div>
+        </div>
+        <div class="message customer">
+          <div class="avatar">👤</div>
+          <div class="message-content"><strong>Customer:</strong> I’m fine thank you! I need to know how much is this?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
