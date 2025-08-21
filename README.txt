@@ -40,7 +40,4 @@
 
 ```
 
-This format is clean, easy to follow, and works well in a `README.md` file.  
-
-I can also add **prerequisites** (like Node version) and **environment variable instructions** if you want it to be a full setup guide. Do you want me to do that?
-```
+ 
