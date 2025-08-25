@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, {   useState } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "../../../../backend/src/modules/users/schmas/users.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SubmitHandler, useForm, useFormContext } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { loginSchema } from "@/app/utils/zodschama";
 import { MakeApiCall, Methods } from "@/app/actions";
 import { userData } from "@/app/utils/user.data";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 type Inputs = {
   email: string;
@@ -25,21 +26,26 @@ export default function LoginPage() {
   const email = watch("email");
   const password = watch("password");
   const [loading, setLoading] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const submit: SubmitHandler<Inputs> = async (data: any) => {
     const valdidatedData = loginSchema.safeParse(data);
     console.log(email, password);
 
     try {
+      setLoading(true);
       const res = await MakeApiCall({
         body: JSON.stringify(valdidatedData.data),
         url: `/auth/signin`,
         method: Methods.POST,
       });
-      // Send as JSON instead of FormData
+      
       console.log(process.env.NEXT_PUBLIC_BASE_URL);
       localStorage.setItem("accessToken", res.data);
       const payloadPart = res.data.split(".")[1];
@@ -66,8 +72,14 @@ export default function LoginPage() {
       <div className=" text-center text-white text-4xl font-bold"> AI Pin</div>
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Welcome Back!</h2>
+        
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit(submit)} className="space-y-5">
-          {" "}
           <div>
             <label
               htmlFor="email"
@@ -77,6 +89,7 @@ export default function LoginPage() {
             </label>
             <input
               {...register("email")}
+              type="email"
               className={`mt-1 block w-full px-3 py-2 border ${
                 errors.email ? "border-red-500" : "border-gray-300"
               } rounded-md shadow-sm focus:outline-none focus:ring-2 ${
@@ -90,6 +103,7 @@ export default function LoginPage() {
               </p>
             )}
           </div>
+
           <div>
             <label
               htmlFor="password"
@@ -97,26 +111,40 @@ export default function LoginPage() {
             >
               Password
             </label>
-            <input
-              type="password"
-              {...register("password")}
-              className={`mt-1 block w-full px-3 py-2 border ${
-                errors.password ? "border-red-500" : "border-gray-300"
-              } rounded-md shadow-sm focus:outline-none focus:ring-2 ${
-                errors.password ? "focus:ring-red-500" : "focus:ring-blue-500"
-              }`}
-              required
-            />
+            <div className="relative mt-1">
+              <input
+                type={showPassword ? "text" : "password"}
+                {...register("password")}
+                className={`block w-full px-3 py-2 pr-10 border ${
+                  errors.password ? "border-red-500" : "border-gray-300"
+                } rounded-md shadow-sm focus:outline-none focus:ring-2 ${
+                  errors.password ? "focus:ring-red-500" : "focus:ring-blue-500"
+                }`}
+                required
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer hover:text-gray-600"
+              >
+                {showPassword ? (
+                  <EyeOffIcon className="h-5 w-5 text-gray-400" />
+                ) : (
+                  <EyeIcon className="h-5 w-5 text-gray-400" />
+                )}
+              </button>
+            </div>
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.password.message}
               </p>
             )}
           </div>
+
           <button
             type="submit"
             className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white ${
-              error || !password || loading
+              error || !email || !password || loading
                 ? "bg-gray-300 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700 cursor-pointer"
             } focus:outline-none focus:ring-2 focus:ring-blue-500`}
@@ -129,45 +157,3 @@ export default function LoginPage() {
     </div>
   );
 }
-/*"use client";
-
-import React, { useState } from "react";
- import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema } from "../utils/zodschama";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import InputForm from "../_componentes/reusable/Form";
-import { MakeApiCall, Methods } from "../actions";
-
-type LoginInputs = z.infer<typeof loginSchema>;
-
-export default function LoginPage() {
-  const [loading, setLoading] = useState(false);
-
-  const handleLogin = async (data: LoginInputs) => {
-    setLoading(true);
-    try {
-  await MakeApiCall({url:'/auth/signin',body:JSON.stringify(data),method:Methods.POST})
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-        <InputForm<LoginInputs>
-          onSubmit={handleLogin}
-          loading={loading}
-          defaultValues={{ email: "", password: "" }}
-        >
-          <InputForm.Input name="email" label="Email" required />
-          <InputForm.Input name="password" label="Password" type="password" required />
-          <InputForm.SubmitButton label="Login" />
-        </InputForm>
-      </div>
-    </div>
-  );
-}
-*/

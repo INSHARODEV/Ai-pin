@@ -46,14 +46,14 @@ export class AssmbleyAI {
         method: 'POST',
         body: JSON.stringify({
           audio_url: transcribedUrl,
-          speech_model: 'universal', // Changed from "universal" to "best"
+          speech_model: 'universal', 
       
           language_code: 'ar', 
         
         }),
         headers: {
           authorization: process.env.ASSMBLEY_AI_API_KEY as string,
-          'content-type': 'application/json', // Added content-type header
+          'content-type': 'application/json',  
         },
       });
 
@@ -72,7 +72,7 @@ export class AssmbleyAI {
   }
 
   async transcribe(transcriptId: string): Promise<string> {
-    this.logger.verbose('transcriptId', transcriptId);
+  //  this.logger.verbose('transcriptId', transcriptId);
     
     const maxAttempts = 60; // 5 minutes with 5-second intervals
     const pollInterval = 30000; // 5 seconds
@@ -93,7 +93,7 @@ export class AssmbleyAI {
         }
 
         const data = await response.json();
-        this.logger.verbose(`Transcription status (attempt ${attempt}):`, data.status);
+       // this.logger.verbose(`Transcription status (attempt ${attempt}):`, data.status);
 
         if (data.status === 'completed') {
            this.logger.verbose('data',data.text)

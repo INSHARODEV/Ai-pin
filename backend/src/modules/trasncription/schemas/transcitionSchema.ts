@@ -1,8 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
+import { MongoDbId } from 'src/common/DTOS/mongodb-Id.dto';
 
 export type TranscriptDocument = Transcript & Document;
+export type ShiftDocument = Shift & Document;
 
+@Schema({ timestamps: true })
+export class Shift {
+  @Prop({ type: mongoose.Schema.ObjectId, ref: 'User' })
+  emp: MongoDbId;
+  @Prop([{ type: mongoose.Schema.ObjectId, ref: 'Transcript' }])
+  transcriptionsId: MongoDbId[];
+}
 @Schema({ _id: false })
 export class EngagementMetrics {
   @Prop()
@@ -85,9 +94,6 @@ export class Transcript {
   @Prop()
   audio_url: string;
 
-  @Prop({ type: mongoose.Schema.ObjectId, ref: 'User' })
-  emp: string;
-
   @Prop({
     type: String,
     enum: ['recording', 'completed', 'processing', 'failed'],
@@ -97,3 +103,9 @@ export class Transcript {
 }
 
 export const TranscriptSchema = SchemaFactory.createForClass(Transcript);
+export const ShfitSchema = SchemaFactory.createForClass(Shift);
+
+// start shift  and naviage into ode design
+//when inside startdroding
+//each 5 minutes create new trasoption
+//send it to backend and save and so on and so fourth

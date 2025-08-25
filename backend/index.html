@@ -3,145 +3,432 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Player</title>
+    <title>Audio Transcription Debug - FIXED</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 50px auto;
+            max-width: 800px;
+            margin: 0 auto;
             padding: 20px;
-            background-color: #f5f5f5;
+            background: #f5f5f5;
         }
-        .container {
+        
+        .debug-panel {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .controls {
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .status.connected { background: #d4edda; color: #155724; }
+        .status.disconnected { background: #f8d7da; color: #721c24; }
+        .status.recording { background: #fff3cd; color: #856404; }
+        
         button {
-            background-color: #007bff;
+            background: #007bff;
             color: white;
             border: none;
             padding: 12px 24px;
-            font-size: 16px;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
-            margin: 10px;
+            margin: 5px;
+            font-size: 16px;
         }
-        button:hover {
-            background-color: #0056b3;
-        }
+        
         button:disabled {
-            background-color: #6c757d;
+            background: #ccc;
             cursor: not-allowed;
         }
-        .status {
+        
+        button.danger {
+            background: #dc3545;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
             margin: 20px 0;
-            padding: 10px;
-            border-radius: 5px;
         }
-        .loading {
-            background-color: #fff3cd;
-            color: #856404;
+        
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .success {
-            background-color: #d4edda;
-            color: #155724;
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
         }
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        audio {
-            width: 100%;
+        
+        .transcript-box {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
             margin: 20px 0;
+            min-height: 100px;
+        }
+        
+        .partial-text {
+            color: #666;
+            font-style: italic;
+        }
+        
+        .final-text {
+            color: #000;
+            font-weight: bold;
+            margin: 5px 0;
+            padding: 5px;
+            background: #f8f9fa;
+            border-left: 3px solid #007bff;
+        }
+        
+        .audio-debug {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Audio Player</h1>
-        <p>Fetch and play audio from your local server</p>
-        
-        <button id="fetchButton" onclick="fetchAndPlayAudio()">Fetch & Play Audio</button>
-        
-        <div id="status" class="status" style="display: none;"></div>
-        
-        <audio id="audioPlayer" controls style="display: none;">
-            Your browser does not support the audio element.
-        </audio>
+    <h1>🎤 Audio Transcription Debug Tool - FIXED VERSION</h1>
+    
+    <div class="status" id="connectionStatus">Disconnected</div>
+    
+    <div class="controls">
+        <button id="connectBtn">Connect to Server</button>
+        <button id="testApiBtn">Test AssemblyAI API</button>
+        <button id="startBtn" disabled>Start Transcription</button>
+        <button id="stopBtn" disabled class="danger">Stop Transcription</button>
+    </div>
+    
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-value" id="audioChunks">0</div>
+            <div>Audio Chunks Sent</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="partialTranscripts">0</div>
+            <div>Partial Transcripts</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="finalTranscripts">0</div>
+            <div>Final Transcripts</div>
+        </div>
+    </div>
+    
+    <div class="audio-debug">
+        <h4>🎵 Audio Debug Info:</h4>
+        <div id="audioDebug">No audio data yet...</div>
+    </div>
+    
+    <div class="transcript-box">
+        <h3>Live Transcription:</h3>
+        <div id="transcriptContent">Speak into your microphone to see transcription results here...</div>
+    </div>
+    
+    <div class="debug-panel" id="debugLog">
+        <strong>🐛 Debug Log:</strong><br>
+        Waiting for connection...
     </div>
 
     <script>
-        async function fetchAndPlayAudio() {
-            const fetchButton = document.getElementById('fetchButton');
-            const statusDiv = document.getElementById('status');
-            const audioPlayer = document.getElementById('audioPlayer');
+        class AudioTranscriptionDebugger {
+            constructor() {
+                this.socket = null;
+                this.mediaRecorder = null;
+                this.audioContext = null;
+                this.processor = null;
+                this.source = null;
+                this.isRecording = false;
+                this.isConnected = false;
+                this.isTranscriptionReady = false;
+                
+                this.stats = {
+                    audioChunks: 0,
+                    partialTranscripts: 0,
+                    finalTranscripts: 0
+                };
+                
+                this.setupUI();
+            }
             
-            // Show loading state
-            fetchButton.disabled = true;
-            fetchButton.textContent = 'Loading...';
-            statusDiv.style.display = 'block';
-            statusDiv.className = 'status loading';
-            statusDiv.textContent = 'Fetching audio from server...';
-            audioPlayer.style.display = 'none';
+            setupUI() {
+                document.getElementById('connectBtn').onclick = () => this.connect();
+                document.getElementById('testApiBtn').onclick = () => this.testAPI();
+                document.getElementById('startBtn').onclick = () => this.startTranscription();
+                document.getElementById('stopBtn').onclick = () => this.stopTranscription();
+            }
             
-            try {
-                // Fetch audio URL from your API
-                const response = await fetch('http://localhost:8000/trasncriptions');
+            log(message, type = 'info') {
+                const debugLog = document.getElementById('debugLog');
+                const timestamp = new Date().toLocaleTimeString();
+                const colors = { info: '#00ff00', warn: '#ffff00', error: '#ff4444' };
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                debugLog.innerHTML += `<div style="color: ${colors[type]}">[${timestamp}] ${message}</div>`;
+                debugLog.scrollTop = debugLog.scrollHeight;
                 
-                const data = await response.json();
+                console.log(`[${type.toUpperCase()}] ${message}`);
+            }
+            
+            updateStatus(status, className) {
+                const statusEl = document.getElementById('connectionStatus');
+                statusEl.textContent = status;
+                statusEl.className = `status ${className}`;
+            }
+            
+            updateStats() {
+                document.getElementById('audioChunks').textContent = this.stats.audioChunks;
+                document.getElementById('partialTranscripts').textContent = this.stats.partialTranscripts;
+                document.getElementById('finalTranscripts').textContent = this.stats.finalTranscripts;
+            }
+            
+            updateAudioDebug(audioData) {
+                const debugEl = document.getElementById('audioDebug');
+                const min = Math.min(...audioData);
+                const max = Math.max(...audioData);
+                const avg = audioData.reduce((a, b) => a + b, 0) / audioData.length;
+                const rms = Math.sqrt(audioData.reduce((a, b) => a + b * b, 0) / audioData.length);
                 
-                // Assuming your API returns either:
-                // Option 1: { url: "http://localhost:8000/path/to/audio.mp3" }
-                // Option 2: { audioUrl: "http://localhost:8000/path/to/audio.mp3" }
-                // Option 3: Direct URL string
-                
-                let audioUrl;
-                if (typeof data === 'string') {
-                    audioUrl = data;
-                } else if (data.url) {
-                    audioUrl = data.url;
-                } else if (data.audioUrl) {
-                    audioUrl = data.audioUrl;
-                } else {
-                    throw new Error('Invalid response format - no audio URL found');
-                }
-                
-                // Create and play audio
-                audioPlayer.src = audioUrl;
-                audioPlayer.style.display = 'block';
-                
-                // Try to play automatically
+                debugEl.innerHTML = `
+                    <div>Chunk #${this.stats.audioChunks}</div>
+                    <div>Length: ${audioData.length} samples</div>
+                    <div>Min: ${min.toFixed(0)} | Max: ${max.toFixed(0)}</div>
+                    <div>Average: ${avg.toFixed(1)} | RMS: ${rms.toFixed(1)}</div>
+                    <div>Range Check: ${min >= -32768 && max <= 32767 ? '✅ Valid 16-bit' : '❌ Invalid range'}</div>
+                `;
+            }
+            
+            async connect() {
                 try {
-                    await audioPlayer.play();
-                    statusDiv.className = 'status success';
-                    statusDiv.textContent = 'Audio loaded and playing successfully!';
-                } catch (playError) {
-                    // Autoplay might be blocked by browser
-                    statusDiv.className = 'status success';
-                    statusDiv.textContent = 'Audio loaded! Click play button to start (autoplay blocked by browser).';
+                    this.log('🔌 Connecting to WebSocket server...');
+                    
+                    this.socket = io('http://localhost:8000', {
+                        transports: ['websocket'],
+                        timeout: 10000
+                    });
+                    
+                    this.socket.on('connect', () => {
+                        this.log('✅ Connected to server');
+                        this.isConnected = true;
+                        this.updateStatus('Connected', 'connected');
+                        document.getElementById('connectBtn').disabled = true;
+                        document.getElementById('startBtn').disabled = false;
+                        document.getElementById('testApiBtn').disabled = false;
+                    });
+                    
+                    this.socket.on('disconnect', () => {
+                        this.log('❌ Disconnected from server');
+                        this.isConnected = false;
+                        this.updateStatus('Disconnected', 'disconnected');
+                        document.getElementById('connectBtn').disabled = false;
+                        document.getElementById('startBtn').disabled = true;
+                        document.getElementById('stopBtn').disabled = true;
+                    });
+                    
+                    this.socket.on('connected', (data) => {
+                        this.log(`📝 Server message: ${data.message}`);
+                    });
+                    
+                    this.socket.on('transcription-ready', (data) => {
+                        this.log(`🎉 Transcription ready! Session: ${data.sessionId}`);
+                        this.isTranscriptionReady = true;
+                        this.updateStatus('Recording & Ready', 'recording');
+                    });
+                    
+                    this.socket.on('partial-transcript', (data) => {
+                   
+                        this.stats.partialTranscripts++;
+                        this.updateStats();
+                        this.log(`📝 Partial: "${data.text}" (confidence: ${data.confidence})`, 'info');
+                        
+                        const content = document.getElementById('transcriptContent');
+                        content.innerHTML = `<span class="partial-text">${data.text}</span>`;
+                    });
+                    
+                    this.socket.on('final-transcript', (data) => {
+                        this.stats.finalTranscripts++;
+                        this.updateStats();
+                        this.log(`✅ Final: "${data.text}" (confidence: ${data.confidence})`, 'info');
+                        
+                        const content = document.getElementById('transcriptContent');
+                        const finalDiv = document.createElement('div');
+                        finalDiv.className = 'final-text';
+                        finalDiv.textContent = data.text;
+                        content.appendChild(finalDiv);
+                        
+                        // Clear partial text
+                        const partialSpan = content.querySelector('.partial-text');
+                        if (partialSpan) partialSpan.remove();
+                    });
+                    
+                    this.socket.on('transcription-error', (data) => {
+                        this.log(`❌ Transcription error: ${data.error}`, 'error');
+                    });
+                    
+                    this.socket.on('transcription-stopped', (data) => {
+                        this.log(`⏹️ Transcription stopped: ${data.reason || 'user requested'}`);
+                        this.isTranscriptionReady = false;
+                    });
+                    
+                    this.socket.on('test-result', (data) => {
+                        if (data.success) {
+                            this.log(`✅ API Test: ${data.message}`, 'info');
+                        } else {
+                            this.log(`❌ API Test Failed: ${data.message}`, 'error');
+                        }
+                    });
+                    
+                } catch (error) {
+                    this.log(`❌ Connection error: ${error.message}`, 'error');
+                }
+            }
+            
+            async testAPI() {
+                if (!this.socket) return;
+                
+                this.log('🧪 Testing AssemblyAI API...');
+                this.socket.emit('test-assemblyai');
+            }
+            
+            async startTranscription() {
+                try {
+                    this.log('🎤 Requesting microphone access...');
+                    
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            sampleRate: 16000,
+                            channelCount: 1,
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            autoGainControl: true
+                        }
+                    });
+                    
+                    this.log('✅ Microphone access granted');
+                    
+                    // Start transcription on server
+                    this.socket.emit('start-transcription');
+                    
+                    // Setup audio processing with CORRECT format
+                    this.audioContext = new AudioContext({ sampleRate: 16000 });
+                    this.source = this.audioContext.createMediaStreamSource(stream);
+                    
+                    // Use smaller buffer for more responsive audio
+                    this.processor = this.audioContext.createScriptProcessor(4096, 1, 1);
+                    
+                    this.processor.onaudioprocess = (event) => {
+                        if (!this.isTranscriptionReady) return;
+                        
+                        const inputBuffer = event.inputBuffer.getChannelData(0);
+                        
+                        // CRITICAL FIX: Proper float32 to int16 conversion
+                        const int16Buffer = new Int16Array(inputBuffer.length);
+                        for (let i = 0; i < inputBuffer.length; i++) {
+                            // Clamp to [-1, 1] range first
+                            const clamped = Math.max(-1, Math.min(1, inputBuffer[i]));
+                            // Convert to 16-bit signed integer range [-32768, 32767]
+                            int16Buffer[i] = Math.round(clamped * 32767);
+                        }
+                        
+                        // Debug first few chunks to verify format
+                        if (this.stats.audioChunks < 3) {
+                            this.log(`🔧 Audio format check - Min: ${Math.min(...int16Buffer)}, Max: ${Math.max(...int16Buffer)}`);
+                        }
+                        
+                        // Update debug display
+                        this.updateAudioDebug(Array.from(int16Buffer));
+                        
+                       this.socket.on('ready-to-stream',
+                        
+                       )
+                        this.socket.emit('audio-data', int16Buffer.buffer) 
+                        
+                        this.stats.audioChunks++;
+                        this.updateStats();
+                        
+                        if (this.stats.audioChunks % 50 === 0) {
+                            this.log(`📊 Sent ${this.stats.audioChunks} audio chunks`);
+                        }
+                    };
+                    
+                    this.source.connect(this.processor);
+                    this.processor.connect(this.audioContext.destination);
+                    
+                    this.isRecording = true;
+                    document.getElementById('startBtn').disabled = true;
+                    document.getElementById('stopBtn').disabled = false;
+                    
+                    this.log('🔴 Recording started with corrected audio format');
+                    
+                } catch (error) {
+                    this.log(`❌ Failed to start recording: ${error.message}`, 'error');
+                }
+            }
+            
+            stopTranscription() {
+                if (this.socket) {
+                    this.socket.emit('stop-transcription');
                 }
                 
-            } catch (error) {
-                console.error('Error fetching/playing audio:', error);
-                statusDiv.className = 'status error';
-                statusDiv.textContent = `Error: ${error.message}`;
-                audioPlayer.style.display = 'none';
-            } finally {
-                // Reset button
-                fetchButton.disabled = false;
-                fetchButton.textContent = 'Fetch & Play Audio';
+                if (this.processor) {
+                    this.processor.disconnect();
+                    this.processor = null;
+                }
+                
+                if (this.source) {
+                    this.source.disconnect();
+                    this.source = null;
+                }
+                
+                if (this.audioContext) {
+                    this.audioContext.close();
+                    this.audioContext = null;
+                }
+                
+                this.isRecording = false;
+                this.isTranscriptionReady = false;
+                
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+                
+                this.updateStatus('Connected', 'connected');
+                this.log('⏹️ Recording stopped');
             }
         }
         
-        // Optional: Auto-fetch on page load
-        // window.addEventListener('load', fetchAndPlayAudio);
+        // Initialize the debugger when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.debugger = new AudioTranscriptionDebugger();
+        });
     </script>
 </body>
 </html>
