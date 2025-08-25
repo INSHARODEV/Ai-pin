@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+.next/
+.vercel/
+dist/
+build/
+
+# Generated files
+.env
+.env.local
+.env.production.local
+.env.development.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+*.sqlite
+
+# Backend build artifacts (if sharing repo)
+backend/dist/
+backend/node_modules/
+
+# Package locks (optional - some teams prefer to format these)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
