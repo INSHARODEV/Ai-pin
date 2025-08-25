@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { loginSchema } from "../utils/zodschama";  
-import { userData } from "../utils/user.data";
-import { User } from "../../../backend/src/modules/users/schmas/users.schema";
-import { MakeApiCall, Methods } from "../actions";
- import { zodResolver } from "@hookform/resolvers/zod";
+import { User } from "../../../../backend/src/modules/users/schmas/users.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm, useFormContext } from "react-hook-form";
+import { loginSchema } from "@/app/utils/zodschama";
+import { MakeApiCall, Methods } from "@/app/actions";
+import { userData } from "@/app/utils/user.data";
 
 type Inputs = {
   email: string;
@@ -15,7 +15,12 @@ type Inputs = {
 };
 
 export default function LoginPage() {
-  const { register, handleSubmit,watch, formState: { errors } } = useForm<Inputs>();;
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<Inputs>();
 
   const email = watch("email");
   const password = watch("password");
@@ -24,7 +29,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const submit: SubmitHandler<Inputs> = async (data:any) => {
+  const submit: SubmitHandler<Inputs> = async (data: any) => {
     const valdidatedData = loginSchema.safeParse(data);
     console.log(email, password);
 
@@ -55,14 +60,11 @@ export default function LoginPage() {
 
   return (
     <div
-    className="min-h-screen flex items-center justify-center flex-col p-2 
+      className="min-h-screen flex items-center justify-center flex-col p-2 
     bg-[linear-gradient(to_top_right,_rgb(3,55,101),_rgb(13,112,200),_rgb(97,108,202),_rgb(127,174,215),_rgb(94,152,203))]"
-  >
-
- 
-<div  className=" text-center text-white text-4xl font-bold">   AI Pin</div>
+    >
+      <div className=" text-center text-white text-4xl font-bold"> AI Pin</div>
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
-      
         <h2 className="text-2xl font-bold mb-6 text-center">Welcome Back!</h2>
         <form onSubmit={handleSubmit(submit)} className="space-y-5">
           {" "}

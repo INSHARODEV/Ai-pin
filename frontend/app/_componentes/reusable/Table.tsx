@@ -1,14 +1,11 @@
-import React, { ReactNode } from 'react';
+import * as React from 'react';
 
-interface Params {
-  headers: any
-  data: any
+export interface TableProps {
+  headers: string[];
+  data: Array<Array<React.ReactNode>>;
 }
 
-export default function Table({
-  headers, data
-}: Params) {
-  
+export default function Table({ headers, data }: TableProps) {
   const getPerformanceStyle = (performance: string) => {
     switch (performance.toLowerCase()) {
       case 'in progress':
@@ -29,31 +26,34 @@ export default function Table({
   };
 
   return (
-    <div className={`overflow-x-auto shadow-lg shadow-black"`}>
-      <table className="min-w-full bg-white rounded-lg overflow-hidden " >
+    <div className=''>
+      <table className='min-w-full overflow-hidden rounded-lg bg-white shadow-sm shadow-black'>
         <thead>
-          <tr className="bg-blue-600">
-            {headers.map((header: string, index: number): any => (
+          <tr className='bg-blue-600'>
+            {headers.map((header, index) => (
               <th
                 key={index}
-                className="px-6 py-4 text-left font-medium text-white text-sm"
+                className='px-6 py-4 text-left text-sm font-medium text-white'
               >
                 {header}
               </th>
             ))}
           </tr>
         </thead>
+
         <tbody>
-          {data.map((row: unknown[], rowIndex: number) => (
+          {data.map((row, rowIndex) => (
             <tr
               key={rowIndex}
               className={rowIndex % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
             >
-              {row.map((cell: any, cellIndex: number) => (
+              {row.map((cell, cellIndex) => (
                 <td
                   key={cellIndex}
                   className={`px-6 py-4 text-sm ${
-                    cellIndex === 4 ? getPerformanceStyle(cell) : 'text-gray-700'
+                    cellIndex === 4 && typeof cell === 'string'
+                      ? getPerformanceStyle(cell)
+                      : 'text-gray-700'
                   }`}
                 >
                   {cell}
