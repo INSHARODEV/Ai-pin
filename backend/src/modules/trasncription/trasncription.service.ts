@@ -34,7 +34,7 @@ export class TrasncriptionService {
   
     return await this.transcriptionRepo.find({
       limit: 100,
-      page: 1,
+      page: 1,popultae:'',
       queryStr,
       sort: 'asc',
       skip: 0,

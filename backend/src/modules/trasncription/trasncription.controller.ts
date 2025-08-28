@@ -8,6 +8,8 @@ import {
   Inject,
   UseGuards,
   Param,
+  Get,
+  Query,
 } from '@nestjs/common';
 import { TrasncriptionService } from './trasncription.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -22,8 +24,12 @@ import { AuthGuard } from 'src/common/guards/auth/auth.gurd';
 import { shiftService } from './shift.service';
 import { ParseMongoIdPipe } from '../../common/pipes/parse-mongodb-id.pipe';
 import { MongoDbId } from 'src/common/DTOS/mongodb-Id.dto';
+import { QueryString } from 'src/common/types/queryString.type';
+import { PaginationPipe } from 'src/common/pipes/pagination.pipe';
+import { SalseDataInteceptor } from './interceptors/data.interceptor';
 
 @Controller('trasncriptions')
+@UseGuards(AuthGuard)
 export class TrasncriptionController {
   constructor(
     private readonly trasncriptionService: TrasncriptionService,
@@ -34,19 +40,17 @@ export class TrasncriptionController {
   ) {}
 
   @Post('shift')
-  @UseGuards(AuthGuard)
   async startShift(@Req() req: Request) {
     const empId = req['user']['_id'];
-    await this.shiftService.createShift({ emp: empId });
+    return await this.shiftService.createShift({ emp: empId });
   }
 
   @Post(':shiftId')
-  @UseGuards(AuthGuard)
   @UseInterceptors(FileInterceptor('audio-file'))
   async transcripe(
     @UploadedFile(AudioPipe) { file, fileName }: any,
     @Req() req: Request,
-    @Param('shiftId', ParseMongoIdPipe) shiftId: MongoDbId
+    @Param('shiftId', ParseMongoIdPipe) shiftId: MongoDbId,
   ) {
     try {
       this.logger.verbose('audioFile', file);
@@ -72,11 +76,27 @@ export class TrasncriptionController {
       const newDoc = await this.trasncriptionService.create(
         craeteTrasncitionDto as createTransiptionDto,
       );
-    await  this.shiftService.updateShift(shiftId,newDoc._id)
+      await this.shiftService.updateShift(shiftId, newDoc._id);
+      console.log(craeteTrasncitionDto)
       return newDoc;
     } catch (error) {
-      this.logger.error(`Transcription process failed:${error.message}. ${error.stack}`);
-      throw error; // Re-throw to let NestJS handle the response
+      this.logger.error(
+        `Transcription process failed:${error.message}. ${error.stack}`,
+      );
+      throw error;  
     }
+  }
+
+  @Get()
+  @UseInterceptors(SalseDataInteceptor)
+  async retiveAllShifts(
+    @Req() req: Request,
+    @Query(PaginationPipe)
+    { fields, limit, queryStr, popultae, skip, sort, page }: QueryString,
+  ) {
+    return await this.shiftService.getAll(
+      { fields, limit, queryStr, skip, sort, page, popultae },
+      req['user']['_id'],
+    );
   }
 }

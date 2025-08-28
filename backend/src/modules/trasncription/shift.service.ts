@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { CreateShiftDton } from './dto/create-shift-dto';
 import { shiftRepo } from './shift.repo';
 import { MongoDbId } from "src/common/DTOS/mongodb-Id.dto";
+import { QueryString } from "src/common/types/queryString.type";
  
 @Injectable()
 export class shiftService{
@@ -23,11 +24,9 @@ export class shiftService{
         }
      //   console.log(updatedDc)
     }
-    // async getAllShifts(empId,timeRange){
-    //     await this.shiftRepo.find({limit:10,page:pageXOffset,queryStr:})
-    // }
-    // {
-        
-    // }
+    async getAll({fields,limit,skip,sort,page}:QueryString,empId){
+       return await this.shiftRepo.find({fields,popultae:{ path: 'transcriptionsId',select: ' performance',},limit,queryStr:{emp:empId},skip,sort:{'createdAt':-1},page} )
+    }
+     
 }
  

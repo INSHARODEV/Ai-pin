@@ -1,4 +1,4 @@
-import { IsArray, IsOptional, isString, IsString } from 'class-validator';
+import { IsArray, IsDecimal, IsDefined, isNumber, IsOptional, isString, IsString } from 'class-validator';
 import { Turn, TurnSchema } from '../schemas/transcitionSchema';
 
 export class createTransiptionDto {
@@ -7,6 +7,8 @@ export class createTransiptionDto {
 
   @IsString()
   raw_transcript: string;
+  @IsDefined()
+  performance: any;
 
   @IsString()
   summary: string;

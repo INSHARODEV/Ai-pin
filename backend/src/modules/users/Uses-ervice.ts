@@ -8,8 +8,8 @@ export class UserService{
         private readonly logger:Logger
     ){}
 
-    async getAllUsers({fields,limit,page,skip,sort,queryStr}:QueryString,{firstName,lastName, role}:Partial<createUserDto>){
+    async getAllUsers({fields,limit,page,skip,sort,queryStr,popultae}:QueryString,{firstName,lastName, role}:Partial<createUserDto>){
         this.logger.verbose(  ` user : ${firstName as string+lastName as string} with role :${role} is retriving All Admins Data`)
-      return   await this.userRepor.find({fields,limit,page,queryStr,skip,sort})
+      return   await this.userRepor.find({fields,limit,page,queryStr,skip,sort,popultae})
     }
 }

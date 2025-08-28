@@ -59,7 +59,7 @@ export class BranchController {
     @Param('companyId', new ParseMongoIdPipe()) companyId: string,
     @Req() req: Request,
     @Query(new PaginationPipe())
-    { fields, limit, queryStr, skip, sort, page }: QueryString,
+    { fields, limit, queryStr, skip, sort, page,popultae }: QueryString,
   ) {
     const exsisitngCompany = await this.CompanyService.findOne(companyId, {
       email: req['user']['email'],
@@ -68,7 +68,7 @@ export class BranchController {
     if (!exsisitngCompany)
       throw new BadRequestException('this comapny dose not exsisit');
     return await this.branchService.findAll(
-      { fields, limit, page, queryStr, skip, sort },
+      { fields, limit, page, queryStr, skip, sort ,popultae},
       {
         email: req['user']['email'],
         firstName: req['user']['firstName'],

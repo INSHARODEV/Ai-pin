@@ -11,6 +11,7 @@ export class Shift {
   emp: MongoDbId;
   @Prop([{ type: mongoose.Schema.ObjectId, ref: 'Transcript' }])
   transcriptionsId: MongoDbId[];
+  
 }
 @Schema({ _id: false })
 export class EngagementMetrics {
@@ -87,6 +88,8 @@ export class Transcript {
 
   @Prop()
   raw_transcript: string;
+  @Prop({default:0})
+  performance: number;
 
   @Prop()
   summary: string;

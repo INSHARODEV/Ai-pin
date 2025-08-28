@@ -4,11 +4,14 @@ export const prompt=(transcript)=>{
     Analyze the transcript and return ONLY a JSON object with this exact structure:
     
     {
+     "performance": 0,
+    
       "turns": [
         {
           "transcription": "<exact words spoken>",
           "speaker_label": "Sales Rep" or "Customer",
           "tone_sentiment": "friendly" | "neutral" | "confused" | "frustrated" | "aggressive",
+          
           "sales_script_adherence": <0-100 integer>,
           "compliance_flags": {
             "profanity": false,
@@ -36,6 +39,9 @@ export const prompt=(transcript)=>{
     - Always include ALL required fields with proper data types
     - Identify speakers as "Sales Rep" or "Customer" based on context
     - Set upselling fields to false (will be overridden by our detection)
+    -IMPORTANT: Always include "performance" at the top level as an integer between 0 and 100.
+    - If unsure, set "performance" = 0.
+
     
     Transcript to analyze: ${transcript}`;
 }

@@ -9,7 +9,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import {  UsersRepo } from './auth.repo';
+import { UsersRepo } from './auth.repo';
 import { createUserDto } from '../users/dto/create-user-dto';
 import { Request, Response } from 'express';
 
@@ -31,19 +31,20 @@ export class AuthController {
   async signin(
     @Body() createUserDto: Partial<createUserDto>,
     @Res() res: Response,
-    @Req()req:Request
+    @Req() req: Request,
   ) {
-    
-    console.log(req.body)
+    console.log(req.body);
 
     const { refreshToken, authToken } = await this.AuthService.signin(
       createUserDto,
-    {email:createUserDto.email as string,name:createUserDto.email as string}
+      {
+        email: createUserDto.email as string,
+        name: createUserDto.email as string,
+      },
     );
     res.cookie('refresh-token', refreshToken, {
-      httpOnly: true,
       maxAge: 1254685235478,
-      sameSite: true,
+      sameSite: 'none',
       secure: true,
     });
 
@@ -58,8 +59,8 @@ export class AuthController {
   }
   @Get('refresh')
   async refreshToken(@Req() req: Request, @Res() res: Response) {
-    const refreshToken = req.cookies['refresh-token'];
-
+    const refreshToken = req.cookies['refresh-token'] as any;
+    console.log(refreshToken);
     if (!refreshToken) throw new BadRequestException('Please sign in first');
 
     const authToken = await this.authService.refresh(refreshToken);
@@ -71,6 +72,6 @@ export class AuthController {
         sameSite: true,
         secure: true,
       })
-      .json({ authToken });
+      .json(authToken);
   }
 }

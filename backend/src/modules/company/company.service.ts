@@ -21,9 +21,9 @@ export class CompanyService {
    
   }
 
- async findAll({fields,limit,queryStr,skip,sort,page} :QueryString, {role ,firstName   }:Partial<createUserDto>) {
+ async findAll({fields,limit,queryStr,skip,sort,page,popultae} :QueryString, {role ,firstName   }:Partial<createUserDto>) {
     this.logger.verbose(`retrivng paginated companys by ${firstName}  . role : ${role}`)
-    return  await  this.comapntRepo.find({fields,limit,queryStr,skip,sort,page}) ;
+    return  await  this.comapntRepo.find({fields,limit,queryStr,skip,sort,page,popultae}) ;
   }
 
   async findOne(id: string,{role ,firstName   }:Partial<createUserDto>) {

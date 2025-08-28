@@ -5,5 +5,7 @@ export interface QueryString   {
     skip: number;
     sort: any;
     queryStr: any;
+     
+    popultae?:string
   };
   

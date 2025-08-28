@@ -18,10 +18,10 @@ export class BranchService {
     return  await this.branchrepo.create(createBranchDto)
   }
 
-  async findAll({fields,limit,page,queryStr,skip,sort},{email,firstName}:Partial<createUserDto>) {
+  async findAll({fields,limit,page,queryStr,skip,sort,popultae},{email,firstName}:Partial<createUserDto>) {
     this.logger.verbose(` user ${firstName } with email ${email} is retriving all branches  `)
  
-    return  await this.branchrepo.find({fields,limit,page,queryStr,skip,sort})
+    return  await this.branchrepo.find({fields,limit,page,queryStr,skip,sort,popultae})
   }
 
   async findOne(id: string,{email,firstName}:Partial<createUserDto>) {

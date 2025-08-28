@@ -57,7 +57,7 @@ export interface Params {
 
 export async function MakeApiCall({ url, method, body,queryString ,headers }: Params) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}${url}?${queryString}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}${url}?${queryString?queryString:''}`, {
       method,
       body: body ?  body  : undefined,
       headers: {

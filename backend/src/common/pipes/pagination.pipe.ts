@@ -24,7 +24,7 @@ export class PaginationPipe implements PipeTransform {
     const fields = '-__v';
 
     const page = queryString.page as number * 1 || 1;
-    const limit = queryString.limit * 1 || 5;
+    const limit = queryString.limit * 1 || 8;
     const skip = (page - 1) * limit;
     queryStr    = JSON.parse(queryStr) ;
     for (const key in queryStr as {}) {
@@ -32,6 +32,6 @@ export class PaginationPipe implements PipeTransform {
         queryStr['key'] = { $regex: `^${queryStr[key]}`, $options: "i" };  
       }
     }
-    return { limit, skip, queryStr, fields, sort, page };
+    return { limit, skip, queryStr, fields, sort, page,popultae:'' };
   }
 }

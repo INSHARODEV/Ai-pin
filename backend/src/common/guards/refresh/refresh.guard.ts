@@ -13,10 +13,10 @@ export class RefreshGuard implements CanActivate {
     const req:Request = context.switchToHttp().getRequest();
     const authToken=req.headers.authorization as string
 
-     if(authToken && this.JWTAuthService.VerifyToken({secret:process.env.AUTH_SECRET as string,token:authToken})){
-      return false
-    }
-    
+    //  if(authToken && this.JWTAuthService.VerifyToken({secret:process.env.AUTH_SECRET as string,token:authToken})){
+    //   return false
+    // }
+    console.log(req)
      const {refreshToken}=req.cookies;
     const decoded=this.JWTAuthService.VerifyToken({secret:process.env.REFRESH_SECRET as string,token:refreshToken})
      if (!refreshToken&&!decoded ) {

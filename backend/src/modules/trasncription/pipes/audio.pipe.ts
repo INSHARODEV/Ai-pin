@@ -7,6 +7,7 @@ export class AudioPipe implements PipeTransform {
   constructor(private readonly b2Service: BackblazeCloudService) {}
 
   async transform(file: any) {
+    console.log(file)
     if (!file || !file.buffer || !file.originalname) {
       throw new BadRequestException('No file uploaded');
     }
