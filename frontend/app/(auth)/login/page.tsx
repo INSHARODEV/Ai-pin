@@ -41,9 +41,10 @@ export default function LoginPage() {
     try {
       setLoading(true);
       const res = await MakeApiCall({
-        body: JSON.stringify(valdidatedData.data),
+        body: JSON.stringify(valdidatedData.data) ,
         url: `/auth/signin`,
         method: Methods.POST,
+              
       });
       
       console.log(process.env.NEXT_PUBLIC_BASE_URL);
