@@ -34,5 +34,5 @@ export interface Shift {
   startTime: string;
   endTime: string;
   duration: string;
-  performance:  number;
+  performance: ShiftPerformance | string;
 }

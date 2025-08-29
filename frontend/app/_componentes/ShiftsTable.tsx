@@ -1,7 +1,7 @@
+// ShiftsTable.tsx
 import * as React from 'react';
 import { Shift } from '../types';
-import { Card } from './ui/Card';
-import Table from './reusable/Table';
+import Table, { BadgeValue, type TableCell } from './reusable/Table';
 
 export interface ShiftsTableProps {
   shifts: Shift[];
@@ -15,21 +15,21 @@ export function ShiftsTable({ shifts }: ShiftsTableProps) {
     'Duration',
     'Performance',
   ];
-  const data = shifts.map(s => [
+
+  const data: TableCell[][] = shifts.map(s => [
     s.date,
     s.startTime,
     s.endTime,
     s.duration,
-    s.performance,
+    { kind: 'badge', value: s.performance as BadgeValue }, // <— make it a badge cell
   ]);
 
   return (
-    <Card className='overflow-hidden'>
-      <div className='border-b border-gray-200 p-6'>
+    <div className='overflow-hidden bg-inherit'>
+      <div className='p-6'>
         <h3 className='text-xl font-semibold text-gray-900'>Last 7 Shifts</h3>
       </div>
-
       <Table headers={headers} data={data} />
-    </Card>
+    </div>
   );
 }

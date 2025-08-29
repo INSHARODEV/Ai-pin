@@ -14,12 +14,9 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   return (
     <div>
-      <SalesHeader
-        userName='Full Name'
-        //  onLogout={() => console.log('logout')}
-      />
+      <SalesHeader userName='Full Name' />
 
-      <main>{children}</main>
+      <main className='px-10'>{children}</main>
     </div>
   );
 }

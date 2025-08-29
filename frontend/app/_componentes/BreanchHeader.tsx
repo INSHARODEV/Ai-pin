@@ -3,15 +3,15 @@
 import * as React from 'react';
 import { Activity, LogOut } from 'lucide-react';
 
-export interface SalesHeaderProps {
+export interface BreanchHeaderProps {
   userName?: string;
   onLogout?: () => void;
 }
 
-export default function SalesHeader({
+export default function BreanchHeader({
   userName = 'Full Name',
   onLogout,
-}: SalesHeaderProps) {
+}: BreanchHeaderProps) {
   const [showLogout, setShowLogout] = React.useState(false);
 
   const handleIconClick = () => {
@@ -26,15 +26,12 @@ export default function SalesHeader({
   };
 
   return (
-    <header className='bg-white shadow-sm px-16 py-4 z-0 relative'>
+    <header className='bg-[#FEFEFE] shadow-b-sm px-16 py-4 z-0 relative'>
       <div className='flex items-center justify-between'>
         {/* Left side */}
-        <div className='flex items-center space-x-3'>
-          <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600'>
-            <Activity className='h-5 w-5 text-white' />
-          </div>
-          <span className='text-xl font-semibold text-gray-900'>AI Pin</span>
-        </div>
+        <h2 className='text-2xl font-bold text-gray-900'>
+          Branch Transcription
+        </h2>
 
         {/* Right side */}
         <div className='relative flex items-center gap-4'>

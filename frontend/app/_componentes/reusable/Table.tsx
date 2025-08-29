@@ -1,35 +1,65 @@
 import * as React from 'react';
+import { Badge } from '../ui/Badge';
+
+// ---- NEW: strongly-typed cells -----------------
+type StatusColor = 'green' | 'red' | 'orange';
+
+export type BadgeValue = 'Low' | 'High' | 'Standard' | 'Critical'; // | (string & {}); // allow other strings
+
+type LinkCell = {
+  kind: 'link';
+  label: string;
+  href?: string;
+  onClick?: () => void;
+};
+type BadgeCell = { kind: 'badge'; value: BadgeValue };
+type StatusCell = { kind: 'status'; value: StatusColor };
+// Allow plain text/nodes too
+type PlainCell = string | number | React.ReactNode;
+
+export type TableCell = PlainCell | LinkCell | BadgeCell | StatusCell;
+// ------------------------------------------------
 
 export interface TableProps {
   headers: string[];
-  data: Array<Array<React.ReactNode>>;
+  data: Array<Array<TableCell>>;
 }
 
 export default function Table({ headers, data }: TableProps) {
-  const getPerformanceStyle = (performance: string) => {
-    switch (performance.toLowerCase()) {
-      case 'in progress':
-        return 'text-blue-600 font-medium';
-      case 'friendly':
-        return 'text-green-600 font-medium';
-      case 'confused':
-        return 'text-yellow-600 font-medium';
-      case 'neutral':
-        return 'text-gray-600 font-medium';
-      case 'frustrated':
-        return 'text-orange-600 font-medium';
-      case 'aggressive':
-        return 'text-red-600 font-medium';
+  const getPerformanceBadgeVariant = (performance: string) => {
+    switch (performance) {
+      case 'High':
+        return 'success';
+      case 'Low':
+        return 'warning';
+      case 'Critical':
+        return 'destructive';
+      case 'Standard':
+        return 'neutral';
       default:
-        return 'text-gray-600 font-medium';
+        return 'secondary';
     }
   };
 
+  const getStatusDot = (status: StatusColor) => {
+    const colors: Record<StatusColor, string> = {
+      green: 'bg-green-500',
+      red: 'bg-red-500',
+      orange: 'bg-orange-500',
+    };
+    return (
+      <span
+        aria-label={`${status} status`}
+        className={`inline-block h-3 w-3 rounded-full ${colors[status]}`}
+      />
+    );
+  };
+
   return (
-    <div className=''>
-      <table className='min-w-full overflow-hidden rounded-lg bg-white shadow-sm shadow-black'>
+    <div>
+      <table className='min-w-full overflow-hidden rounded-lg bg-white shadow-[0_0_7px_0_#C9C9C940]'>
         <thead>
-          <tr className='bg-blue-600'>
+          <tr className='bg-[#0D70C8]'>
             {headers.map((header, index) => (
               <th
                 key={index}
@@ -40,25 +70,60 @@ export default function Table({ headers, data }: TableProps) {
             ))}
           </tr>
         </thead>
-
         <tbody>
           {data.map((row, rowIndex) => (
             <tr
               key={rowIndex}
               className={rowIndex % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
             >
-              {row.map((cell, cellIndex) => (
-                <td
-                  key={cellIndex}
-                  className={`px-6 py-4 text-sm ${
-                    cellIndex === 4 && typeof cell === 'string'
-                      ? getPerformanceStyle(cell)
-                      : 'text-gray-700'
-                  }`}
-                >
-                  {cell}
-                </td>
-              ))}
+              {row.map((cell, cellIndex) => {
+                // Narrow discriminated union
+                if (
+                  typeof cell === 'object' &&
+                  cell !== null &&
+                  'kind' in cell
+                ) {
+                  const c = cell as LinkCell | BadgeCell | StatusCell;
+                  return (
+                    <td key={cellIndex} className='px-6 py-4 text-sm'>
+                      {c.kind === 'badge' ? (
+                        <Badge
+                          variant={getPerformanceBadgeVariant(c.value) as any}
+                        >
+                          {c.value}
+                        </Badge>
+                      ) : c.kind === 'status' ? (
+                        getStatusDot(c.value)
+                      ) : // link
+                      c.href ? (
+                        <a
+                          href={c.href}
+                          className='text-blue-600 hover:underline'
+                        >
+                          {c.label}
+                        </a>
+                      ) : (
+                        <button
+                          type='button'
+                          onClick={c.onClick}
+                          className='text-blue-600 hover:underline'
+                        >
+                          {c.label}
+                        </button>
+                      )}
+                    </td>
+                  );
+                }
+
+                // Plain content
+                return (
+                  <td key={cellIndex} className='px-6 py-4 text-sm'>
+                    <span className='text-gray-700'>
+                      {cell as React.ReactNode}
+                    </span>
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>
