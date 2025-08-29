@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { TranscriptionRepo } from './transcrition.repo';
 import { createTransiptionDto } from './dto/create-trasition-dto';
+ import { MongoDbId } from 'src/common/DTOS/mongodb-Id.dto';
+import { QueryString } from 'src/common/types/queryString.type';
 
 @Injectable()
 export class TrasncriptionService {
@@ -15,17 +17,17 @@ export class TrasncriptionService {
     return Result
 
   }
-  async getUserTranscriptions(userEmail: string, startDate?: Date, endDate?: Date) {
+  async getUserTranscriptions({fields,limit,queryStr:  sd,skip,sort,page,popultae}:QueryString,userEmail: MongoDbId, ) {
     // Default: 7 days ago to now
     const now = new Date();
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(now.getDate() - 7);
   
-    const fromDate = startDate || sevenDaysAgo;
-    const toDate = endDate || now;
+    const fromDate = sd.startDate || sevenDaysAgo;
+    const toDate = sd.endDate || now;
   
-    const queryStr = {
-      userEmail,
+    const queryStr= {
+      emp:userEmail,
       createdAt: {
         $gt: fromDate,
         $lte: toDate

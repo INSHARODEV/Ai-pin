@@ -27,6 +27,8 @@ import { MongoDbId } from 'src/common/DTOS/mongodb-Id.dto';
 import { QueryString } from 'src/common/types/queryString.type';
 import { PaginationPipe } from 'src/common/pipes/pagination.pipe';
 import { SalseDataInteceptor } from './interceptors/data.interceptor';
+import { RoleMixin } from '../../common/Mixins/role.mixin';
+import { Role } from 'src/shared/ROLES';
 
 @Controller('trasncriptions')
 @UseGuards(AuthGuard)
@@ -98,5 +100,10 @@ export class TrasncriptionController {
       { fields, limit, queryStr, skip, sort, page, popultae },
       req['user']['_id'],
     );
+  }
+  @Get(':empId')
+  @UseGuards(RoleMixin([Role.SUPERVISOR]))
+  async getAllTrasnciptions(@Req() req: Request,{ fields, limit, queryStr, popultae, skip, sort, page }: QueryString,@Param('empId', ParseMongoIdPipe) empId: MongoDbId){
+    await this.trasncriptionService.getUserTranscriptions({ fields, limit, queryStr, popultae, skip, sort, page },  empId)
   }
 }

@@ -103,6 +103,8 @@ export class Transcript {
     default: 'recording',
   })
   status: string;
+  @Prop({ type: mongoose.Schema.ObjectId, ref: 'User' })
+  emp: MongoDbId;
 }
 
 export const TranscriptSchema = SchemaFactory.createForClass(Transcript);

@@ -1,5 +1,6 @@
 import { IsArray, IsDecimal, IsDefined, isNumber, IsOptional, isString, IsString } from 'class-validator';
 import { Turn, TurnSchema } from '../schemas/transcitionSchema';
+import { MongoDbId } from 'src/common/DTOS/mongodb-Id.dto';
 
 export class createTransiptionDto {
   @IsArray()
@@ -9,7 +10,7 @@ export class createTransiptionDto {
   raw_transcript: string;
   @IsDefined()
   performance: any;
-
+ 
   @IsString()
   summary: string;
   @IsString()
@@ -17,7 +18,7 @@ export class createTransiptionDto {
 
   @IsString()
   @IsOptional()
-  emp: string;
+  emp: MongoDbId;
 
   @IsString()
   status: string;
