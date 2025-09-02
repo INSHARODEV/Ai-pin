@@ -44,7 +44,8 @@ export class TrasncriptionController {
   @Post('shift')
   async startShift(@Req() req: Request) {
     const empId = req['user']['_id'];
-    return await this.shiftService.createShift({ emp: empId });
+    const branchId = req['user']['branchId'] as MongoDbId;
+    return await this.shiftService.createShift({ emp: empId,branchId });
   }
 
   @Post(':shiftId')
@@ -68,12 +69,14 @@ export class TrasncriptionController {
         chatGptPrompt,
         chatGptPrompt,
       );
+
       craeteTrasncitionDto = {
         ...craeteTrasncitionDto,
         status: 'completed',
         raw_transcript: transcription,
         emp: req['user']['_id'],
         audio_url: fileName,
+       
       } as createTransiptionDto;
       const newDoc = await this.trasncriptionService.create(
         craeteTrasncitionDto as createTransiptionDto,
@@ -97,13 +100,13 @@ export class TrasncriptionController {
     { fields, limit, queryStr, popultae, skip, sort, page }: QueryString,
   ) {
     return await this.shiftService.getAll(
-      { fields, limit, queryStr, skip, sort, page, popultae },
-      req['user']['_id'],
+      { fields, limit, queryStr:{emp:req['user']['_id']}, skip, sort, page, popultae },
+     
     );
   }
   @Get(':empId')
   @UseGuards(RoleMixin([Role.SUPERVISOR]))
   async getAllTrasnciptions(@Req() req: Request,{ fields, limit, queryStr, popultae, skip, sort, page }: QueryString,@Param('empId', ParseMongoIdPipe) empId: MongoDbId){
-    await this.trasncriptionService.getUserTranscriptions({ fields, limit, queryStr, popultae, skip, sort, page },  empId)
+    await this.trasncriptionService.getUserTranscriptions({ fields, limit, queryStr:{branchId:req['user']['branchId']}, popultae:{ path: 'transcriptionsId',select: ' performance',}, skip, sort, page },  empId)
   }
 }

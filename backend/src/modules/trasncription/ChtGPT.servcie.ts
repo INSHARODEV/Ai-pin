@@ -7,14 +7,15 @@ import {
   rejectionPatterns,
 } from 'src/common/utils/pattrens';
 import { stringfyBody } from 'src/common/utils/stirngfy-body';
+import { Turn } from './schemas/transcitionSchema';
 
 @Injectable()
 export class ChatGpt {
   constructor(private readonly Logger: Logger) {}
   async callChatGpt(prompt: string, transcript: string) {
-    this.Logger.warn(
-      `call ing chat gpt with the prompt : ${JSON.stringify(prompt)}`,
-    );
+    // this.Logger.warn(
+    //   `call ing chat gpt with the prompt : ${JSON.stringify(prompt)}`,
+    // );
     const url = 'https://api.openai.com/v1/chat/completions';
     const body = stringfyBody(prompt);
     const res = await fetch(url, {
@@ -41,7 +42,10 @@ export class ChatGpt {
         .trim();
     }
     const parsed = JSON.parse(content);
-    const turns = parsed.turns;
+    this.Logger.warn('the reposen of chat gpt',parsed)
+    const turns = parsed.turns as Turn[];
+    const performance=parsed.performance
+
     let summary = parsed.summary;
     if (Array.isArray(summary)) {
       summary = summary.join(' ');
@@ -69,6 +73,8 @@ export class ChatGpt {
         turns,
         summary,
         audio_url: '',
+
+        performance 
       };
     }
   }

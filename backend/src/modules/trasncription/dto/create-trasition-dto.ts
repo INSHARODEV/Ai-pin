@@ -9,7 +9,7 @@ export class createTransiptionDto {
   @IsString()
   raw_transcript: string;
   @IsDefined()
-  performance: any;
+  performance: number;
  
   @IsString()
   summary: string;

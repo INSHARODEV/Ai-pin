@@ -4,7 +4,7 @@ export const prompt=(transcript)=>{
     Analyze the transcript and return ONLY a JSON object with this exact structure:
     
     {
-     "performance": 0,
+    
     
       "turns": [
         {
@@ -30,7 +30,8 @@ export const prompt=(transcript)=>{
           }
         }
       ],
-      "summary": "Conversation summary focusing on customer needs, products discussed, and outcome."
+      "summary": "Conversation summary focusing on customer needs, products discussed, and outcome.",
+       "performance": 0,
     }
     
     CRITICAL RULES:

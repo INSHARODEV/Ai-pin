@@ -11,6 +11,10 @@ export class Shift {
   emp: MongoDbId;
   @Prop([{ type: mongoose.Schema.ObjectId, ref: 'Transcript' }])
   transcriptionsId: MongoDbId[];
+  @Prop({ type: mongoose.Schema.ObjectId, ref: 'Branch' })
+  branchId: MongoDbId;
+
+  
   
 }
 @Schema({ _id: false })

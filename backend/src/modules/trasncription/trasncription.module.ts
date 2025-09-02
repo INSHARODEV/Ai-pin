@@ -10,6 +10,7 @@ import { BackblazeCloudService } from './BazePlaceUploadService';
 import { AudioGateway  } from './transcripe.gatway';
 import { shiftService } from './shift.service';
 import { shiftRepo } from './shift.repo';
+import { ShiftController } from './shift.controller';
 
 @Module({
   imports:[
@@ -18,7 +19,7 @@ import { shiftRepo } from './shift.repo';
     ]),
 
   ],
-  controllers: [TrasncriptionController,],
+  controllers: [TrasncriptionController,ShiftController],
   providers: [TrasncriptionService,AssmbleyAI,ChatGpt,TranscriptionRepo,AudioGateway,BackblazeCloudService,shiftService,shiftRepo],
 })
 export class TrasncriptionModule {}

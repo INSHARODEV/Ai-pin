@@ -35,6 +35,7 @@ export class SalseDataInteceptor implements NestInterceptor {
           console.log(shift)
         
           return {
+            fullName:shift.emp?shift.emp.firstName+shift.emp.lastName:'',
             duration: `${durationHours} hours ${durationMinutes} minutes`,
             endTime: `${updatedAtAtDate.getHours() - 12 > 0 ? updatedAtAtDate.getHours() - 12 + ' : ' + updatedAtAtDate.getUTCMinutes() + ' ' + 'pm' : updatedAtAtDate.getHours() + ' : ' + updatedAtAtDate.getUTCMinutes() + ' ' + 'am'}`,
             performance:shift.transcriptionsId.reduce((acc, t) => acc + (t.performance || 0), 0) /

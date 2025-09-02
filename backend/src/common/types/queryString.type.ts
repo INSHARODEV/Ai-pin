@@ -6,6 +6,6 @@ export interface QueryString   {
     sort: any;
     queryStr: any;
      
-    popultae?:string
+    popultae?:any
   };
   

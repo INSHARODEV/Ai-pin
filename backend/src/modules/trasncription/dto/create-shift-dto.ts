@@ -1,4 +1,4 @@
-import { IsArray, IsOptional } from "class-validator";
+import { IsArray, IsDefined, IsOptional, IsString } from 'class-validator';
 import { MongoDbId } from "src/common/DTOS/mongodb-Id.dto";
 
 export class CreateShiftDton{
@@ -6,5 +6,9 @@ export class CreateShiftDton{
     emp:MongoDbId
     @IsOptional()
     
-    transciptionsId?:MongoDbId []
+    transciptionsId?:MongoDbId 
+     
+    @IsDefined()
+    @IsString()
+    branchId:MongoDbId 
 }
