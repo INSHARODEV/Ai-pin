@@ -1,63 +1,33 @@
-import * as React from 'react';
-
+'use client'
+ 
 import { StatCard } from '@/app/_componentes/reusable/StatCard';
 import { Shift } from '../types';
 import { ShiftsTable } from '../_componentes/ShiftsTable';
 import Image from 'next/image';
 import BranchTable from '../_componentes/BranchTable';
-
+import { useEffect, useState } from 'react';
+import { MakeApiCall, Methods } from '../actions';
+ 
 export default function Page() {
-  const shifts: Shift[] = [
-    {
-      date: '12th Aug, 2025',
-      startTime: '9:01 AM',
-      endTime: '5:12 PM',
-      duration: '8 hrs, 45 mins',
-      performance: 'Friendly',
-    },
-    {
-      date: '12th Aug, 2025',
-      startTime: '9:01 AM',
-      endTime: '5:12 PM',
-      duration: '8 hrs, 45 mins',
-      performance: 'Confused',
-    },
-    {
-      date: '12th Aug, 2025',
-      startTime: '9:01 AM',
-      endTime: '5:12 PM',
-      duration: '8 hrs, 45 mins',
-      performance: 'Neutral',
-    },
-    {
-      date: '12th Aug, 2025',
-      startTime: '9:01 AM',
-      endTime: '5:12 PM',
-      duration: '8 hrs, 45 mins',
-      performance: 'Frustrated',
-    },
-    {
-      date: '12th Aug, 2025',
-      startTime: '9:01 AM',
-      endTime: '5:12 PM',
-      duration: '8 hrs, 45 mins',
-      performance: 'Aggressive',
-    },
-    {
-      date: '12th Aug, 2025',
-      startTime: '9:01 AM',
-      endTime: '5:12 PM',
-      duration: '8 hrs, 45 mins',
-      performance: 'Friendly',
-    },
-    {
-      date: '12th Aug, 2025',
-      startTime: '9:01 AM',
-      endTime: '5:12 PM',
-      duration: '8 hrs, 45 mins',
-      performance: 'Aggressive',
-    },
-  ];
+  const [shifts,setShifts]= useState<Shift[]>()
+  const [numberOfPages,setNumberOfPages]= useState(1)
+  const [currentPageNumber,setCurrentPage]= useState(1)
+  useEffect(()=>{
+   async function  getShifts(){
+    const { numberOfPages, page, data } = await MakeApiCall({
+      url: '/shift',
+      method: Methods.GET,
+      queryString: 'limit=7',
+    });
+    console.log(data);
+    setShifts(data as Shift[]);
+    setNumberOfPages(numberOfPages);
+    setCurrentPage(page);
+   }
+   getShifts()
+  
+  },[])
+  
 
   return (
     <div className='min-h-screen bg-gray-50'>

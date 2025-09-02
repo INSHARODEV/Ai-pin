@@ -6,9 +6,10 @@ import { User } from "../../../../backend/src/modules/users/schmas/users.schema"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { loginSchema } from "@/app/utils/zodschama";
-import { MakeApiCall, Methods } from "@/app/actions";
+import {    MakeApiCall, Methods } from "@/app/actions";
 import { userData } from "@/app/utils/user.data";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { Role } from "../../../../backend/src/shared/ROLES";
 
 type Inputs = {
   email: string;
@@ -43,7 +44,7 @@ export default function LoginPage() {
       const res = await MakeApiCall({
         body: JSON.stringify(valdidatedData.data) ,
         url: `/auth/signin`,
-        method: Methods.POST,
+        method: Methods.POST, headers: 'json'
               
       });
       
@@ -52,7 +53,14 @@ export default function LoginPage() {
       const payloadPart = res.data.split(".")[1];
       const user: User = userData(payloadPart);
       localStorage.setItem("user", JSON.stringify(user));
-      router.push("/recoder");
+      switch (user.role) {
+  case Role.SUPERVISOR:
+    router.push('/branch');
+    break;
+  case Role.ADMIN:
+    router.push('/sales');
+    break;
+}
     } catch (err) {
       console.error("Login error:", err);
       setError(
