@@ -30,9 +30,11 @@ export type ShiftPerformance =
   | 'Aggressive';
 
 export interface Shift {
+  _id?:string
   date: string;
   startTime: string;
   endTime: string;
   duration: string;
-  performance: ShiftPerformance | string;
+  fullName?:string;
+  performance: ShiftPerformance | string|any;
 }

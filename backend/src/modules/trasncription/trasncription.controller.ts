@@ -104,9 +104,9 @@ export class TrasncriptionController {
      
     );
   }
-  @Get(':empId')
+  @Get( )
   @UseGuards(RoleMixin([Role.SUPERVISOR]))
-  async getAllTrasnciptions(@Req() req: Request,{ fields, limit, queryStr, popultae, skip, sort, page }: QueryString,@Param('empId', ParseMongoIdPipe) empId: MongoDbId){
-    await this.trasncriptionService.getUserTranscriptions({ fields, limit, queryStr:{branchId:req['user']['branchId']}, popultae:{ path: 'transcriptionsId',select: ' performance',}, skip, sort, page },  empId)
+  async getAllTrasnciptions(@Req() req: Request,@Query(){ fields, limit, queryStr, popultae, skip, sort, page }: QueryString,@Param('empId', ParseMongoIdPipe) empId: MongoDbId){
+    await this.trasncriptionService.getUserTranscriptions({ fields, limit, queryStr:{branchId:req['user']['branchId']}, popultae:{ path: 'transcriptionsId emp',select: ' performance firstName lastName',}, skip, sort, page },  empId)
   }
 }

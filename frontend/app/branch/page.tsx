@@ -1,32 +1,26 @@
 'use client'
  
 import { StatCard } from '@/app/_componentes/reusable/StatCard';
-import { Shift } from '../types';
-import { ShiftsTable } from '../_componentes/ShiftsTable';
-import Image from 'next/image';
-import BranchTable from '../_componentes/BranchTable';
-import { useEffect, useState } from 'react';
-import { MakeApiCall, Methods } from '../actions';
  
-export default function Page() {
-  const [shifts,setShifts]= useState<Shift[]>()
-  const [numberOfPages,setNumberOfPages]= useState(1)
-  const [currentPageNumber,setCurrentPage]= useState(1)
-  useEffect(()=>{
-   async function  getShifts(){
-    const { numberOfPages, page, data } = await MakeApiCall({
-      url: '/shift',
-      method: Methods.GET,
-      queryString: 'limit=7',
-    });
-    console.log(data);
-    setShifts(data as Shift[]);
-    setNumberOfPages(numberOfPages);
-    setCurrentPage(page);
-   }
-   getShifts()
+import BranchTable from '../_componentes/BranchTable';
+ 
+import { useShifts } from '../hooks/useShifts';
+import { useShiftsContext } from './layout';
+export interface Params{
+  currentPageNumber:any
+  emps:any
+  firstGroup:any
+  numberOfPages:any
+  rating:any
+  secondGroup:any
+  shifts:any
+   performanceDelta:any
+}
+   
+export default function Page( ) {
+ 
+  const { shifts, rating, performanceDelta ,emps} = useShiftsContext();
   
-  },[])
   
 
   return (
@@ -42,25 +36,35 @@ export default function Page() {
         <section className='mb-8 grid grid-cols-1 gap-6 md:grid-cols-3'>
           <StatCard
             title='Rating'
-            value='4.2'
+            value= {rating}
             description='For the last 7 shifts'
-            variant='green'
+            variant={rating>2.5?'green':'red'}
           />
           <StatCard
             title='Skill Improvement'
-            value='-6%'
+            value={performanceDelta}
+            variant={
+              performanceDelta > 0 
+               ? "green" 
+               : performanceDelta === 0 
+                 ? "orange" 
+                 : "red"
+           }
             description='Change in performance'
-            variant='red'
+     
           />
           <StatCard
-            title='Skill Improvement'
-            value='-6%'
-            description='Change in performance'
+            title='Employees worked'
+            value={emps  }
+            description='Employees worked'
             variant='blue'
           />
         </section>
+ {shifts&& <BranchTable   shifst= {shifts}/>}
 
-        <BranchTable />
+ <div>Loading ...</div>
+ 
+       
       </main>
     </div>
   );

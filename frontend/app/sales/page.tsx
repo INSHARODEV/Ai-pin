@@ -10,275 +10,23 @@ import { MakeApiCall, Methods } from '../actions';
 // import { PaginatedData } from '../../../backend/dist/common/types/paginateData.type';
 import { getChunckedDatat } from '../utils/checuked';
 import { StatCard } from '../_componentes/reusable/StatCard';
+import { useShifts } from '../hooks/useShifts';
+import { Empoylee, User } from '../../../backend/src/modules/users/schmas/users.schema';
+import { Recorder } from '../_componentes/Recorder';
 
 export default function Page() {
-  const mediaStream = useRef<MediaStream | null>(null);
-  const mediaRecorder = useRef<MediaRecorder | null>(null);
-  const chunks = useRef<Blob[]>([]);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const [onShfit, setOnShfit] = useState(false);
-  const [Recording, setRecording] = useState(false);
+
+
   const [error, setError] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [Shifts, setShifts] = useState<Shift[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [numberOfPages, setNumberOfPages] = useState(1);
-  const [rating, setRating] = useState<number>(0);
-  const [firstGroup, setFirstGroup] = useState<Shift[]>();
-  const [secondGroup, setSeconedGroup] = useState<Shift[]>();
-  useEffect(() => {
-    async function getShfits() {
-      const { numberOfPages, page, data } = await MakeApiCall({
-        url: '/trasncriptions',
-        method: Methods.GET,
-        queryString: 'limit=14',
-      });
-      console.log(data);
-      setShifts(data as Shift[]);
-      setNumberOfPages(numberOfPages);
-      setCurrentPage(page);
-      setRating(() => {
-        if (Shifts.length === 0) return 0;
 
-        if (Shifts.length >= 7) {
-          const performances = Shifts.slice(0, 6).map(shift =>
-            Number(shift.performance)
-          );
-          const sum = performances.reduce((a, b) => a + b, 0);
-          return sum / 6; // Fixed: divide by 6, not 7, since we're taking 6 shifts
-        } else {
-          const performances = Shifts.map(shift => Number(shift.performance));
-          const sum = performances.reduce((a, b) => a + b, 0);
-          return sum / Shifts.length;
-        }
-      });
+  const user: any = JSON.parse( localStorage.getItem('user') as string)   ;
 
-      const [firstGroup, secondGroup] = getChunckedDatat(
-        Shifts,
-        7
-      ) as Shift[][];
-      setFirstGroup(firstGroup);
-      setSeconedGroup(secondGroup);
-    }
+  const{currentPageNumber,numberOfPages,rating,shifts, performanceDelta}=useShifts({emp:(user ._id )})
 
-    getShfits();
-  }, []);
+  
 
-  // Function to send audio data to the server
-  const sendAudioToServer = async () => {
-    if (chunks.current.length === 0) {
-      console.log('No audio chunks to send');
-      return;
-    }
+  const [Recording, setRecording] = useState(false);
 
-    const shiftId = localStorage.getItem('shiftId');
-    if (!shiftId) {
-      console.log('No shiftId found');
-      return;
-    }
-
-    // Create blob from chunks
-    const audioBlob = new Blob(chunks.current, { type: 'audio/webm' });
-    console.log('Audio blob size:', audioBlob.size);
-
-    // Create FormData to send the audio file
-    const formData = new FormData();
-    formData.append('audio-file', audioBlob, `audio_${Date.now()}.webm`);
-
-    try {
-      const res = await MakeApiCall({
-        url: `/trasncriptions/${shiftId}`,
-        method: Methods.POST,
-        body: formData,
-      });
-
-      console.log('Audio sent successfully:', res);
-
-      // Clear chunks after successful send
-      chunks.current = [];
-    } catch (error) {
-      console.error('Failed to send audio:', error);
-    }
-  };
-
-  const requestMicrophonePermission = async () => {
-    try {
-      // Check if we're in a secure context (HTTPS or localhost)
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error(
-          'getUserMedia is not supported in this browser or context'
-        );
-      }
-
-      console.log('Requesting microphone permission...');
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          sampleRate: 44100,
-        },
-      });
-
-      console.log('Microphone permission granted, stream obtained:', stream);
-      return stream;
-    } catch (err: any) {
-      console.error('Microphone permission error:', err);
-
-      if (err.name === 'NotAllowedError') {
-        setError(
-          'Microphone permission denied. Please allow microphone access and try again.'
-        );
-      } else if (err.name === 'NotFoundError') {
-        setError(
-          'No microphone found. Please connect a microphone and try again.'
-        );
-      } else if (err.name === 'NotSupportedError') {
-        setError('Your browser does not support audio recording.');
-      } else {
-        setError(`Microphone error: ${err.message}`);
-      }
-      throw err;
-    }
-  };
-
-  const startRecording = (stream: MediaStream) => {
-    try {
-      // Check if MediaRecorder is supported
-      if (!window.MediaRecorder) {
-        throw new Error('MediaRecorder is not supported in this browser');
-      }
-
-      const recorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus',
-      });
-
-      mediaRecorder.current = recorder;
-
-      recorder.ondataavailable = (event: BlobEvent) => {
-        console.log('Audio data available, size:', event.data.size);
-        if (event.data && event.data.size > 0) {
-          chunks.current.push(event.data);
-        }
-      };
-
-      recorder.onstop = async () => {
-        console.log('Recording stopped, sending final audio...');
-        await sendAudioToServer();
-      };
-
-      recorder.onerror = (event: any) => {
-        console.error('MediaRecorder error:', event.error);
-        setError(`Recording error: ${event.error}`);
-      };
-
-      recorder.onstart = () => {
-        console.log('Recording started successfully');
-        setRecording(true);
-        setError(null);
-      };
-
-      recorder.start(1000);
-      console.log('MediaRecorder start called');
-    } catch (err: any) {
-      console.error('Error starting recording:', err);
-      setError(`Failed to start recording: ${err.message}`);
-    }
-  };
-
-  const startShfit = async () => {
-    // Prevent double clicks
-    if (isProcessing) {
-      console.log('Already processing, ignoring click');
-      return;
-    }
-
-    console.log('Start/Stop shift clicked, current state:', onShfit);
-    setIsProcessing(true);
-
-    try {
-      if (!onShfit) {
-        // Starting shift
-        setError(null);
-
-        // Create shift
-        console.log('Creating shift...');
-        const res = await MakeApiCall({
-          url: '/trasncriptions/shift',
-          method: Methods.POST,
-        });
-
-        localStorage.setItem('shiftId', res._id);
-        console.log('Shift created:', res);
-
-        // Get microphone permission and stream
-        const stream = await requestMicrophonePermission();
-        mediaStream.current = stream;
-
-        // Start recording
-        startRecording(stream);
-
-        // Set up interval to send audio every 5 minutes (300000 ms)
-        intervalRef.current = setInterval(async () => {
-          console.log('5-minute interval triggered');
-          if (
-            mediaRecorder.current &&
-            mediaRecorder.current.state === 'recording'
-          ) {
-            console.log('Stopping current recording for interval send');
-            mediaRecorder.current.stop();
-
-            // Wait a bit for the stop event to process
-            setTimeout(() => {
-              // Restart recording if still in shift
-              if (onShfit && mediaStream.current) {
-                console.log('Restarting recording after interval');
-                startRecording(mediaStream.current);
-              }
-            }, 500);
-          }
-        }, 300000);
-
-        setOnShfit(true);
-      } else {
-        // Ending shift
-        console.log('Ending shift...');
-
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
-          console.log('Interval cleared');
-        }
-
-        if (
-          mediaRecorder.current &&
-          mediaRecorder.current.state === 'recording'
-        ) {
-          console.log('Stopping final recording');
-          mediaRecorder.current.stop();
-        }
-
-        if (mediaStream.current) {
-          mediaStream.current.getTracks().forEach(track => {
-            track.stop();
-            console.log('Track stopped:', track.kind);
-          });
-          mediaStream.current = null;
-        }
-
-        mediaRecorder.current = null;
-        setRecording(false);
-        setOnShfit(false);
-        setError(null);
-        console.log('Shift ended');
-      }
-    } catch (error: any) {
-      console.error('Error starting shift:', error);
-      setError(`Failed to start shift: ${error.message}`);
-      setOnShfit(false); // Reset state on error
-    } finally {
-      setIsProcessing(false);
-    }
-  };
 
   return (
     <div className='min-h-screen bg-gray-50'>
@@ -300,21 +48,17 @@ export default function Page() {
 
           <StatCard
             title='Skill Improvement'
-            value={
-              (firstGroup?.length
-                ? firstGroup
-                    .map(shift => Number(shift.performance))
-                    .reduce((a, b) => a + b, 0) / firstGroup.length
-                : 0) -
-              (secondGroup?.length
-                ? secondGroup
-                    .map(shift => Number(shift.performance))
-                    .reduce((a, b) => a + b, 0) / secondGroup.length
-                : 0)
-            }
-            // trendDirection='down'
+            value={performanceDelta}
+              icon=''
+             
             description='Change in performance'
-            variant='red'
+            variant={
+               performanceDelta > 0 
+                ? "green" 
+                : performanceDelta === 0 
+                  ? "orange" 
+                  : "red"
+            }
           />
           <div className='p-6'>
             <div className='space-y-4'>
@@ -336,28 +80,12 @@ export default function Page() {
                 </div>
               )}
 
-              <button
-                onClick={startShfit}
-                disabled={isProcessing}
-                className={`w-full ${
-                  isProcessing
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : onShfit
-                      ? 'bg-[#EF4444]'
-                      : 'bg-[#0D70C8]'
-                }`}
-              >
-                {isProcessing
-                  ? 'Processing...'
-                  : onShfit
-                    ? 'End Shift'
-                    : 'Start Shift'}
-              </button>
+       <Recorder setRecording={setRecording}/>
             </div>
           </div>
         </section>
 
-        <ShiftsTable shifts={Shifts} />
+        <ShiftsTable shifts={shifts} />
       </main>
     </div>
   );

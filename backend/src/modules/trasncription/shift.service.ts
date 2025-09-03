@@ -25,7 +25,7 @@ export class shiftService{
      //   console.log(updatedDc)
     }
     async getAll({fields,limit,skip,sort,page ,queryStr,popultae}:QueryString  ){
-       return await this.shiftRepo.find({fields, popultae,limit,queryStr ,skip,sort:{'createdAt':-1},page} )
+       return await this.shiftRepo.find({fields,  popultae:{ path: 'transcriptionsId emp',select: ' performance firstName lastName',},limit,queryStr ,skip,sort:{'createdAt':-1},page} )
     }
      
 }

@@ -100,7 +100,7 @@ export abstract class BaseRepository<T> implements BaseRepositoryInterface<T> {
       .skip(skip)
       .populate(popultae)
       .select(fields)
-      .sort()
+      .sort(sort)
       .lean()
       .exec();
 

@@ -11,6 +11,7 @@ interface StatCardProps {
   description: string;
   variant: Variant;
   icon?: React.ReactNode; // only required if variant = "blue"
+ 
 }
 
 const variantStyles: Record<Variant, string> = {
@@ -26,6 +27,7 @@ export function StatCard({
   description,
   variant,
   icon,
+ 
 }: StatCardProps) {
   let variantIcon: React.ReactNode;
 
