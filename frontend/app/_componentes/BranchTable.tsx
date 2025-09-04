@@ -28,7 +28,7 @@ export default function BranchTable({shifst}:props) {
           ? "High"
           : "Standard",
     }
-    ,<Link  href={`/employee-rpofile/${shift._id}`} >Details</Link>
+    ,<Link  href={`/employee-rpofile/${shift.empId}`} >Details</Link>
   ]);
 
   return<>

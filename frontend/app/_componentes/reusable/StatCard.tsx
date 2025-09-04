@@ -27,6 +27,7 @@ export function StatCard({
   description,
   variant,
   icon,
+  
  
 }: StatCardProps) {
   let variantIcon: React.ReactNode;

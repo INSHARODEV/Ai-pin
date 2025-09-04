@@ -36,5 +36,6 @@ export interface Shift {
   endTime: string;
   duration: string;
   fullName?:string;
+  empId:string,
   performance: ShiftPerformance | string|any;
 }

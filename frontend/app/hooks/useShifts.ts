@@ -12,14 +12,15 @@ export const useShifts = (queryString: any) => {
   const [secondGroup, setSecondGroup] = useState<Shift[]>([]);
   const [performanceDelta, setPerformanceDelta] = useState<number>(0);
   const [emps, setEmps] = useState<number >(0);
+  const [empsNames,setEmpsNames]=useState<string[]>()
 
   useEffect(() => {
     async function getShifts(queryString: any) {
       try {
         const { numberOfPages, page, data } = await MakeApiCall({
-          url: "/shift?limit=14",
+          url: "/shift",
           method: Methods.GET,
-          queryString: `limit=14&${queryString}`,
+          queryString: `?limit=14&${queryString}`,
         });
 
         const fetchedShifts = data as Shift[];
@@ -32,7 +33,8 @@ export const useShifts = (queryString: any) => {
           new Map(fetchedShifts.map((obj: any) => [obj.emp, obj])).values()
         );
         setEmps(unique.length);
-
+        setEmpsNames(unique.map(un=>un.fullName))
+ 
         // Rating calculation
         if (fetchedShifts.length === 0) {
           setRating(0);
@@ -83,5 +85,6 @@ export const useShifts = (queryString: any) => {
     secondGroup,
     performanceDelta,
     emps,
+    empsNames
   };
 };

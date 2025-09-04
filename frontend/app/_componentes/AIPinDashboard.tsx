@@ -5,11 +5,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import BarChartIcon from './icons/BarChartIcon';
 import { useShiftsContext } from '../branch/layout';
-import { Shift } from '../types';
-
+ 
 const AIPinDashboard = () => {
   const currentPath = usePathname();
-  const { shifts,  } = useShiftsContext();
+  const { empsNames  } = useShiftsContext();
  
   // Helper function to check if a path is active
   const isActive = (path: string) => {
@@ -83,12 +82,12 @@ const AIPinDashboard = () => {
           Employees
         </h2>
         <div>
-          {shifts.map((sihift:Shift, index:number) => (
+          {empsNames&&empsNames.map((name:string, index:number) => (
             <div
               key={index}
               className='px-4 py-3 hover:bg-blue-200 transition-colors cursor-pointer rounded-r-lg'
             >
-              <span className='text-muted-foreground'>{sihift.fullName}</span>
+              <span className='text-muted-foreground'>{name }</span>
             </div>
           ))}
         </div>
