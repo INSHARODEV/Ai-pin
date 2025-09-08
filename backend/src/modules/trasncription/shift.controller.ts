@@ -14,7 +14,8 @@ export class ShiftController{
 //@UseGuards(RoleMixin([Role.SUPERVISOR]))
 @UseInterceptors(SalseDataInteceptor)
 async getSHiftsData(@Query(PaginationPipe){fields,limit, queryStr,skip,sort,page,popultae}:QueryString,@Req() req:Request){
-   const data = await this.shiftService.getAll({fields,limit,queryStr:{branchId:req['user']['branchId']},skip,sort,page,popultae:{ path: 'emp',select: 'firstName lastName',}})
+    console.log(queryStr)
+   const data = await this.shiftService.getAll({fields,limit,queryStr,skip,sort,page,popultae:{ path: 'emp',select: 'firstName lastName',}})
    console.log(data)
    return data
 }
