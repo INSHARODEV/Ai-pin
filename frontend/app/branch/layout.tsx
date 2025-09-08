@@ -1,5 +1,5 @@
 'use client';
-import { ReactNode, createContext, useContext } from 'react';
+import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
 import AIPinDashboard from '../_componentes/AIPinDashboard';
 import BreanchHeader from '../_componentes/BreanchHeader';
 import { useShifts } from '../hooks/useShifts';
@@ -13,8 +13,21 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
-  const user: any = JSON.parse(localStorage.getItem('user') as string);
-  const shiftsData = useShifts({ branchId: user.branchId });
+ 
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('user');
+    if (stored) {
+      setUser(JSON.parse(stored));
+    }
+  }, []);
+
+  const query = useMemo(
+    () => (user ? { branchId: user.branchId } : {}),
+    [user?.branchId]
+  );
+   const shiftsData = useShifts(query);
 
   return (
     <ShiftsContext.Provider value={shiftsData}>

@@ -16,11 +16,23 @@ export const useShifts = (queryString: any) => {
 
   useEffect(() => {
     async function getShifts(queryString: any) {
+      const params = new URLSearchParams();
+
+       Object.entries(queryString).forEach(([key, value]) => {
+        if (typeof value === "object") {
+          // Convert nested objects (e.g., regex) into JSON strings
+          params.set(key, JSON.stringify(value));
+        } else {
+          params.set(key, String(value));
+        }
+      });
+      
+      const query = `${params.toString()}`;
       try {
         const { numberOfPages, page, data } = await MakeApiCall({
           url: "/shift",
           method: Methods.GET,
-          queryString: `?limit=14&${queryString}`,
+          queryString: `${query}`,
         });
 
         const fetchedShifts = data as Shift[];
@@ -29,11 +41,10 @@ export const useShifts = (queryString: any) => {
         setCurrentPage(page);
 
         // Unique employees
-        const unique = Array.from(
-          new Map(fetchedShifts.map((obj: any) => [obj.emp, obj])).values()
-        );
-        setEmps(unique.length);
-        setEmpsNames(unique.map(un=>un.fullName))
+        const unique =  new Set(fetchedShifts.map(shift=>shift.fullName)) as any
+        setEmps(unique.size);
+        console.log(Array.from(unique))
+        setEmpsNames(Array.from(unique) )
  
         // Rating calculation
         if (fetchedShifts.length === 0) {

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { Activity, LogOut } from 'lucide-react';
+import Logo from './icons/Logo';
 
 export interface SalesHeaderProps {
   userName?: string;
@@ -30,9 +31,7 @@ export default function SalesHeader({
       <div className='flex items-center justify-between'>
         {/* Left side */}
         <div className='flex items-center space-x-3'>
-          <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600'>
-            <Activity className='h-5 w-5 text-white' />
-          </div>
+          <Logo/>
           <span className='text-xl font-semibold text-gray-900'>AI Pin</span>
         </div>
 

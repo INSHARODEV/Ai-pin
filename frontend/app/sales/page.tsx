@@ -5,7 +5,7 @@ import { ShiftManagementCard } from '../_componentes/ShiftManagementCard';
 // note fro alll refactor page into its onwn componenet
 import { Shift } from '../types';
 import { ShiftsTable } from '../_componentes/ShiftsTable';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { MakeApiCall, Methods } from '../actions';
 // import { PaginatedData } from '../../../backend/dist/common/types/paginateData.type';
 import { getChunckedDatat } from '../utils/checuked';
@@ -18,10 +18,21 @@ export default function Page() {
 
 
   const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
 
-  const user: any = JSON.parse( localStorage.getItem('user') as string)   ;
+  useEffect(() => {
+    const stored = localStorage.getItem('user');
+    if (stored) {
+      setUser(JSON.parse(stored));
+    }
+  }, []);
 
-  const{currentPageNumber,numberOfPages,rating,shifts, performanceDelta}=useShifts({emp:(user ._id )})
+  const query = useMemo(
+    () => (user ? { branchId: user.branchId } : {}),
+    [user?.branchId]
+  );
+
+  const{currentPageNumber,numberOfPages,rating,shifts, performanceDelta}=useShifts(query)
 
   
 

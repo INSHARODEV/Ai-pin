@@ -57,7 +57,7 @@ export default function LoginPage() {
   case Role.SUPERVISOR:
     router.push('/branch');
     break;
-  case Role.ADMIN:
+  case Role.SELLER:
     router.push('/sales');
     break;
 }

@@ -1,0 +1,86 @@
+"use client";
+
+import React from "react";
+import InputForm from "../_componentes/reusable/Form";
+import { ArrowRight } from "lucide-react"; // for the arrow icon
+import Logo from "../_componentes/icons/Logo";
+
+export interface Params{
+  step:number;
+  setStep:(number:number)=>void
+}
+export default function Page({setStep,step}:Params) {
+  const handleSubmit = (data: any) => {
+    
+    setStep(step+1)
+  };
+
+  return (
+    <div className="  mx-auto mt-10 p-12 bg-white rounded-lg shadow h-[100%]">
+ 
+      <h3 className="text-xl font-semibold mb-1">Company Setup</h3>
+      <p className="text-gray-600 mb-6">
+        Enter the company details and create the main manager account.
+      </p>
+
+      <InputForm
+        onSubmit={handleSubmit}
+        defaultValues={{ company: "", managerName: "", email: "" }}
+      >
+        {/* Company Section */}
+        <div className="space-y-2  ">
+          <label className="text-xs font-semibold text-gray-500 tracking-wide">
+            COMPANY
+          </label>
+          <div className="p-1.5">
+
+         
+          <InputForm.Input
+            name="company"
+            label="" // no extra label, since "COMPANY" is the section title
+            required
+            placeHolder="Company name"
+          />
+           </div>
+        </div>
+
+        {/* Manager Section */}
+        <div className="space-y-2  ">
+          <label className="text-xs font-semibold text-gray-500 tracking-wide">
+            MANAGER
+          </label>
+          <div className="p-1.5  mt-7" >
+
+
+          <InputForm.Input
+            name="managerName"
+            label=""
+            required
+            placeHolder="Manager's name"
+          />
+          <div className="mt-7"> 
+          <InputForm.Input
+            name="email"
+            label=""
+            type="email"
+            required
+            placeHolder="Manager's email"
+          />
+          </div>
+          </div>
+        </div>
+
+        {/* Submit button → round with arrow */}
+        <div className="flex justify-end mt-14">
+          <button
+          
+            type="submit"
+            className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow"
+          >
+            <ArrowRight size={20} />
+          </button>
+        </div>
+      </InputForm>
+    </div>
+  );
+}

@@ -44,12 +44,13 @@ function InputForm<T extends FieldValues>({
 // Input field subcomponent
 interface InputFieldProps {
   name: string;
-  label: string;
+  label?: string;
   type?: string;
+  placeHolder?:string
   required?: boolean;
 }
 
-function InputField({ name, label, type = "text", required }: InputFieldProps) {
+function InputField({ name, label, type = "text", required ,placeHolder}: InputFieldProps) {
   const { register, errors } = useFormContextSafe<any>();
   const error = errors[name]?.message as string | undefined;
 
@@ -59,11 +60,12 @@ function InputField({ name, label, type = "text", required }: InputFieldProps) {
         {label}
       </label>
       <input
+      placeholder={placeHolder}
         type={type}
         {...register(name, { required })}
         className={`mt-1 block w-full px-3 py-2 border ${
-          error ? "border-red-500" : "border-gray-300"
-        } rounded-md shadow-sm focus:outline-none focus:ring-2 ${
+          error ? "border-red-500" : "border-gray-100"
+        } rounded-md shadow-xsm focus:outline-none focus:ring-2 ${
           error ? "focus:ring-red-500" : "focus:ring-blue-500"
         }`}
       />
