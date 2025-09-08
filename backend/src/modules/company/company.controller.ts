@@ -19,7 +19,7 @@ export class CompanyController {
   ) {}
 
   @Post()
-  @UseGuards(RoleMixin([Role.MANAGER]))
+  @UseGuards(RoleMixin([Role.ADMIN]))
   create(@Body() createCompanyDto: CreateCompanyDto,@Req() req :Request) {
     return this.companyService.create(createCompanyDto,  { 
       role:Role.MANAGER,firstName: req['user'].firstName});

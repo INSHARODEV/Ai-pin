@@ -2,18 +2,37 @@ import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { CompnayRepo } from './cmopany.repo';
-import { CompanyDocument } from './schemas/Cmopany.schema';
-import { createUserDto } from '../users/dto/create-user-dto';
+ import { createUserDto } from '../users/dto/create-user-dto';
 import { QueryString } from 'src/common/types/queryString.type';
 import { MongoDbId } from 'src/common/DTOS/mongodb-Id.dto';
+import { UserService } from '../users/Uses-ervice';
+  import * as argon2 from 'argon2';
+import { UsersRepo } from '../auth/auth.repo';
  
 @Injectable()
 export class CompanyService {
-  constructor(private readonly comapntRepo:CompnayRepo , private  readonly logger:Logger){}
- async create(createCompanyDto: CreateCompanyDto,{role ,firstName   }:Partial<createUserDto> ) {
-    this.logger.verbose(`${createCompanyDto.name} is being created at  `,CompanyService.name)
+  constructor(private readonly comapntRepo:CompnayRepo, private  readonly  UsersRepo:UsersRepo,
+        private  readonly logger:Logger){}
+ async create(createCompanyDto: CreateCompanyDto,{role ,firstName   }:Partial<createUserDto>,
+   
+  ) {
+    //this.logger.verbose(`${createCompanyDto.name} is being created at  `,CompanyService.name)
     try{
-     return await this.comapntRepo.create(createCompanyDto  )
+      const hashedPassword = await argon2.hash(`changeMe@${createCompanyDto.name}`);
+
+      // create a manager user
+      console.log(createCompanyDto)
+      const manager = await this.UsersRepo.create({
+        firstName: createCompanyDto.manager.firstName,
+        email: createCompanyDto.manager.email,
+        password: hashedPassword,
+        role: createCompanyDto.manager.role,
+       
+
+      });
+   
+     return await this.comapntRepo.create({   name: createCompanyDto.name,  manager}  )
+
     }catch(err){
       this.logger.error(`errr to create user ${createCompanyDto}, with data ${JSON.stringify(createCompanyDto)}, stack:${err.stack}`)
       throw new InternalServerErrorException()

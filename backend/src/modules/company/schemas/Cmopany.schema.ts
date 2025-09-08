@@ -1,26 +1,38 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import slugify from 'slugify';
+import crypto from 'crypto';
 import { Branch } from 'src/modules/branch/schemas/branch.schema';
-
+import { User, userModel } from 'src/modules/users/schmas/users.schema';
+ 
 export type CompanyDocument = HydratedDocument<Company>;
 
+ 
+@Schema({ _id: false })  
+export class Manager extends User {
+  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: Branch.name  ,default:[]}])
+  inChargeOf?: mongoose.Types.ObjectId[];
+}
+
+const ManagerSchema = SchemaFactory.createForClass(Manager);
+ 
 @Schema()
 export class Company {
-  @Prop()
+  @Prop({ required: true })
   name: string;
 
   @Prop()
   slug: string;
 
-  @Prop([{type: mongoose.Schema.ObjectId, ref: Branch.name}])
-  branchId:string[]
+
+  @Prop({ type: ManagerSchema, })
+  manager: Manager ;
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);
-CompanySchema.pre('save', function (next) {
-  if (this.isModified('name')) {
-    this.slug = slugify(`${crypto.randomUUID().slice(0, 5)}-${this.name}`);
-  }
-  next();
-});
+
+ 
+ 
+export const MangerSchema = SchemaFactory.createForClass(Manager);
+
+export const MangerModel = userModel.discriminator('MangerSchmea', MangerSchema);

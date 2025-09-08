@@ -1,23 +1,39 @@
 import { Module } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CompanyController } from './company.controller';
-import { Company ,CompanySchema} from './schemas/Cmopany.schema';
-import { MongooseModule } from '@nestjs/mongoose';
-import { CompnayRepo } from './cmopany.repo';
+ import { MongooseModule } from '@nestjs/mongoose';
+ 
 import { BranchModule } from '../branch/branch.module';
- import { RouterModule } from '@nestjs/core';
+import { Company, CompanySchema, Manager, MangerSchema,   } from './schemas/Cmopany.schema';
+import { User, UserSchema } from '../users/schmas/users.schema';
+import { CompnayRepo } from './cmopany.repo';
+import { UsersRepo } from '../auth/auth.repo';
+import { UsersModule } from '../users/users.module';
+ // assuming you have this
 
 @Module({
-  imports: [ 
+  imports: [
     BranchModule,
-    MongooseModule.forFeature([{ name: Company.name, schema:  CompanySchema }]),
-    RouterModule.register( [{
-      path:'company/:companyId',
-      module: BranchModule,
-    }])
+    UsersModule,
+    MongooseModule.forFeatureAsync([
+      {
+        name: Company.name,
+        useFactory: () => {
+          return CompanySchema;
+        },
+      },
+      {
+        name: User.name,
+        useFactory: () => {
+          const schema = UserSchema;
+          schema.discriminator(Manager.name, MangerSchema); 
+          return schema;
+        },
+      },
+    ]),
   ],
   controllers: [CompanyController],
-  providers: [CompanyService,CompnayRepo],
-  exports:[CompanyService,CompnayRepo]
+  providers: [CompanyService, CompnayRepo],
+  exports: [CompanyService, CompnayRepo],
 })
 export class CompanyModule {}

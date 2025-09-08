@@ -8,7 +8,8 @@ export class createUserDto{
     firstName:string
     @IsString() 
     @Length(4,20)
-    lastName:string
+    @IsOptional()
+    lastName?:string
     @IsString()
     @IsEmail()
     email:string
