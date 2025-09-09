@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import { Shift } from "../types";
-import { MakeApiCall, Methods } from "../actions";
-import { getChunckedDatat } from "../utils/checuked";
- 
+// hooks/useShifts.ts
+import { useEffect, useState } from 'react';
+import { Shift } from '../types';
+import { MakeApiCall, Methods } from '../actions';
+import { getChunckedDatat } from '../utils/checuked';
+
 export const useShifts = (queryString: any) => {
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [numberOfPages, setNumberOfPages] = useState(1);
@@ -11,81 +12,103 @@ export const useShifts = (queryString: any) => {
   const [firstGroup, setFirstGroup] = useState<Shift[]>([]);
   const [secondGroup, setSecondGroup] = useState<Shift[]>([]);
   const [performanceDelta, setPerformanceDelta] = useState<number>(0);
-  const [emps, setEmps] = useState<number >(0);
-  const [empsNames,setEmpsNames]=useState<string[]>()
+  const [emps, setEmps] = useState<number>(0);
+  const [empsNames, setEmpsNames] = useState<string[]>();
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function getShifts(queryString: any) {
-      const params = new URLSearchParams();
+    // If you ONLY want to fetch when branchId exists, early-return until it's present:
+    if (!queryString || !queryString.branchId) {
+      // Reset to clean empty state while we wait for user/branch
+      setShifts([]);
+      setNumberOfPages(1);
+      setCurrentPage(1);
+      setRating(0);
+      setFirstGroup([]);
+      setSecondGroup([]);
+      setPerformanceDelta(0);
+      setEmps(0);
+      setEmpsNames([]);
+      setIsLoading(false);
+      setError(null);
+      return;
+    }
 
-       Object.entries(queryString).forEach(([key, value]) => {
-        if (typeof value === "object") {
-          // Convert nested objects (e.g., regex) into JSON strings
+    async function getShifts(qs: any) {
+      setIsLoading(true);
+      setError(null);
+
+      const params = new URLSearchParams();
+      Object.entries(qs).forEach(([key, value]) => {
+        if (typeof value === 'object') {
           params.set(key, JSON.stringify(value));
         } else {
           params.set(key, String(value));
         }
       });
-      
+
       const query = `${params.toString()}`;
       try {
         const { numberOfPages, page, data } = await MakeApiCall({
-          url: "/shift",
+          url: '/shift',
           method: Methods.GET,
-          queryString: `${query}`,
+          queryString: query,
         });
 
-        const fetchedShifts = data as Shift[];
+        const fetchedShifts = (data as Shift[]) ?? [];
         setShifts(fetchedShifts);
-        setNumberOfPages(numberOfPages);
-        setCurrentPage(page);
+        setNumberOfPages(numberOfPages ?? 1);
+        setCurrentPage(page ?? 1);
 
         // Unique employees
-        const unique =  new Set(fetchedShifts.map(shift=>shift.fullName)) as any
+        const unique = new Set(fetchedShifts.map(s => s.fullName));
         setEmps(unique.size);
-        console.log(Array.from(unique))
-        setEmpsNames(Array.from(unique) )
- 
-        // Rating calculation
-        if (fetchedShifts.length === 0) {
-          setRating(0);
-        } else if (fetchedShifts.length >= 7) {
-          const performances = fetchedShifts
-            .slice(0, 6)
-            .map((shift) => Number(shift.performance));
-          const sum = performances.reduce((a, b) => a + b, 0);
-          setRating(sum / 7);
-        } else {
-          const performances = fetchedShifts.map((shift) =>
-            Number(shift.performance)
+        setEmpsNames(Array.from(unique) as string[]);
+
+        // ---- Rating calculation fix ----
+        // If >= 7 shifts, take last 7 (or first 7) consistently and divide by 7.
+        if (fetchedShifts.length >= 7) {
+          const last7 = fetchedShifts.slice(0, 7);
+          const sum = last7.reduce(
+            (acc, s) => acc + Number(s.performance || 0),
+            0
           );
-          const sum = performances.reduce((a, b) => a + b, 0);
+          setRating(sum / 7);
+        } else if (fetchedShifts.length > 0) {
+          const sum = fetchedShifts.reduce(
+            (acc, s) => acc + Number(s.performance || 0),
+            0
+          );
           setRating(sum / fetchedShifts.length);
+        } else {
+          setRating(0);
         }
 
         // Chunk data
-        const [first, second] = getChunckedDatat(
-          fetchedShifts,
-          7
-        ) as Shift[][];
+        const [first, second] = getChunckedDatat(fetchedShifts, 7) as Shift[][];
         setFirstGroup(first || []);
         setSecondGroup(second || []);
 
-        // Performance delta (average difference)
+        // Performance delta (avg difference)
         const avg = (arr: Shift[]) =>
-          arr.length
-            ? arr.map((s) => Number(s.performance)).reduce((a, b) => a + b, 0) /
-              arr.length
+          arr?.length
+            ? arr
+                .map(s => Number(s.performance || 0))
+                .reduce((a, b) => a + b, 0) / arr.length
             : 0;
-
         setPerformanceDelta(avg(first) - avg(second));
-      } catch (err) {
-        console.error("Failed to fetch shifts:", err);
+      } catch (err: any) {
+        console.error('Failed to fetch shifts:', err);
+        setError(err?.message || 'Failed to fetch shifts');
+      } finally {
+        setIsLoading(false);
       }
     }
 
     getShifts(queryString);
-  }, [queryString]);
+  }, [JSON.stringify(queryString)]); // stable dep for object
 
   return {
     shifts,
@@ -96,6 +119,8 @@ export const useShifts = (queryString: any) => {
     secondGroup,
     performanceDelta,
     emps,
-    empsNames
+    empsNames,
+    isLoading,
+    error,
   };
 };
