@@ -11,7 +11,6 @@ interface StatCardProps {
   description: string;
   variant: Variant;
   icon?: React.ReactNode; // only required if variant = "blue"
- 
 }
 
 const variantStyles: Record<Variant, string> = {
@@ -27,8 +26,6 @@ export function StatCard({
   description,
   variant,
   icon,
-  
- 
 }: StatCardProps) {
   let variantIcon: React.ReactNode;
 
@@ -58,7 +55,7 @@ export function StatCard({
   }
 
   return (
-    <div className='rounded-2xl shadow-md flex w-full flex-col justify-between bg-white'>
+    <div className='rounded-2xl shadow-md flex w-full flex-col justify-between bg-[#FEFEFE]'>
       <div className='px-6 py-4 flex flex-col gap-4'>
         <h3 className='text-xl font-semibold'>{title}</h3>
         <div className='flex items-center justify-between'>

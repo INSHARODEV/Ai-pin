@@ -1,24 +1,37 @@
 'use client';
 
 import * as React from 'react';
-import { ShiftManagementCard } from '../_componentes/ShiftManagementCard';
-// note fro alll refactor page into its onwn componenet
-import { Shift } from '../types';
 import { ShiftsTable } from '../_componentes/ShiftsTable';
-import { useRef, useState, useEffect, useMemo } from 'react';
-import { MakeApiCall, Methods } from '../actions';
-// import { PaginatedData } from '../../../backend/dist/common/types/paginateData.type';
-import { getChunckedDatat } from '../utils/checuked';
+import { useState, useEffect, useMemo } from 'react';
 import { StatCard } from '../_componentes/reusable/StatCard';
 import { useShifts } from '../hooks/useShifts';
-import { Empoylee, User } from '../../../backend/src/modules/users/schmas/users.schema';
 import { Recorder } from '../_componentes/Recorder';
 
 export default function Page() {
-
-
-  const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<any>(null);
+  const [Recording, setRecording] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const query = useMemo(
+    () => (user ? { branchId: user.branchId } : {}),
+    [user?.branchId]
+  );
+  const { rating, shifts, performanceDelta } = useShifts(query);
+
+  const formatTime = (total: number) => {
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    return [h, m, s].map(v => String(v).padStart(2, '0')).join(':');
+  };
+
+  useEffect(() => {
+    if (!Recording) {
+      setElapsedTime(0);
+      return;
+    }
+    const id = setInterval(() => setElapsedTime(t => t + 1), 1000);
+    return () => clearInterval(id);
+  }, [Recording]);
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
@@ -26,18 +39,6 @@ export default function Page() {
       setUser(JSON.parse(stored));
     }
   }, []);
-
-  const query = useMemo(
-    () => (user ? { branchId: user.branchId } : {}),
-    [user?.branchId]
-  );
-
-  const{currentPageNumber,numberOfPages,rating,shifts, performanceDelta}=useShifts(query)
-
-  
-
-  const [Recording, setRecording] = useState(false);
-
 
   return (
     <div className='min-h-screen bg-gray-50'>
@@ -52,7 +53,6 @@ export default function Page() {
           <StatCard
             title='Rating'
             value={rating}
-            // trendDirection={rating > 2.5 ? 'up' : 'down'}
             description='For the last 7 shifts'
             variant={rating > 2.5 ? 'green' : 'red'}
           />
@@ -60,38 +60,32 @@ export default function Page() {
           <StatCard
             title='Skill Improvement'
             value={performanceDelta}
-              icon=''
-             
+            icon=''
             description='Change in performance'
             variant={
-               performanceDelta > 0 
-                ? "green" 
-                : performanceDelta === 0 
-                  ? "orange" 
-                  : "red"
+              performanceDelta > 0
+                ? 'green'
+                : performanceDelta === 0
+                  ? 'orange'
+                  : 'red'
             }
           />
-          <div className='p-6'>
-            <div className='space-y-4'>
-              <h3 className='text-lg font-medium text-gray-900'>
-                Shift Management
-              </h3>
-              <p className='text-gray-600'>Ready to begin ?</p>
-
-              {error && (
-                <div className='p-3 bg-red-100 border border-red-300 text-red-700 rounded-md text-sm'>
-                  {error}
+          <div className='bg-amber-[#FEFEFE] p-6 rounded-2xl shadow-md text-white flex flex-col justify-between'>
+            <h3 className='text-lg font-medium text-gray-900'>
+              Shift Management
+            </h3>
+            <div className='flex items-center justify-center mt-4'>
+              {Recording ? (
+                <div className='flex items-center text-[#AEAEAE] min-w-40 gap-2'>
+                  <div className='w-2 h-2 rounded-full animate-pulse'></div>
+                  <span className='text-sm tabular-nums'>
+                    {formatTime(elapsedTime)}
+                  </span>
                 </div>
+              ) : (
+                <p className='text-gray-600 min-w-40'>Ready to begin ?</p>
               )}
-
-              {Recording && (
-                <div className='flex items-center space-x-2 text-green-600'>
-                  <div className='w-2 h-2 bg-green-600 rounded-full animate-pulse'></div>
-                  <span className='text-sm'>Recording...</span>
-                </div>
-              )}
-
-       <Recorder setRecording={setRecording}/>
+              <Recorder setRecording={setRecording} />
             </div>
           </div>
         </section>
