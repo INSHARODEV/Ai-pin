@@ -5,9 +5,9 @@ import InputForm from "../../_componentes/reusable/Form";
 import { ArrowRight } from "lucide-react"; // for the arrow icon
 import Logo from "../../_componentes/icons/Logo";
 import { MakeApiCall, Methods } from "../../actions";
-import { stepsContext } from '../layout';
-import { useRouter } from "next/navigation"; // ✅ FIX
+ import { useRouter } from "next/navigation"; // ✅ FIX
 import { routes } from "@/app/_componentes/Form-sidebar";
+import { stepsContext } from "@/app/context/stesp.context";
 
 export interface Params{
   step:number;
@@ -21,7 +21,7 @@ export default function Page() {
     name:data.name,
     manager:{
   "firstName":data.firstName,
-    "email":data.email,
+  email: data.email?.toLowerCase(),
     "role":"MANAGER"
     }
   

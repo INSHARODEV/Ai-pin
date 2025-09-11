@@ -1,16 +1,17 @@
 "use client";
 
 import React, { useContext, useEffect, useState } from "react";
-import { stepsContext } from "../../layout";
-import InputForm from "@/app/_componentes/reusable/Form";
+ import InputForm from "@/app/_componentes/reusable/Form";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { MakeApiCall, Methods } from "@/app/actions";
 import { routes } from "@/app/_componentes/Form-sidebar";
-import { Branch } from "../../../../../backend/src/modules/branch/schemas/branch.schema";
-import { Empoylee } from "../../../../../backend/src/modules/users/schmas/users.schema";
-import { Role } from "../../../../../backend/src/shared/ROLES";
+import { Branch, Role } from "../../../../../shard/src";
+import { Employee } from "../../../../../shard/src";
+import { stepsContext } from "@/app/context/stesp.context";
+import { createUserSchmea } from "@/app/utils/zodschama";
+ 
 
 export interface SaleshFormData {
   firstName?: string;
@@ -30,7 +31,7 @@ export default function Page() {
   const router = useRouter();
   const [branches, setBranches] = useState<BranchWithIdAndMembers[]>([]);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [branchEmps,setBrnachEmps]=useState<Empoylee[]>([])
+  const [branchEmps,setBrnachEmps]=useState<Employee[]>([])
   const { id } = useParams<{ id: string }>();
   const { step, setStep } = useContext(stepsContext) as any;
 
@@ -70,7 +71,7 @@ export default function Page() {
     memberIndex: number,
     branchId: string
   ) => {
-    // update local state
+
     setBranches((prev) =>
       prev.map((b, i) =>
         i === branchIndex
@@ -86,12 +87,13 @@ export default function Page() {
 
     const submittedData = {
       firstName: data.firstName,
-      email: data.email,
+      email: data.email?.toLowerCase(),
       role: "SELLER",
       jobTitle: "Employee",
       password: "changeMe",
       branchId,
     };
+ 
 
     console.log("Submitting:", submittedData);
 

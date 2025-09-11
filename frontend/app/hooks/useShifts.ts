@@ -39,14 +39,18 @@ export const useShifts = (queryString: any) => {
         setShifts(fetchedShifts);
         setNumberOfPages(numberOfPages);
         setCurrentPage(page);
-
-        // Unique employees
+ 
         const unique =  new Set(fetchedShifts.map(shift=>shift.fullName)) as any
         setEmps(unique.size);
         console.log(Array.from(unique))
         setEmpsNames(Array.from(unique) )
  
-        // Rating calculation
+        const allEmps = [ 
+          ...new Map( 
+            fetchedShifts.map(shift => [shift.fullName, { name: shift.fullName, _id: shift._id }]) 
+          ).values() 
+        ]; 
+    console.log(allEmps)
         if (fetchedShifts.length === 0) {
           setRating(0);
         } else if (fetchedShifts.length >= 7) {

@@ -1,5 +1,6 @@
-import { Role } from '../../../backend/src/shared/ROLES';
-  
+import { Role } from "../../../shard/src";
+
+   
   
 export interface AUTH {
     role: Role;

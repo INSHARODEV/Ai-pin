@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useContext, useState } from "react";
-import { stepsContext } from "../../layout";
-import InputForm from "@/app/_componentes/reusable/Form";
+ import InputForm from "@/app/_componentes/reusable/Form";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { MakeApiCall, Methods } from "@/app/actions";
 import { useRouter } from "next/navigation"; // ✅ FIX
 import { routes } from "@/app/_componentes/Form-sidebar";
+import { stepsContext } from "@/app/context/stesp.context";
 
 export interface BranchFormData {
   name?: string;
@@ -40,7 +40,7 @@ export default function Page() {
       name:data.name,
       Superviosr:{
     "firstName":data.firstName,
-      "email":data.email,
+    email: data.email?.toLowerCase(),
       "role":"Superviosr"
       }
     

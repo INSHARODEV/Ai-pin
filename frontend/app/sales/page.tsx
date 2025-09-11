@@ -1,18 +1,14 @@
 'use client';
 
 import * as React from 'react';
-import { ShiftManagementCard } from '../_componentes/ShiftManagementCard';
-// note fro alll refactor page into its onwn componenet
+ // note fro alll refactor page into its onwn componenet
 import { Shift } from '../types';
 import { ShiftsTable } from '../_componentes/ShiftsTable';
 import { useRef, useState, useEffect, useMemo } from 'react';
-import { MakeApiCall, Methods } from '../actions';
-// import { PaginatedData } from '../../../backend/dist/common/types/paginateData.type';
-import { getChunckedDatat } from '../utils/checuked';
+ import { getChunckedDatat } from '../utils/checuked';
+ import { useShifts } from '../hooks/useShifts';
+ import { Recorder } from '../_componentes/Recorder';
 import { StatCard } from '../_componentes/reusable/StatCard';
-import { useShifts } from '../hooks/useShifts';
-import { Empoylee, User } from '../../../backend/src/modules/users/schmas/users.schema';
-import { Recorder } from '../_componentes/Recorder';
 
 export default function Page() {
 

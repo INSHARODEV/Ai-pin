@@ -9,9 +9,9 @@ import Loader from '../loader';
 import { Result } from '../types/result';
 import { Turn } from '../types/turns';
 import witAuth from '../_componentes/witAuth';
+import { Role } from '../../../shard/src';
 
-import { Role } from '../../../backend/src/shared/ROLES';
-function App() {
+ function App() {
   console.log('qweqwe', process.env.NEXT_PUBLIC_BASE_URL);
 
   const [results, setResults] = useState<Result[]>([]);

@@ -1,17 +1,14 @@
 'use client'
 import React, { createContext, ReactNode, useEffect, useState } from 'react'
 import FormSidebar from '../_componentes/Form-sidebar';
+import { stepsContext } from '../context/stesp.context';
 
 interface LayoutProps {
   children: ReactNode;
 }
 
-interface StepsContextType {
-  step: number;
-  setStep: React.Dispatch<React.SetStateAction<number>>;
-}
 
-export const stepsContext = createContext<StepsContextType | null>(null);
+  
 
 export default function Layout({ children }: LayoutProps) {
   const [step, setStep] = useState(0);
