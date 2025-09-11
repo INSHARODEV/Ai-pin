@@ -5,8 +5,7 @@ import { CompnayRepo } from './cmopany.repo';
  import { createUserDto } from '../users/dto/create-user-dto';
 import { QueryString } from 'src/common/types/queryString.type';
 import { MongoDbId } from 'src/common/DTOS/mongodb-Id.dto';
-import { UserService } from '../users/Uses-ervice';
-  import * as argon2 from 'argon2';
+   import * as argon2 from 'argon2';
 import { UsersRepo } from '../auth/auth.repo';
  
 @Injectable()
@@ -30,8 +29,11 @@ export class CompanyService {
        
 
       });
-   
-     return await this.comapntRepo.create({   name: createCompanyDto.name,  manager}  )
+   let data=await this.comapntRepo.create({   name: createCompanyDto.name,  manager}  )
+ 
+  data.manager.password=undefined
+   console.log(data)
+     return data
 
     }catch(err){
       this.logger.error(`errr to create user ${createCompanyDto}, with data ${JSON.stringify(createCompanyDto)}, stack:${err.stack}`)
@@ -47,7 +49,7 @@ export class CompanyService {
 
   async findOne(id: string,{role ,firstName   }:Partial<createUserDto>) {
     this.logger.verbose(`retrivng company   by ${firstName}  . role : ${role}`)
-    return await  this.comapntRepo.findOneById(id)
+    return await  this.comapntRepo.findOneById(id,'branchs')
   }
 async findOneBybranchAndCompanyId(companyId:any, branchId:any){
   this .logger.warn(` retrinvg hte comapny assoited with this id ${companyId.slice(0,4)}... and branch id stats with  ${branchId }...`)
@@ -57,7 +59,7 @@ async findOneBybranchAndCompanyId(companyId:any, branchId:any){
   )
 
 }
- async update(id: MongoDbId, updateCompanyDto: UpdateCompanyDto,{role ,firstName   }:Partial<createUserDto>) {
+ async update(id: MongoDbId, updateCompanyDto: any,{role ,firstName   }:Partial<createUserDto>) {
     this.logger.verbose(` company id:${id} is being  updated   by  user${firstName}  . role : ${role}`)
     return await  this.comapntRepo.updateOne(id,updateCompanyDto)
 

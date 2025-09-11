@@ -56,11 +56,11 @@ export abstract class BaseRepository<T> implements BaseRepositoryInterface<T> {
     return await this.model.insertMany(newData);
   }
 
-  async findOneById(id: string): Promise<unknown | Error> {
+  async findOneById(id: string,populate=''): Promise<unknown | Error> {
     this.logger.verbose(
       `attemting to get user with its id ${id.slice(1, 5)}...`,
     );
-    const exsistingDoc = await this.model.findById(id).lean().exec();
+    const exsistingDoc = await this.model.findById(id).populate(populate).lean().exec();
     if (exsistingDoc) return exsistingDoc;
     this.logger.error(`we ware not able to find this ${id}  `);
     throw new NotFoundException();
@@ -103,9 +103,10 @@ export abstract class BaseRepository<T> implements BaseRepositoryInterface<T> {
       .sort(sort)
       .lean()
       .exec();
-
+console.log('here',this.model)
     return { data, numberOfPages, page };
   }
+  
   async findOneAndUpdate(
     filter: FilterQuery<T>,
     updateData: Partial<T>,

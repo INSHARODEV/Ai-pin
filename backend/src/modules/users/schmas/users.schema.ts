@@ -6,7 +6,7 @@ import { MongoDbId } from 'src/common/DTOS/mongodb-Id.dto';
 import { Role } from 'src/shared/ROLES';
 
 export type UserDocument = HydratedDocument<User>;
-
+export type EmpoyleeDocument = HydratedDocument<Empoylee>; 
 @Schema({ timestamps: true, discriminatorKey: 'jobTitle' })
 export class User {
   @Prop()
@@ -36,16 +36,12 @@ export class Empoylee extends User {
  
 }
  
+
+ 
 const EmpoyleeSchema = SchemaFactory.createForClass(Empoylee);
  
 const UserSchema = SchemaFactory.createForClass(User);
-UserSchema.pre('save', function (next) {
-  this.slug = slugify(
-    `${crypto.randomUUID().slice(0, 5)}-${this.firstName}-${this.lastName}`,
-  );
-
-  next();
-});
+ 
 const userModel = model<UserDocument>('User', UserSchema as mongoose.Schema);
 const EmpoyleeModel = userModel.discriminator('Employee', EmpoyleeSchema);
  

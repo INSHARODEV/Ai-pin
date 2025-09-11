@@ -1,8 +1,11 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose, { HydratedDocument } from "mongoose";
-import { MongoDbId } from "src/common/DTOS/mongodb-Id.dto";
+import { User } from "src/modules/users/schmas/users.schema";
+ 
 export type BranchDocument = HydratedDocument<Branch>;
-@Schema()
+  
+
+@Schema({timestamps:true})
 export class Branch {
 
     @Prop({required:true})
@@ -10,7 +13,8 @@ export class Branch {
 
     @Prop()
     slug:string
+  
    
 }
-export const BranshSchema = SchemaFactory.createForClass(Branch)
+export const BranchSchema = SchemaFactory.createForClass(Branch)
  

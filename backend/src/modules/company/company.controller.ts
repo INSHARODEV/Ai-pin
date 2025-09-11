@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Logger, Query, Req, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Logger, Query, Req, Put, UseInterceptors } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
@@ -10,6 +10,7 @@ import { MongoDbId } from 'src/common/DTOS/mongodb-Id.dto';
 import { ParseMongoIdPipe } from 'src/common/pipes/parse-mongodb-id.pipe';
 import { Role } from 'src/shared/ROLES';
 import { PermissonsGuard } from 'src/common/guards/permissons/permissons.guard';
+import { BranchInterceptor } from './intercepotrs/branch.Interceptor';
   @UseGuards(AuthGuard)
 @Controller('company')
 export class CompanyController {
@@ -19,8 +20,9 @@ export class CompanyController {
   ) {}
 
   @Post()
-  @UseGuards(RoleMixin([Role.ADMIN]))
+  //@UseGuards(RoleMixin([Role.ADMIN]))
   create(@Body() createCompanyDto: CreateCompanyDto,@Req() req :Request) {
+    console.log(createCompanyDto)
     return this.companyService.create(createCompanyDto,  { 
       role:Role.MANAGER,firstName: req['user'].firstName});
   }
@@ -34,7 +36,8 @@ export class CompanyController {
   }
 
   @Get(':id')
-  @UseGuards(RoleMixin([Role.ADMIN]  ),PermissonsGuard)
+  @UseInterceptors(BranchInterceptor)
+  @UseGuards(RoleMixin([Role.ADMIN]  ),/*PermissonsGuard*/)
   findOne(@Param('id') id: string,@Req() req :Request) {
     
     return this.companyService.findOne(id,{ 

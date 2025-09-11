@@ -11,7 +11,7 @@ export type CompanyDocument = HydratedDocument<Company>;
 @Schema({ _id: false })  
 export class Manager extends User {
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: Branch.name  ,default:[]}])
-  inChargeOf?: mongoose.Types.ObjectId[];
+  comapnyId?: mongoose.Types.ObjectId[];
 }
 
 const ManagerSchema = SchemaFactory.createForClass(Manager);
@@ -24,7 +24,11 @@ export class Company {
   @Prop()
   slug: string;
 
-
+ 
+ 
+@Prop([{ type: mongoose.Schema.Types.ObjectId, ref: Branch.name  ,default:[]}])
+branchs?: mongoose.Types.ObjectId[];
+  ///#TODO ADJUST CMPANYNA CREATIONS add acompanyy id to manger
   @Prop({ type: ManagerSchema, })
   manager: Manager ;
 }

@@ -27,7 +27,7 @@ export class PaginationPipe implements PipeTransform {
 
     const fields = '-__v';
     const page = (queryString.page as number) * 1 || 1;
-    const limit = (queryString.limit as number) * 1 || 8;
+    const limit = (queryString.limit as number) * 1 || 14;
     const skip = (page - 1) * limit;
 
     // Dynamically apply regex to string fields EXCEPT ObjectId fields

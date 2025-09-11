@@ -21,5 +21,6 @@ export class UsersController {
     return await this.userService.getAllUsers({ fields, limit, page, queryStr, skip, sort } ,{
        firstName:req['user'].firstName,lastName:req['user'].lastName,role:req['user']. role
     });
+    
   }
 }

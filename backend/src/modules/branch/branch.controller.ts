@@ -33,24 +33,32 @@ export class BranchController {
     private readonly CompanyService: CompanyService,
   ) {}
 
-  @Post()
-  @UseGuards(RoleMixin([Role.ADMIN]))
+  @Post(':companyId')
+ @UseGuards(RoleMixin([Role.ADMIN]))
   
   async create(
     @Body() createBranchDto: CreateBranchDto,
-    @Param('companyId', new ParseMongoIdPipe()) companyId: string,
+    @Param('companyId', new ParseMongoIdPipe()) companyId: MongoDbId,
     @Req() req: Request,
   ) {
-    const exsisitngCompany = await this.CompanyService.findOne(companyId, {
+    const exsisitngCompany = await this.CompanyService.findOne(companyId as any, {
       email: req['user']['email'],
       firstName: req['user']['firstName'],
     });
+  
+    console.log(req['user']['email'])
     if (!exsisitngCompany)
       throw new BadRequestException('this comapny dose not exsisit');
-    return await this.branchService.create(createBranchDto, {
+    const newBranch= await this.branchService.create(createBranchDto, {
       email: req['user']['email'],
       firstName: req['user']['firstName'],
     });
+    await this.CompanyService.update(companyId, {
+      $addToSet: { branchs: newBranch._id }
+    },
+    {role:Role.MANAGER,firstName: req['user'].firstName}
+  );
+  return newBranch
   }
 
   @Get()
