@@ -30,7 +30,7 @@ export class AuthService {
         `Checking if document already exists: ${JSON.stringify(createUserDto)}`,
       );
 
-      const exists = await this.authRepo.exists( {email:createUserDto.email});
+      const exists = await this.authRepo.exists( {email:createUserDto.email.toLocaleLowerCase()});
       this.logger.warn(exists)
       if (exists) {
         this.logger.error(

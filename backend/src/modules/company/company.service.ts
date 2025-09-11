@@ -17,13 +17,13 @@ export class CompanyService {
   ) {
     //this.logger.verbose(`${createCompanyDto.name} is being created at  `,CompanyService.name)
     try{
-      const hashedPassword = await argon2.hash(`changeMe@${createCompanyDto.name}`);
+      const hashedPassword = await argon2.hash(`changeMe`);
 
       // create a manager user
       console.log(createCompanyDto)
       const manager = await this.UsersRepo.create({
         firstName: createCompanyDto.manager.firstName,
-        email: createCompanyDto.manager.email,
+        email: createCompanyDto.manager.email.toLocaleLowerCase(),
         password: hashedPassword,
         role: createCompanyDto.manager.role,
        

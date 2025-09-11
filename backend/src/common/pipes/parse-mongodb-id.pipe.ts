@@ -8,7 +8,7 @@ export class ParseMongoIdPipe implements PipeTransform {
   async transform(value: any) {
     
     
-    
+    console.log(value)
     const errors = await validate(plainToClass(MongoDbId, { id: value }));
     if (errors.length > 0) {
       throw new BadRequestException('Invalid MongoDB ObjectId');

@@ -17,14 +17,14 @@ export class TrasncriptionService {
     return Result
 
   }
-  async getUserTranscriptions({fields,limit,queryStr:  sd,skip,sort,page,popultae}:QueryString,userEmail: MongoDbId, ) {
-    // Default: 7 days ago to now
+  async getUserTranscriptions({fields,limit,queryStr:ss,skip,sort,page,popultae}:QueryString,userEmail: MongoDbId, ) {
+   // Default: 7 days ago to now
     const now = new Date();
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(now.getDate() - 7);
   
-    const fromDate = sd.startDate || sevenDaysAgo;
-    const toDate = sd.endDate || now;
+    const fromDate = ss.startDate || sevenDaysAgo;
+    const toDate = ss.endDate || now;
   
     const queryStr= {
       emp:userEmail,
@@ -34,7 +34,7 @@ export class TrasncriptionService {
       }
     };
   
-    return await this.transcriptionRepo.find({
+    const data= await this.transcriptionRepo.find({
       limit: 100,
       page: 1,popultae:'',
       queryStr,
@@ -42,7 +42,9 @@ export class TrasncriptionService {
       skip: 0,
       fields: ''
     });
+    console.log(data)
+    return data
   }
-  
+
 
 }

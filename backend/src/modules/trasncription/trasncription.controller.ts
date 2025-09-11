@@ -10,6 +10,7 @@ import {
   Param,
   Get,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { TrasncriptionService } from './trasncription.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -92,21 +93,11 @@ export class TrasncriptionController {
     }
   }
 
-  @Get()
-  @UseInterceptors(SalseDataInteceptor)
-  async retiveAllShifts(
-    @Req() req: Request,
-    @Query(PaginationPipe)
-    { fields, limit, queryStr, popultae, skip, sort, page }: QueryString,
-  ) {
-    return await this.shiftService.getAll(
-      { fields, limit, queryStr:{emp:req['user']['_id']}, skip, sort, page, popultae },
-     
-    );
-  }
+ 
   @Get( )
   @UseGuards(RoleMixin([Role.SUPERVISOR]))
-  async getAllTrasnciptions(@Req() req: Request,@Query(){ fields, limit, queryStr, popultae, skip, sort, page }: QueryString,@Param('empId', ParseMongoIdPipe) empId: MongoDbId){
-    await this.trasncriptionService.getUserTranscriptions({ fields, limit, queryStr:{branchId:req['user']['branchId']}, popultae:{ path: 'transcriptionsId emp',select: ' performance firstName lastName',}, skip, sort, page },  empId)
+  async getAllTrasnciptions(@Req() req: Request,@Query(){ fields, limit, queryStr, popultae, skip, sort, page }: QueryString,@Query('empId', ParseMongoIdPipe) empId: MongoDbId){
+    if(!empId) throw new BadRequestException('pleas provide an emp id')
+   return await this.trasncriptionService.getUserTranscriptions({ fields, limit, queryStr: {emp:empId}, popultae:{ path: 'transcriptionsId emp',select: ' performance firstName lastName',}, skip, sort, page },  empId)
   }
 }

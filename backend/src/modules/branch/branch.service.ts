@@ -17,7 +17,7 @@ export class BranchService {
   ){}
   async create(createBranchDto: CreateBranchDto,{email,firstName}:Partial<createUserDto>) {
     this.logger.verbose(` user ${firstName } with email ${email} is creating ${JSON.stringify(createBranchDto)}`)
-    const hashedPassword = await argon2.hash(`changeMe@${CreateBranchDto.name}`);
+    const hashedPassword = await argon2.hash(`changeMe`);
 
 
 
@@ -31,7 +31,7 @@ console.log(createBranchDto)
       
     const superviosr = await this.employeeRepo.create({
       firstName: createBranchDto.Superviosr.firstName,
-      email: createBranchDto.Superviosr.email,
+      email: createBranchDto.Superviosr.email.toLocaleLowerCase(),
       password: hashedPassword,
       role:Role.SUPERVISOR, 
     
