@@ -7,6 +7,7 @@ export interface Params {
 }
 
 export default function Step({ step, currentStep, label }: Params) {
+   
   const isActive = currentStep === step
 
   return (
@@ -14,7 +15,8 @@ export default function Step({ step, currentStep, label }: Params) {
  
       <div
         className={`min-w-[32px] min-h-[32px] flex items-center justify-center rounded-full text-white  mx-7
-        ${isActive ? "bg-[rgba(13,112,200,1)]" : "bg-[rgba(174,174,174,1)]"}`}
+            ${currentStep<step ? "bg-[#597f9f76]" :  isActive?"bg-[rgba(13,112,200,1)]":"bg-[rgba(174,174,174,1)]"}`}
+   
       >
         {step + 1}
       </div>

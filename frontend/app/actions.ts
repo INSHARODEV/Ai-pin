@@ -74,11 +74,12 @@ export async function MakeApiCall({ url, method, body, queryString, headers }: P
       const errorData = await res.json();
       throw new Error(errorData.message || JSON.stringify(errorData));
     }
-
-    return await res.json();
+const data=await res.json();
+console.log('data here',data)
+    return data
   } catch (err: any) {
-    console.error(err);
+    console.log(err);
     toast.error(err.message);
-    throw new Error(err.message);
+  //  throw new Error(err);
   }
 }

@@ -48,9 +48,10 @@ interface InputFieldProps {
   type?: string;
   placeHolder?:string
   required?: boolean;
+  disabled?:boolean
 }
 
-function InputField({ name, label, type = "text", required ,placeHolder}: InputFieldProps) {
+function InputField({ name, label, type = "text", required ,placeHolder,disabled}: InputFieldProps) {
   const { register, errors } = useFormContextSafe<any>();
   const error = errors[name]?.message as string | undefined;
 
@@ -60,6 +61,7 @@ function InputField({ name, label, type = "text", required ,placeHolder}: InputF
         {label}
       </label>
       <input
+      disabled={disabled}
       placeholder={placeHolder}
         type={type}
         {...register(name, { required })}

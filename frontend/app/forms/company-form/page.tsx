@@ -1,18 +1,47 @@
 "use client";
 
-import React from "react";
-import InputForm from "../_componentes/reusable/Form";
+import React, { useContext } from "react";
+import InputForm from "../../_componentes/reusable/Form";
 import { ArrowRight } from "lucide-react"; // for the arrow icon
-import Logo from "../_componentes/icons/Logo";
+import Logo from "../../_componentes/icons/Logo";
+import { MakeApiCall, Methods } from "../../actions";
+import { stepsContext } from '../layout';
+import { useRouter } from "next/navigation"; // ✅ FIX
+import { routes } from "@/app/_componentes/Form-sidebar";
 
 export interface Params{
   step:number;
-  setStep:(number:number)=>void
+
 }
-export default function Page({setStep,step}:Params) {
-  const handleSubmit = (data: any) => {
-    
-    setStep(step+1)
+export default function Page() {
+  const router = useRouter();
+  const {step,setStep}=useContext( stepsContext) as any
+  const handleSubmit = async(data: any) => {
+    const submittedData={
+    name:data.name,
+    manager:{
+  "firstName":data.firstName,
+    "email":data.email,
+    "role":"MANAGER"
+    }
+  
+
+  
+}
+console.log(submittedData)
+const res=await MakeApiCall({  
+  method:Methods.POST,
+  url:'/company',
+  body:JSON.stringify(submittedData),
+    headers:'json'
+
+})
+// console.log(res)
+console.log(res)
+setStep(step+1)
+   
+router.push(`/${routes(res._id,1) }`);
+ 
   };
 
   return (
@@ -36,8 +65,8 @@ export default function Page({setStep,step}:Params) {
 
          
           <InputForm.Input
-            name="company"
-            label="" // no extra label, since "COMPANY" is the section title
+            name="name"
+            label=""  
             required
             placeHolder="Company name"
           />
@@ -75,7 +104,7 @@ export default function Page({setStep,step}:Params) {
           <button
           
             type="submit"
-            className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow"
+     className="flex w-12  h-12 items-center justify-center rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow" 
           >
             <ArrowRight size={20} />
           </button>

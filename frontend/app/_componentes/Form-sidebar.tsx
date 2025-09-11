@@ -1,6 +1,5 @@
 'use client'
-import React, { useState } from 'react'
-import Step from './Step'
+ import Step from './Step'
 import Logo from './icons/Logo'
 
 const companySetup = {
@@ -8,12 +7,24 @@ const companySetup = {
   "Branches Setup": "Branches Setup",
   "Sales Team Setup": "Sales Team Setup"
 }
+export const routes=(id:string,index:number)=>{
+  const allRoutes=[
+ 'forms/company-form',
+  `forms/branch-form/${id}`,
+`forms/sales-form/${id}`
+]
 
-export default function FormSidebar() {
-  const [step, setStep] = useState(0)
+return allRoutes[index]}
+export interface Params{
+  step:number
+  
+}
+
+export default function FormSidebar({step }:Params) {
+ 
 
   return (
-    <div className="h-full  flex flex-col my-5  p-10" >
+    <div className="   flex flex-col my-5  p-10" >
 
  <Logo/>
 
@@ -24,6 +35,7 @@ export default function FormSidebar() {
           key={key}
           step={index}
           currentStep={step}
+       
         label= {key}
        
         />
