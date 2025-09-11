@@ -82,12 +82,12 @@ const AIPinDashboard = () => {
           Employees
         </h2>
         <div>
-          {empsNames&&empsNames.map((name:string, index:number) => (
+          {empsNames&&empsNames.map(({name,_id}:{name:any,_id:any}, index:number) => (
             <div
               key={index}
               className='px-4 py-3 hover:bg-blue-200 transition-colors cursor-pointer rounded-r-lg'
             >
-              <span className='text-muted-foreground'>{name }</span>
+              <Link className='text-muted-foreground' href={`trasctiptions/${_id}`}>{name }</Link>
             </div>
           ))}
         </div>

@@ -1,11 +1,18 @@
+// app/branch/layout.tsx
 'use client';
-import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import AIPinDashboard from '../_componentes/AIPinDashboard';
 import BreanchHeader from '../_componentes/BreanchHeader';
 import { useShifts } from '../hooks/useShifts';
 
 const ShiftsContext = createContext<any>(null);
-
 export const useShiftsContext = () => useContext(ShiftsContext);
 
 interface LayoutProps {
@@ -13,24 +20,24 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
- 
   const [user, setUser] = useState<any>(null);
+  const [userLoaded, setUserLoaded] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
-    if (stored) {
-      setUser(JSON.parse(stored));
-    }
+    if (stored) setUser(JSON.parse(stored));
+    setUserLoaded(true);
   }, []);
 
   const query = useMemo(
-    () => (user ? { branchId: user.branchId } : {}),
+    () => (user ? { branchId: user.branchId } : null),
     [user?.branchId]
   );
-   const shiftsData = useShifts(query);
+
+  const shiftsData = useShifts(query ?? {});
 
   return (
-    <ShiftsContext.Provider value={shiftsData}>
+    <ShiftsContext.Provider value={{ ...shiftsData, userLoaded }}>
       <div className='flex'>
         <div className='w-1/5'>
           <AIPinDashboard />

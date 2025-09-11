@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { Shift } from '../../types';
 import { ShiftsTable } from '../../_componentes/ShiftsTable';
-import { ShiftManagementCard } from '../../_componentes/ShiftManagementCard';
-import { StatCard } from '@/app/_componentes/reusable/StatCard';
+ import { StatCard } from '@/app/_componentes/reusable/StatCard';
 
 export default function Page() {
   const shifts: Shift[] = [

@@ -3,38 +3,30 @@ import * as React from 'react';
 import Table, { type TableCell } from './reusable/Table';
 import { Shift } from '../types';
 import Link from 'next/link';
-interface props{
-  shifst:Shift[]
-}
-export default function BranchTable({shifst}:props) {
-  const headers = [
-    'Name',
-    'Date',
-    'Time',
-    'Shift Performance',
-    'Details',
-  ];
 
-    const rows: TableCell[][] = shifst.map((shift) => [
+interface Props {
+  shifts: Shift[];
+  emptyMessage?: React.ReactNode; // NEW
+}
+
+export default function BranchTable({ shifts, emptyMessage }: Props) {
+  const headers = ['Name', 'Date', 'Time', 'Shift Performance', 'Details'];
+
+  const rows: TableCell[][] = (shifts ?? []).map(shift => [
     shift.fullName,
     shift.date,
     shift.startTime,
     {
-      kind: "badge",
+      kind: 'badge',
       value:
         shift.performance === 0
-          ? "Low"
+          ? 'Low'
           : shift.performance > 80
-          ? "High"
-          : "Standard",
-    }
-    ,<Link  href={`/employee-profile/${shift.empId}`} >Details</Link>
+            ? 'High'
+            : 'Standard',
+    },
+    <Link href={`/employee-profile/${shift.empId}`}>Details</Link>,
   ]);
 
-  return<>
-  <Table headers={headers} data={rows} /> 
-
-  
-  </> 
- 
+  return <Table headers={headers} data={rows} emptyMessage={emptyMessage} />;
 }
