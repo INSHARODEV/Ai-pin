@@ -1,96 +1,47 @@
-import * as React from 'react';
-import { Shift } from '../../types';
-import { ShiftsTable } from '../../_componentes/ShiftsTable';
-import { ShiftManagementCard } from '../../_componentes/ShiftManagementCard';
-import { StatCard } from '@/app/_componentes/reusable/StatCard';
+'use client';
 
-export default function Page() {
-  const shifts: Shift[] = [
-    {
-      date: '12th Aug, 2025',
-      startTime: '9:01 AM',
-      endTime: '5:12 PM',
-      duration: '8 hrs, 45 mins',
-      performance: 'Friendly',
-    },
-    {
-      date: '12th Aug, 2025',
-      startTime: '9:01 AM',
-      endTime: '5:12 PM',
-      duration: '8 hrs, 45 mins',
-      performance: 'Confused',
-    },
-    {
-      date: '12th Aug, 2025',
-      startTime: '9:01 AM',
-      endTime: '5:12 PM',
-      duration: '8 hrs, 45 mins',
-      performance: 'Neutral',
-    },
-    {
-      date: '12th Aug, 2025',
-      startTime: '9:01 AM',
-      endTime: '5:12 PM',
-      duration: '8 hrs, 45 mins',
-      performance: 'Frustrated',
-    },
-    {
-      date: '12th Aug, 2025',
-      startTime: '9:01 AM',
-      endTime: '5:12 PM',
-      duration: '8 hrs, 45 mins',
-      performance: 'Aggressive',
-    },
-    {
-      date: '12th Aug, 2025',
-      startTime: '9:01 AM',
-      endTime: '5:12 PM',
-      duration: '8 hrs, 45 mins',
-      performance: 'Friendly',
-    },
-    {
-      date: '12th Aug, 2025',
-      startTime: '9:01 AM',
-      endTime: '5:12 PM',
-      duration: '8 hrs, 45 mins',
-      performance: 'Aggressive',
-    },
-  ];
+import React from 'react';
+import { Calendar, User, Search } from 'lucide-react';
+import { ConversationSidebar } from '@/app/_componentes/ConversationsList';
+import { MainDashboard } from '@/app/_componentes/PerformancePanel';
+import { ChatPanel } from '@/app/_componentes/ChatTranscript';
 
+const Index = () => {
   return (
-    <div className='min-h-screen bg-gray-50'>
-      <main className='px-6 py-8'>
-        <div className='mb-8'>
-          <h1 className='mb-2 text-3xl font-bold text-gray-900'>
-            Welcome Name!
-          </h1>
-          <p className='text-gray-600'>12th Aug 2025, 12:45 PM</p>
-        </div>
-
-        <section className='mb-8 grid grid-cols-1 gap-6 md:grid-cols-3'>
-          <StatCard
-            title='Rating'
-            value='4.2'
-            description='For the last 7 shifts'
-            variant='green'
-          />
-          <StatCard
-            title='Skill Improvement'
-            value='-6%'
-            description='Change in performance'
-            variant='red'
-          />
-          <StatCard
-            title='Skill Improvement'
-            value='-6%'
-            description='Change in performance'
-            variant='blue'
-            icon={undefined}
-          />
-        </section>
-
-        <ShiftsTable shifts={shifts} />
-      </main>
+    <div className='h-screen flex flex-col py-4 gap-3 bg-[#F9FAFB]'>
+      <div className='px-4'>
+        <header className='flex items-center justify-evenly bg-white rounded-2xl p-2 shadow-custom'>
+          <div className='flex items-start px-2 gap-4 w-full'>
+            <div className='flex items-center gap-2 text-sm font-semibold'>
+              <div className='p-2 rounded-full bg-[#0D70C81A]'>
+                <Calendar color='#0D70C8' className='w-4 h-4' />
+              </div>
+              1 Aug 2025 - 4 Aug 2025
+            </div>
+          </div>
+          <hr className='w-0.5 h-9 bg-[#AEAEAE]'></hr>
+          <div className='flex justify-between px-3 gap-4 w-full'>
+            <div className='flex items-center gap-2 text-sm font-semibold'>
+              <div className='p-2 rounded-full bg-[#0D70C81A]'>
+                <User color='#0D70C8' className='w-4 h-4' />
+              </div>
+              Sales Name
+            </div>
+            <button
+              aria-label='Search'
+              className='p-2 rounded-full bg-[#0D70C8] text-white hover:bg-[#0D70E9] hover:shadow-xl'
+            >
+              <Search className='w-4 h-4' />
+            </button>
+          </div>
+        </header>
+      </div>
+      <div className='h-screen flex text-foreground w-full'>
+        <ConversationSidebar />
+        <MainDashboard />
+        <ChatPanel />
+      </div>
     </div>
   );
-}
+};
+export default Index;

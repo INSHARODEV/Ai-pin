@@ -38,7 +38,7 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <ShiftsContext.Provider value={{ ...shiftsData, userLoaded }}>
-      <div className='flex'>
+      <div className='flex bg-[#FEFEFE]'>
         <div className='w-1/5'>
           <AIPinDashboard />
         </div>
