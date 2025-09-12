@@ -16,21 +16,21 @@ const Index = () => {
   const [transcriptions, setTranscriptions] = useState<Transcript[]>([]);
   const [selected, setSelected] = useState<Transcript&ID | null>(null);
 
-  // useEffect(() => {
-  //   async function getTranscriptions() {
-  //     const res = await MakeApiCall({
-  //       method: Methods.GET,
-  //       url: `/trasncriptions?empId=${id}`, // <-- fixed typo
-  //     });
+  useEffect(() => {
+    async function getTranscriptions() {
+      const res = await MakeApiCall({
+        method: Methods.GET,
+        url: `/trasncriptions?empId=${id}`, // <-- fixed typo
+      });
 
-  //     if (res?.data) {
-  //       setTranscriptions(res.data);
-  //       setSelected(res.data[0]); // default to first conversation
-  //     }
-  //   }
+      if (res?.data) {
+        setTranscriptions(res.data);
+        setSelected(res.data[0]); // default to first conversation
+      }
+    }
 
-  //   getTranscriptions();
-  // }, [id]);
+    getTranscriptions();
+  }, [id]);
 
   return (
     <div className='h-screen flex flex-col py-4 gap-3 bg-[#F9FAFB]'>
