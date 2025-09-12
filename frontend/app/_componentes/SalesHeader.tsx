@@ -3,6 +3,8 @@
 import * as React from 'react';
 import { Activity, LogOut } from 'lucide-react';
 import Logo from './icons/Logo';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 export interface SalesHeaderProps {
   userName?: string;
@@ -14,15 +16,20 @@ export default function SalesHeader({
   onLogout,
 }: SalesHeaderProps) {
   const [showLogout, setShowLogout] = React.useState(false);
+  const router = useRouter();
 
   const handleIconClick = () => {
     setShowLogout(!showLogout);
   };
 
   const handleLogout = () => {
-    if (onLogout) {
-      onLogout();
-    }
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('user');
+    toast.success('Logged out');
+    router.replace('/login');
+    // if (onLogout) {
+    //   onLogout();
+    // }
     setShowLogout(false);
   };
 
@@ -31,7 +38,7 @@ export default function SalesHeader({
       <div className='flex items-center justify-between'>
         {/* Left side */}
         <div className='flex items-center space-x-3'>
-          <Logo/>
+          <Logo />
           <span className='text-xl font-semibold text-gray-900'>AI Pin</span>
         </div>
 

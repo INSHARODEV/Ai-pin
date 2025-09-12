@@ -18,8 +18,9 @@ export const MainDashboard = ({ transcription }: Props) => {
   return (
     <main className='flex-1 px-6 overflow-y-auto'>
       {/* Performance */}
-  <AudioPlayer transcription={transcription}/>
-   
+      <AudioPlayer transcription={transcription} />
+
+      <section className='hover:scale-[101%] mb-6 shadow-custom rounded-2xl bg-[#FEFEFE]'>
         <div className='p-6 flex items-center justify-between'>
           <div className='flex items-center gap-4'>
             <div className='flex items-center gap-2'>
@@ -33,7 +34,9 @@ export const MainDashboard = ({ transcription }: Props) => {
                 />
               </div>
               <div>
-                <p className='text-sm text-muted-foreground'>Overall Performance:</p>
+                <p className='text-sm text-muted-foreground'>
+                  Overall Performance:
+                </p>
                 <p className='text-3xl font-bold text-foreground'>
                   {transcription?.performance ?? 0}%
                 </p>
@@ -44,13 +47,14 @@ export const MainDashboard = ({ transcription }: Props) => {
             {transcription?.turns?.[0]?.tone_sentiment || 'Neutral'}
           </span>
         </div>
- 
+      </section>
 
-    
-      <section className='mb-6 shadow-custom rounded-2xl bg-card overflow-hidden'>
+      {/* Conversation Summary */}
+      <section className='hover:scale-[101%] mb-6 flex flex-col gap-2'>
         <button
           onClick={() => setSummaryOpen(v => !v)}
-          className='w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50'
+          className='w-full px-6 py-4 rounded-2xl bg-[#FEFEFE] flex items-center justify-between shadow-custom'
+          aria-expanded={summaryOpen}
         >
           <h3 className='text-lg font-semibold'>Conversation Summary</h3>
           <ChevronDown
@@ -58,7 +62,7 @@ export const MainDashboard = ({ transcription }: Props) => {
           />
         </button>
         {summaryOpen && (
-          <div className='px-6 pb-6'>
+          <div className='px-6 pb-6 pt-4 rounded-2xl bg-[#FEFEFE]'>
             <p className='text-sm text-muted-foreground leading-relaxed'>
               {transcription?.summary || 'No summary available.'}
             </p>
@@ -67,12 +71,13 @@ export const MainDashboard = ({ transcription }: Props) => {
       </section>
 
       {/* Compliance & Behavior */}
-      <section className='mb-6 shadow-custom rounded-2xl bg-card overflow-hidden'>
+      <section className='hover:scale-[101%] mb-6 flex flex-col gap-2'>
         <button
           onClick={() => setComplianceOpen(v => !v)}
-          className='w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50'
+          className='w-full px-6 py-4 rounded-2xl bg-[#FEFEFE] flex items-center justify-between shadow-custom'
+          aria-expanded={complianceOpen}
         >
-          <h3 className='text-lg font-semibold'>Compliance & Behavior</h3>
+          <h3 className='text-lg font-semibold'>Compliance &amp; Behavior</h3>
           <ChevronDown
             className={`w-4 h-4 transition-transform ${complianceOpen ? 'rotate-180' : ''}`}
           />
@@ -102,10 +107,11 @@ export const MainDashboard = ({ transcription }: Props) => {
       </section>
 
       {/* Engagement Metrics */}
-      <section className='shadow-custom rounded-2xl bg-card overflow-hidden'>
+      <section className='hover:scale-[101%] flex flex-col gap-2'>
         <button
           onClick={() => setEngagementOpen(v => !v)}
-          className='w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50'
+          className='w-full px-6 py-4 rounded-2xl bg-[#FEFEFE] flex items-center justify-between shadow-custom'
+          aria-expanded={engagementOpen}
         >
           <h3 className='text-lg font-semibold'>Engagement Metrics</h3>
           <ChevronDown
@@ -136,8 +142,7 @@ export const MainDashboard = ({ transcription }: Props) => {
             </div>
           </div>
         )}
-          {/* Audio Player */}
- 
+        {/* Audio Player */}
       </section>
     </main>
   );
