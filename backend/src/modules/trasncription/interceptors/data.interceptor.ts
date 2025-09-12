@@ -32,7 +32,8 @@ export class SalseDataInteceptor implements NestInterceptor {
           let perforance = 0;
           let allTurns = 0;
         
-          console.log(shift)
+          console.log(shift._id)
+          console.log(shift?.emp?._id)
         
           return {
             _id:shift._id,

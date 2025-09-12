@@ -7,7 +7,8 @@ import { Request } from "express";
 import { SalseDataInteceptor } from "./interceptors/data.interceptor";
 import { isValidObjectId } from "mongoose";
 import { Shift } from "./schemas/transcitionSchema";
-
+import { PaginatedData } from "src/common/types/paginateData.type";
+ 
 @Controller('shift')
 @UseGuards(AuthGuard)
 export class ShiftController{
@@ -53,7 +54,7 @@ export class ShiftController{
       });
     
       if (!data || (data.data as Shift[]).length === 0) {
-        throw new BadRequestException('No shifts found for given emp/branch.');
+        return  {data:[],numberOfPages:0,page:0}as PaginatedData
       }
     
       return data;

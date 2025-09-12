@@ -1,12 +1,37 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar, User, Search } from 'lucide-react';
 import { ConversationSidebar } from '@/app/_componentes/ConversationsList';
 import { MainDashboard } from '@/app/_componentes/PerformancePanel';
 import { ChatPanel } from '@/app/_componentes/ChatTranscript';
+import { useParams } from 'next/navigation';
+import { MakeApiCall, Methods } from '@/app/actions';
+import { ID, Transcript } from '../../../../../shard/src';
+
+ 
 
 const Index = () => {
+  const { id } = useParams<{ id: string }>();
+  const [transcriptions, setTranscriptions] = useState<Transcript[]>([]);
+  const [selected, setSelected] = useState<Transcript&ID | null>(null);
+
+  // useEffect(() => {
+  //   async function getTranscriptions() {
+  //     const res = await MakeApiCall({
+  //       method: Methods.GET,
+  //       url: `/trasncriptions?empId=${id}`, // <-- fixed typo
+  //     });
+
+  //     if (res?.data) {
+  //       setTranscriptions(res.data);
+  //       setSelected(res.data[0]); // default to first conversation
+  //     }
+  //   }
+
+  //   getTranscriptions();
+  // }, [id]);
+
   return (
     <div className='h-screen flex flex-col py-4 gap-3 bg-[#F9FAFB]'>
       <div className='px-4'>
@@ -37,11 +62,16 @@ const Index = () => {
         </header>
       </div>
       <div className='h-screen flex text-foreground w-full'>
-        <ConversationSidebar />
-        <MainDashboard />
-        <ChatPanel />
+        <ConversationSidebar
+          transcriptions={transcriptions}
+          selectedId={selected?._id}
+          onSelect={setSelected}
+        />
+        <MainDashboard transcription={selected} />
+        <ChatPanel transcription={selected} />
       </div>
     </div>
   );
 };
+
 export default Index;

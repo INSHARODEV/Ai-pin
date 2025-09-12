@@ -87,7 +87,7 @@ const AIPinDashboard = () => {
               key={index}
               className='px-4 py-3 hover:bg-blue-200 transition-colors cursor-pointer rounded-r-lg'
             >
-              <Link className='text-muted-foreground' href={`trasctiptions/${_id}`}>{name }</Link>
+              <Link className='text-muted-foreground' href={`branch/transcription/${_id}`}>{name }</Link>
             </div>
           ))}
         </div>

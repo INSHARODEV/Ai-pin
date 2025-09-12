@@ -59,7 +59,7 @@ export const useShifts = (queryString: any) => {
           method: Methods.GET,
           queryString: query,
         });
-
+console.log(numberOfPages)
         const fetchedShifts = (data as Shift[]) ?? [];
         setShifts(fetchedShifts);
         setNumberOfPages(numberOfPages ?? 1);
@@ -68,7 +68,7 @@ export const useShifts = (queryString: any) => {
         // Unique employees
         const allEmps = [  
           ...new Map(  
-            fetchedShifts.map(shift => [shift.fullName, { name: shift.fullName, _id: shift._id }])  
+            fetchedShifts.map(shift => [shift.fullName, { name: shift.fullName, _id: shift.empId }])  
           ).values()  
         ];
         setEmpsNames(allEmps)

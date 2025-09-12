@@ -98,17 +98,25 @@ export class BackblazeCloudService {
     const sha1 = crypto.createHash("sha1").update(buffer).digest("hex");
     console.log('📤 Uploading file:', { fileName, bucketName: this.bucketName, downloadUrl: this.downloadUrl });
   
-    const res = await fetch(this.uploadUrl, {
-      method: "POST",
-      headers: {
-        Authorization: this.uploadAuthToken,
-        "X-Bz-File-Name": encodeURIComponent(fileName),
-        "Content-Type": "b2/x-auto",
-        "X-Bz-Content-Sha1": sha1,
-        "Content-Length": buffer.length.toString(),
-      },
-      body: new Uint8Array(buffer),
-    });
+    const mimeType =
+  fileName.endsWith(".webm")
+    ? "audio/webm"
+    : fileName.endsWith(".mp3")
+    ? "audio/mpeg"
+    : "b2/x-auto";
+
+const res = await fetch(this.uploadUrl, {
+  method: "POST",
+  headers: {
+    Authorization: this.uploadAuthToken,
+    "X-Bz-File-Name": encodeURIComponent(fileName),
+    "Content-Type": mimeType, // 👈 proper MIME type
+    "X-Bz-Content-Sha1": sha1,
+    "Content-Length": buffer.length.toString(),
+  },
+  body: new Uint8Array(buffer),
+});
+ 
   
     if (!res.ok) {
       const errorText = await res.text();
@@ -158,27 +166,33 @@ export class BackblazeCloudService {
   }
 
   /** Step 4 — Retrieve/Download a File */
-  public async getFile(fileName: string): Promise<Buffer> {
-    if (!this.authToken || Date.now() > this.authTokenExpiry) {
-      await this.authorize();
-    }
-
-    // Use the download URL from authorization response
-    const downloadFileUrl = `${this.downloadUrl}/file/${this.bucketName}/${encodeURIComponent(fileName)}`;
-
-    const res = await fetch(downloadFileUrl, {
-      method: "GET",
-      headers: { 
-        Authorization: this.authToken 
-      },
-    });
-
-    if (!res.ok) {
-      throw new InternalServerErrorException(`File retrieval failed: ${res.status} ${await res.text()}`);
-    }
-
-    return Buffer.from(await res.arrayBuffer());
+  /** Step 6 — Generate temporary download URL for private buckets */
+public async getSignedFileUrl(fileName: string, validSeconds = 3600): Promise<string> {
+  if (!this.authToken || Date.now() > this.authTokenExpiry) {
+    await this.authorize();
   }
+
+  const res = await fetch(`${this.apiUrl}/b2api/v2/b2_get_download_authorization`, {
+    method: "POST",
+    headers: {
+      Authorization: this.authToken,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      bucketId: this.bucketId,
+      fileNamePrefix: fileName, // must match filename prefix
+      validDurationInSeconds: validSeconds,
+    }),
+  });
+
+  if (!res.ok) {
+    throw new InternalServerErrorException(`Get signed URL failed: ${res.status} ${await res.text()}`);
+  }
+
+  const data = await res.json();
+
+  return `${this.downloadUrl}/file/${this.bucketName}/${encodeURIComponent(fileName)}?Authorization=${data.authorizationToken}`;
+}
 
   /** Optional: Delete a File */
   public async deleteFile(fileName: string, fileId: string): Promise<void> {

@@ -25,8 +25,8 @@ export default function Page() {
  
   const AddBranch = () => {
     const newIndex = branches.length;
-    setBranches((prev) => [...prev, {}]); // add empty branch
-    setActiveIndex(newIndex); // open the new one
+    setBranches((prev) => [...prev, {}]);  
+    setActiveIndex(newIndex);  
   };
 
   const handleSubmit = async (data: BranchFormData, idx: number) => {
