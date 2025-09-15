@@ -12,7 +12,7 @@ import {
   Query,
   BadRequestException,
 } from '@nestjs/common';
-import { TrasncriptionService } from './trasncription.service';
+import { TranscriptionService } from './transcription.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AudioPipe } from './pipes/audio.pipe';
 import { AssmbleyAI } from './assmbleyAi.service';
@@ -31,11 +31,11 @@ import { SalseDataInteceptor } from './interceptors/data.interceptor';
 import { RoleMixin } from '../../common/Mixins/role.mixin';
 import { Role } from 'src/shared/ROLES';
 
-@Controller('trasncriptions')
+@Controller('transcriptions')
 @UseGuards(AuthGuard)
-export class TrasncriptionController {
+export class TranscriptionController {
   constructor(
-    private readonly trasncriptionService: TrasncriptionService,
+    private readonly transcriptionService: TranscriptionService,
     private readonly assmbleyAI: AssmbleyAI,
     private readonly logger: Logger,
     private readonly ChatGpt: ChatGpt,
@@ -46,7 +46,7 @@ export class TrasncriptionController {
   async startShift(@Req() req: Request) {
     const empId = req['user']['_id'];
     const branchId = req['user']['branchId'] as MongoDbId;
-    return await this.shiftService.createShift({ emp: empId,branchId });
+    return await this.shiftService.createShift({ emp: empId, branchId });
   }
 
   @Post(':shiftId')
@@ -77,27 +77,44 @@ export class TrasncriptionController {
         raw_transcript: transcription,
         emp: req['user']['_id'],
         audio_url: fileName,
-       
       } as createTransiptionDto;
-      const newDoc = await this.trasncriptionService.create(
+      const newDoc = await this.transcriptionService.create(
         craeteTrasncitionDto as createTransiptionDto,
       );
       await this.shiftService.updateShift(shiftId, newDoc._id);
-      console.log(craeteTrasncitionDto)
+      console.log(craeteTrasncitionDto);
       return newDoc;
     } catch (error) {
       this.logger.error(
         `Transcription process failed:${error.message}. ${error.stack}`,
       );
-      throw error;  
+      throw error;
     }
   }
 
- 
-  @Get( )
+  @Get()
   @UseGuards(RoleMixin([Role.SUPERVISOR]))
-  async getAllTrasnciptions(@Req() req: Request,@Query(){ fields, limit, queryStr, popultae, skip, sort, page }: QueryString,@Query('empId', ParseMongoIdPipe) empId: MongoDbId){
-    if(!empId) throw new BadRequestException('pleas provide an emp id')
-   return await this.trasncriptionService.getUserTranscriptions({ fields, limit, queryStr: {emp:empId}, popultae:{ path: 'transcriptionsId emp',select: ' performance firstName lastName',}, skip, sort, page },  empId)
+  async getAllTrasnciptions(
+    @Req() req: Request,
+    @Query()
+    { fields, limit, queryStr, popultae, skip, sort, page }: QueryString,
+    @Query('empId', ParseMongoIdPipe) empId: MongoDbId,
+  ) {
+    if (!empId) throw new BadRequestException('pleas provide an emp id');
+    return await this.transcriptionService.getUserTranscriptions(
+      {
+        fields,
+        limit,
+        queryStr: { emp: empId },
+        popultae: {
+          path: 'transcriptionsId emp',
+          select: ' performance firstName lastName',
+        },
+        skip,
+        sort,
+        page,
+      },
+      empId,
+    );
   }
 }

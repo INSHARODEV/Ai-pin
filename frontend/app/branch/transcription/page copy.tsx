@@ -1,45 +1,30 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Calendar, User, Search } from 'lucide-react';
 import { ConversationSidebar } from '@/app/_componentes/ConversationsList';
 import { MainDashboard } from '@/app/_componentes/PerformancePanel';
 import { ChatPanel } from '@/app/_componentes/ChatTranscript';
-import { useParams } from 'next/navigation';
-import { MakeApiCall, Methods } from '@/app/actions';
-import { ID, Transcript } from '../../../../../shard/src';
+import { DateRange, HeaderDateRange } from '@/app/_componentes/CalendarPanel';
 
 const Index = () => {
-  const { id } = useParams<{ id: string }>();
-  const [transcriptions, setTranscriptions] = useState<Transcript[]>([]);
-  const [selected, setSelected] = useState<(Transcript & ID) | null>(null);
-
-  useEffect(() => {
-    async function getTranscriptions() {
-      const res = await MakeApiCall({
-        method: Methods.GET,
-        url: `/transcriptions?empId=${id}`, // <-- fixed typo
-      });
-
-      if (res?.data) {
-        setTranscriptions(res.data);
-        setSelected(res.data[0]); // default to first conversation
-      }
-    }
-
-    getTranscriptions();
-  }, [id]);
-
+  const [range, setRange] = useState<DateRange>({
+    from: new Date(2025, 7, 1),
+    to: new Date(2025, 7, 4),
+  }); // Aug is 7
+  const markers = [new Date(2025, 7, 1), new Date(2025, 7, 25)];
   return (
     <div className='h-screen flex flex-col py-4 gap-3 bg-[#F9FAFB]'>
       <div className='px-4'>
         <header className='flex items-center justify-evenly bg-white rounded-2xl p-2 shadow-custom'>
           <div className='flex items-start px-2 gap-4 w-full'>
             <div className='flex items-center gap-2 text-sm font-semibold'>
-              <div className='p-2 rounded-full bg-[#0D70C81A]'>
-                <Calendar color='#0D70C8' className='w-4 h-4' />
-              </div>
-              1 Aug 2025 - 4 Aug 2025
+              <HeaderDateRange
+                value={range}
+                onChange={setRange}
+                weekStartsOn={1}
+                markers={markers}
+              />
             </div>
           </div>
           <hr className='w-0.5 h-9 bg-[#AEAEAE]'></hr>
@@ -60,16 +45,11 @@ const Index = () => {
         </header>
       </div>
       <div className='h-screen flex text-foreground w-full'>
-        <ConversationSidebar
-          transcriptions={transcriptions}
-          selectedId={selected?._id}
-          onSelect={setSelected}
-        />
-        <MainDashboard transcription={selected} />
-        <ChatPanel transcription={selected} />
+        <ConversationSidebar />
+        <MainDashboard />
+        <ChatPanel />
       </div>
     </div>
   );
 };
-
 export default Index;
