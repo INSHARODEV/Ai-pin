@@ -1,15 +1,15 @@
 'use client';
 
-import React, {   useState } from "react";
-import { useRouter } from "next/navigation";
- import { zodResolver } from "@hookform/resolvers/zod";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { loginSchema } from "@/app/utils/zodschama";
-import {    MakeApiCall, Methods } from "@/app/actions";
-import { userData } from "@/app/utils/user.data";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { Role, User } from "../../../../shard/src/index";
- 
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { loginSchema } from '@/app/utils/zodschama';
+import { MakeApiCall, Methods } from '@/app/actions';
+import { userData } from '@/app/utils/user.data';
+import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import { Role, User } from '../../../../shard/src/index';
+
 type Inputs = {
   email: string;
   password: string;
@@ -49,26 +49,25 @@ export default function LoginPage() {
 
       console.log(process.env.NEXT_PUBLIC_BASE_URL);
       localStorage.setItem('accessToken', res.data);
-    
-      console.log('res',res)
-      localStorage.setItem("accessToken", res.data);
-      const payloadPart = res.data.split(".")[1];
+
+      console.log('res', res);
+      localStorage.setItem('accessToken', res.data);
+      const payloadPart = res.data.split('.')[1];
       const user: User = userData(payloadPart);
       localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem("user", JSON.stringify(user));
-      console.log(user.role)
+      localStorage.setItem('user', JSON.stringify(user));
+      console.log(user.role);
       switch (user.role) {
-      
-  case Role.SUPERVISOR:
-    router.push('/branch');
-    break;
-  case Role.SELLER:
-    router.push('/sales');
-    break
-  case Role.ADMIN:
-    router.push('/forms/company-form')
-    break;
-}
+        case Role.SUPERVISOR:
+          router.push('/branch');
+          break;
+        case Role.SELLER:
+          router.push('/sales');
+          break;
+        case Role.ADMIN:
+          router.push('/forms/company-form');
+          break;
+      }
     } catch (err) {
       console.error('Login error:', err);
       setError(

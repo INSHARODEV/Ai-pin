@@ -11,6 +11,7 @@ import {
 import AIPinDashboard from '../_componentes/AIPinDashboard';
 import BreanchHeader from '../_componentes/BreanchHeader';
 import { useShifts } from '../hooks/useShifts';
+import { RoleGuard } from '../_guards/role-guard';
 
 const ShiftsContext = createContext<any>(null);
 export const useShiftsContext = () => useContext(ShiftsContext);
@@ -44,7 +45,9 @@ export default function Layout({ children }: LayoutProps) {
         </div>
         <div className='w-4/5'>
           <BreanchHeader userName='Branch User' />
-          <main>{children}</main>
+          <main>
+            <RoleGuard>{children}</RoleGuard>
+          </main>
         </div>
       </div>
     </ShiftsContext.Provider>
