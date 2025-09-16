@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import BarChartIcon from './icons/BarChartIcon';
 import { useShiftsContext } from '../branch/layout';
- 
+
 const AIPinDashboard = () => {
   const currentPath = usePathname();
-  const { empsNames  } = useShiftsContext();
- 
+  const { empsNames } = useShiftsContext();
+
   // Helper function to check if a path is active
   const isActive = (path: string) => {
     if (path === '/branch') {
@@ -38,8 +38,8 @@ const AIPinDashboard = () => {
     <div className='py-10 bg-white text-gray-400 flex flex-col'>
       {/* Header */}
       <div className='px-4 flex items-center gap-3 pb-4'>
-        <div className='w-12 h-12 bg-primary rounded-xl flex items-center justify-center bg-[#0D70C8]'>
-          <Activity className='w-6 h-6 text-primary-foreground stroke-2 text-white' />
+        <div className='w-12 h-12 rounded-xl flex items-center justify-center bg-[#0D70C8]'>
+          <Activity className='w-6 h-6 stroke-2 text-white' />
         </div>
         <h1 className='text-2xl font-semibold text-foreground'>AI Pin</h1>
       </div>
@@ -82,14 +82,22 @@ const AIPinDashboard = () => {
           Employees
         </h2>
         <div>
-          {empsNames&&empsNames.map(({name,_id}:{name:any,_id:any}, index:number) => (
-            <div
-              key={index}
-              className='px-4 py-3 hover:bg-blue-200 transition-colors cursor-pointer rounded-r-lg'
-            >
-              <Link className='text-muted-foreground' href={`branch/transcription/${_id}`}>{name }</Link>
-            </div>
-          ))}
+          {empsNames &&
+            empsNames.map(
+              ({ name, _id }: { name: any; _id: any }, index: number) => (
+                <div
+                  key={index}
+                  className='px-4 py-3 hover:bg-blue-200 transition-colors cursor-pointer rounded-r-lg'
+                >
+                  <Link
+                    className='text-muted-foreground'
+                    href={`branch/transcription/${_id}`}
+                  >
+                    {name}
+                  </Link>
+                </div>
+              )
+            )}
         </div>
       </div>
     </div>

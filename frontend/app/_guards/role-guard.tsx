@@ -21,7 +21,7 @@ function getUserRole(): Role | null {
 const ALLOW: Record<string, string[]> = {
   SUPERVISOR: ['/branch'],
   SELLER: ['/sales'],
-  ADMIN: ['/forms', '/branch', '/sales'],
+  ADMIN: ['/forms', '/branch', '/sales', '/admin', '/forms'],
   MANAGER: ['/forms', '/branch', '/sales'],
 };
 
@@ -29,7 +29,7 @@ const ALLOW: Record<string, string[]> = {
 const DEFAULT_FOR_ROLE: Record<string, string> = {
   SUPERVISOR: '/branch',
   SELLER: '/sales',
-  ADMIN: '/forms/company-form',
+  ADMIN: '/admin',
 };
 
 const PUBLIC_PATHS = new Set<string>(['/login', '/']);
