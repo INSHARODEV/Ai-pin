@@ -18,7 +18,7 @@ const Index = () => {
     async function getTranscriptions() {
       const res = await MakeApiCall({
         method: Methods.GET,
-        url: `/transcriptions?empId=${id}`, // <-- fixed typo
+        url: `/trasncriptions?empId=${id}`, // <-- fixed typo
       });
 
       if (res?.data) {

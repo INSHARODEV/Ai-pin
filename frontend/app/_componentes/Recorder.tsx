@@ -146,11 +146,7 @@ export const Recorder = ({ setRecording }: Params) => {
   const requestMicrophonePermission = async () => {
     try {
       // Check if we're in a secure context (HTTPS or localhost)
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error(
-          'getUserMedia is not supported in this browser or context'
-        );
-      }
+   
 
       console.log('Requesting microphone permission...');
       const stream = await navigator.mediaDevices.getUserMedia({
