@@ -5,6 +5,7 @@ export enum Role {
     SELLER = "SELLER",
   }
   
+   
   export type ID = {
     _id: string;
   };
@@ -91,3 +92,8 @@ export enum Role {
   };
  
   
+  export interface PaginatedData   {
+    data: unknown;
+    numberOfPages: number;
+    page: number;
+  };

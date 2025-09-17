@@ -7,13 +7,14 @@ import { BranchModule } from '../branch/branch.module';
 import { Company, CompanySchema, Manager, MangerSchema,   } from './schemas/Cmopany.schema';
 import { User, UserSchema } from '../users/schmas/users.schema';
 import { CompnayRepo } from './cmopany.repo';
-import { UsersRepo } from '../auth/auth.repo';
+import { EmpoyeeRepo, UsersRepo } from '../auth/auth.repo';
 import { UsersModule } from '../users/users.module';
  // assuming you have this
 
 @Module({
   imports: [
     BranchModule,
+  
     UsersModule,
     MongooseModule.forFeatureAsync([
       {
@@ -33,7 +34,7 @@ import { UsersModule } from '../users/users.module';
     ]),
   ],
   controllers: [CompanyController],
-  providers: [CompanyService, CompnayRepo],
+  providers: [CompanyService, CompnayRepo,EmpoyeeRepo],
   exports: [CompanyService, CompnayRepo],
 })
 export class CompanyModule {}

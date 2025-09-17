@@ -82,7 +82,7 @@ router.push(`/${routes(res._id,1) }`);
 
 
           <InputForm.Input
-            name="managerName"
+            name="firstName"
             label=""
             required
             placeHolder="Manager's name"

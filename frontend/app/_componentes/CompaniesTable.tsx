@@ -1,7 +1,7 @@
 // components/CompaniesTable.tsx
 import * as React from 'react';
 import Table, { type TableCell } from './reusable/Table';
-
+import {useEffect} from 'react'
 export type Company = {
   id: string;
   name: string;
@@ -12,14 +12,17 @@ export type Company = {
 };
 
 function formatDateLong(date: Date) {
+  const d = typeof date === 'string' ? new Date(date) : date;
   return new Intl.DateTimeFormat('en-GB', {
     day: '2-digit',
     month: 'long',
     year: 'numeric',
-  }).format(date);
+  }).format(d);
 }
 
 export function CompaniesTable({ rows }: { rows: Company[] }) {
+
+  
   const headers = [
     'Company',
     'Date Joined',
@@ -28,7 +31,7 @@ export function CompaniesTable({ rows }: { rows: Company[] }) {
     'Sales Number',
     'Details',
   ];
-
+ useEffect(()=>{console.log('rows',rows)},[])
   const data: TableCell[][] = rows.map(c => [
     c.name,
     formatDateLong(c.dateJoined),

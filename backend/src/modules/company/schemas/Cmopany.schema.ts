@@ -16,7 +16,7 @@ export class Manager extends User {
 
 const ManagerSchema = SchemaFactory.createForClass(Manager);
  
-@Schema()
+@Schema({timestamps:true})
 export class Company {
   @Prop({ required: true })
   name: string;

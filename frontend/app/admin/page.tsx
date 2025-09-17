@@ -11,8 +11,10 @@ import SortBy, {
 } from '../_componentes/SortBy';
 import { CompaniesTable } from '../_componentes/CompaniesTable';
 import { useRouter } from 'next/navigation';
-
-const PAGE_SIZE = 7;
+import { MakeApiCall, Methods } from '../actions';
+import { PaginatedData } from '../../../shard/src';
+ 
+ 
 
 export type Company = {
   id: string;
@@ -23,18 +25,14 @@ export type Company = {
   sales: number;
 };
 
-const MOCK: Company[] = Array.from({ length: 19 }).map((_, i) => ({
-  id: String(i + 1),
-  name: 'Company Name',
-  dateJoined: new Date(2025, 7, 12),
-  manager: 'Manager Name',
-  branches: 5,
-  sales: 25,
-}));
+ 
 
 export default function CompaniesPage() {
+
   const [query, setQuery] = useState('');
+  const [companies,setCompanies]=useState<Company[]>()
   const [page, setPage] = useState(1);
+  const [numberOfPages, setNumberOfPages] = useState(0);
   const router = useRouter();
 
   // NOTE: matches the dropdown defaults (Date Joined - Newest first)
@@ -42,16 +40,31 @@ export default function CompaniesPage() {
     key: 'dateJoined',
     dir: 'desc',
   });
+  useEffect(()=>{
+    async function getCompanies(){
+      console.log(page)
+      const res=await MakeApiCall({
+        method:Methods.GET,
+        url:`/company?limit=7&page=${page}`
 
+      }) as PaginatedData
+      console.log(res.data)
+      setCompanies((res.data as Company[]))
+      setPage(res.page)
+      setNumberOfPages(res.numberOfPages)
+    }
+    getCompanies()
+  },[page])
   const filteredSorted = useMemo(() => {
     const q = query.trim().toLowerCase();
     const filtered = q
-      ? MOCK.filter(c => c.name.toLowerCase().includes(q))
-      : MOCK;
+      ? companies?.filter(c => c.name.toLowerCase().includes(q))
+      : companies;
 
-    const sorted = [...filtered].sort((a, b) => {
+    const sorted = companies?.sort((a, b) => {
       if (sort.key === 'dateJoined') {
-        const d = a.dateJoined.getTime() - b.dateJoined.getTime();
+        console.log(a.dateJoined)
+        const d = new Date(a.dateJoined).getTime() - new Date(b.dateJoined).getTime();
         return sort.dir === 'asc' ? d : -d;
       }
       if (sort.key === 'branches') {
@@ -59,21 +72,14 @@ export default function CompaniesPage() {
         return sort.dir === 'asc' ? d : -d;
       }
       return 0;
-    });
+    }) 
 
     return sorted;
   }, [query, sort]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredSorted.length / PAGE_SIZE));
-  const current = useMemo(() => {
-    const start = (page - 1) * PAGE_SIZE;
-    return filteredSorted.slice(start, start + PAGE_SIZE);
-  }, [filteredSorted, page]);
-
-  // Keep page in range when filtering/sorting
-  useEffect(() => {
-    if (page > totalPages) setPage(1);
-  }, [totalPages, page]);
+ 
+ 
+ 
 
   return (
     <div className='min-h-screen bg-gray-50 px-12 '>
@@ -143,14 +149,14 @@ export default function CompaniesPage() {
         </div>
 
         {/* Table */}
-        <div className='overflow-hidden rounded-lg'>
-          <CompaniesTable rows={current} />
-        </div>
+    {  companies&& <div className='overflow-hidden rounded-lg'>
+          <CompaniesTable rows={companies as Company[]} />
+        </div>}
 
         {/* Pagination */}
         <div className='relative mt-6 border-t border-blue-200/60 pt-6'>
           <div className='flex items-center justify-center gap-3'>
-            {Array.from({ length: totalPages }).map((_, i) => {
+            {Array.from({ length: numberOfPages }).map((_, i) => {
               const n = i + 1;
               const isActive = n === page;
               return (
@@ -168,7 +174,7 @@ export default function CompaniesPage() {
               );
             })}
             <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              onClick={() => setPage(p => Math.min(page, p + 1))}
               className='grid h-8 w-8 place-items-center rounded-full text-gray-600 hover:text-blue-700'
               aria-label='Next page'
             >

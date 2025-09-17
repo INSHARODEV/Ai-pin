@@ -93,7 +93,7 @@ export abstract class BaseRepository<T> implements BaseRepositoryInterface<T> {
     popultae,
   }): Promise<PaginatedData> {
     const total = await this.count(queryStr);
-    const numberOfPages = Math.ceil(total / limit);
+    const numberOfPages = Math.ceil(total / limit );
     const data = await this.model
       .find(queryStr)
       .limit(limit)

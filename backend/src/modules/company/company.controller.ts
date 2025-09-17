@@ -11,10 +11,15 @@ import { ParseMongoIdPipe } from 'src/common/pipes/parse-mongodb-id.pipe';
 import { Role } from 'src/shared/ROLES';
 import { PermissonsGuard } from 'src/common/guards/permissons/permissons.guard';
 import { BranchInterceptor } from './intercepotrs/branch.Interceptor';
-  @UseGuards(AuthGuard)
+ import { Company } from './schemas/Cmopany.schema';
+import { EmpoyeeRepo, UsersRepo } from '../auth/auth.repo';
+import { PaginatedData } from 'src/common/types/paginateData.type';
+import { PaginationPipe } from 'src/common/pipes/pagination.pipe';
+     @UseGuards(AuthGuard)
 @Controller('company')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService ,
+    private readonly EmpoyeeRepo: EmpoyeeRepo
     
     
   ) {}
@@ -28,12 +33,61 @@ export class CompanyController {
   }
 
   @Get()
-  @UseGuards(RoleMixin([Role.MANAGER]))
-  findAll(@Query() {fields,limit,queryStr,skip,sort,page}:QueryString,@Req() req :Request) {
-   
-    return this.companyService.findAll({fields,limit,queryStr,skip,sort,page},{ 
-      role:Role.MANAGER,firstName: req['user'].firstName});
+  @UseGuards(RoleMixin([Role.ADMIN]))
+  async findAll(
+    @Query(PaginationPipe) { fields, limit, queryStr, skip, sort, page }: QueryString,
+    @Req() req: Request,
+  ) {
+    const companies = await this.companyService.findAll(
+      { fields, limit, queryStr, skip, sort, page },
+      { role: Role.MANAGER, firstName: req['user'].firstName },
+    );
+console.log(companies)
+    const data = await Promise.all(
+      (companies.data as Company[]).map(async (company) => {
+        const branches = company.branchs ?? [];
+      console.log('hereherehere',(company as any).createdAt )
+        // Get employee counts per branch
+        const branchWithEmpCounts = await Promise.all(
+          branches.map(async (branch) => {
+            const empCount = await this.EmpoyeeRepo.count(
+             { branchId: branch },
+            );
+  
+            return {
+              id: branch,
+             
+              employeeCount: empCount,
+            };
+          }),
+        );
+       
+        const totalEmployees = branchWithEmpCounts.reduce(
+          (sum, b) => sum + b.employeeCount,
+          0,
+        );
+       
+        return {
+          id:(company as any)._id,
+          name: company.name,
+          manger:company.manager.firstName,
+          dateJoined:( company as any).createdAt 
+          ? new Date((company as any).createdAt).toISOString().split('T')[0]
+          : new Date().toISOString().split('T')[0],
+            branches: branches.length,
+          sales:totalEmployees,
+     
+        };
+      }),
+    );
+  
+    return {
+      data,
+    numberOfPages:companies.numberOfPages,
+    page:companies.page
+    }    as PaginatedData
   }
+  
 
   @Get(':id')
   @UseInterceptors(BranchInterceptor)
