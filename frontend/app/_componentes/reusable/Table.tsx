@@ -55,7 +55,7 @@ export default function Table({ headers, data, emptyMessage }: TableProps) {
 
   return (
     <div>
-      <table className='min-w-full overflow-hidden rounded-lg bg-white shadow-[0_0_7px_0_#C9C9C940]'>
+      <table className='min-w-full overflow-hidden rounded-lg bg-white shadow-custom'>
         <thead>
           <tr className='bg-[#0D70C8]'>
             {headers.map((header, i) => (
