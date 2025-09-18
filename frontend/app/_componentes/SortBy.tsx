@@ -3,13 +3,16 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-export type SortKey = 'dateJoined' | 'branches';
+/** Any string keys are fine: 'dateJoined', 'branches', 'sales', etc. */
+export type SortKey = string;
 export type SortDir = 'desc' | 'asc';
 export type SortValue = { key: SortKey; dir: SortDir };
+export type SortOption = { key: SortKey; dir: SortDir; label: string };
 
 const ACCENT = '#0D70C8';
 
-const OPTIONS: Array<{ key: SortKey; dir: SortDir; label: string }> = [
+/** Default options (used if you don't pass your own) */
+export const DEFAULT_SORT_OPTIONS: SortOption[] = [
   { key: 'dateJoined', dir: 'desc', label: 'Date Joined (Newest first)' },
   { key: 'dateJoined', dir: 'asc', label: 'Date Joined (Oldest first)' },
   { key: 'branches', dir: 'desc', label: 'Branch count (High to low)' },
@@ -20,17 +23,28 @@ function isActive(a: SortValue, b: SortValue) {
   return a.key === b.key && a.dir === b.dir;
 }
 
-export function labelFor(value: SortValue) {
-  const found = OPTIONS.find(o => isActive(o, value));
+/** Helper to get label for a value with the provided options */
+export function labelFor(
+  value: SortValue,
+  options: SortOption[] = DEFAULT_SORT_OPTIONS
+) {
+  const found = options.find(o => isActive(o, value));
   return found?.label ?? '';
 }
 
 export interface SortByProps {
   value: SortValue;
   onChange: (key: SortKey, dir: SortDir) => void;
+  options?: SortOption[]; // override the menu items
+  title?: string; // defaults to "Sort by:"
 }
 
-export default function SortBy({ value, onChange }: SortByProps) {
+export default function SortBy({
+  value,
+  onChange,
+  options = DEFAULT_SORT_OPTIONS,
+  title = 'Sort by:',
+}: SortByProps) {
   const [open, setOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -39,9 +53,8 @@ export default function SortBy({ value, onChange }: SortByProps) {
     function onDocClick(e: MouseEvent) {
       const t = e.target as Node;
       if (!menuRef.current || !btnRef.current) return;
-      if (!menuRef.current.contains(t) && !btnRef.current.contains(t)) {
+      if (!menuRef.current.contains(t) && !btnRef.current.contains(t))
         setOpen(false);
-      }
     }
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') setOpen(false);
@@ -81,8 +94,10 @@ export default function SortBy({ value, onChange }: SortByProps) {
             <path d='M7 10l5 5 5-5H7z' />
           </svg>
         </span>
-        <span className='font-medium'>Sort by:</span>
-        <span className='font-semibold text-gray-900'>{labelFor(value)}</span>
+        <span className='font-medium'>{title}</span>
+        <span className='font-semibold text-gray-900'>
+          {labelFor(value, options)}
+        </span>
       </button>
 
       {/* Dropdown */}
@@ -91,9 +106,9 @@ export default function SortBy({ value, onChange }: SortByProps) {
           ref={menuRef}
           role='menu'
           aria-label='Sort options'
-          className='absolute z-20 mt-2 w-[340px] rounded-2xl bg-white p-2 shadow-xl ring-1 ring-gray-200'
+          className='absolute z-20 mt-2 rounded-2xl bg-white p-2 shadow-xl ring-1 ring-gray-200'
         >
-          {OPTIONS.map(opt => {
+          {options.map(opt => {
             const active = isActive(opt, value);
             return (
               <button

@@ -4,6 +4,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --font-sans: var(--app-font-geist-sans);
+  --font-mono: var(--app-font-geist-mono);
+  --font-poppins: var(--app-font-poppins);
   --shadow-custom: 0 0 7px 0 rgb(201 201 201 / 0.25);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

@@ -8,8 +8,8 @@ import SortBy, {
   SortDir,
   SortKey,
   SortValue,
-} from '../_componentes/SortBy';
-import { CompaniesTable } from '../_componentes/CompaniesTable';
+} from '../../../_componentes/SortBy';
+import { CompaniesTable } from '../../../_componentes/CompaniesTable';
 import { useRouter } from 'next/navigation';
 import { MakeApiCall, Methods } from '../actions';
 import { PaginatedData } from '../../../shard/src';
@@ -94,13 +94,12 @@ export default function CompaniesPage() {
  
 
   return (
-    <div className='min-h-screen bg-gray-50 px-12 '>
-      <header className='pt-10'>
-        <h1 className='text-3xl font-bold text-gray-900'>Welcome Admin!</h1>
-        <p className='text-gray-500'>12th Aug 2025, 12:45</p>
-      </header>
-
-      <main className='py-6 mx-auto flex flex-col gap-6'>
+    <div className='min-h-screen bg-gray-50'>
+      <div className='pb-5'>
+        <h1 className='text-2xl font-semibold'>Welcome admin</h1>
+        <p className='text-sm text-gray-400'>12th Aug 2025, 12:45</p>
+      </div>
+      <main className='mx-auto flex flex-col gap-6'>
         <div className='flex items-center gap-3'>
           <h2 className='mb-3 text-lg font-semibold text-gray-900'>
             Companies

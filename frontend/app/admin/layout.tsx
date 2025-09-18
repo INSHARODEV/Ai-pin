@@ -1,25 +1,29 @@
-import { ReactNode } from 'react';
-import { Metadata } from 'next';
-import AdminHeader from '../_componentes/AdminHeader';
-import { RoleGuard } from '../_guards/role-guard';
+// app/admin/companies/(withCompanyLayout)/[companyId]/layout.tsx
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Admin Dashboard',
-  description: 'Admin management and analytics dashboard',
-};
+import AdminHeader from '@/app/_componentes/AdminHeader';
+import Breadcrumbs from '@/app/_componentes/Breadcrumbs';
+import { RoleGuard } from '@/app/_guards/role-guard';
+import { ReactNode } from 'react';
 
 interface LayoutProps {
   children: ReactNode;
 }
 
-export default function Layout({ children }: LayoutProps) {
+export default function CompanyLayout({ children }: LayoutProps) {
   return (
-    <div>
-      <AdminHeader userName='Admin' />
+    <RoleGuard>
+      <div className='min-h-screen bg-[#F9FAFB]'>
+        <AdminHeader userName='Admin' />
 
-      <main className=''>
-        <RoleGuard>{children}</RoleGuard>
-      </main>
-    </div>
+        <main className='py-6 px-16'>
+          <div className='mx-auto space-y-6'>
+            <Breadcrumbs />
+
+            {children}
+          </div>
+        </main>
+      </div>
+    </RoleGuard>
   );
 }
