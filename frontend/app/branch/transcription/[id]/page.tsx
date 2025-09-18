@@ -8,6 +8,7 @@ import { ChatPanel } from '@/app/_componentes/ChatTranscript';
 import { useParams } from 'next/navigation';
 import { MakeApiCall, Methods } from '@/app/actions';
 import { ID, Transcript } from '../../../../../shard/src';
+import { data } from '../../../utils/staticData';
 
 const Index = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,12 +19,12 @@ const Index = () => {
     async function getTranscriptions() {
       const res = await MakeApiCall({
         method: Methods.GET,
-        url: `/trasncriptions?empId=${id}`, // <-- fixed typo
+        url: `/trasncriptions?empId=${id}`,  
       });
-
+ 
       if (res?.data) {
         setTranscriptions(res.data);
-        setSelected(res.data[0]); // default to first conversation
+        setSelected(res.data[0]);  
       }
     }
 

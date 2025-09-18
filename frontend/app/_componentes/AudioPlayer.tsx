@@ -1,9 +1,24 @@
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 export function AudioPlayer({ transcription }: { transcription: any }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  // Update audio source when transcription changes
+  useEffect(() => {
+    if (audioRef.current && transcription?.audio_url) {
+      // Pause current audio if playing
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
+      
+      // Update the source
+      audioRef.current.src = transcription.audio_url;
+      audioRef.current.load(); // Reload the audio element with new source
+    }
+  }, [transcription?.audio_url]); // Dependency on audio_url
 
   const togglePlay = () => {
     console.log(transcription.audio_url)
@@ -40,7 +55,7 @@ export function AudioPlayer({ transcription }: { transcription: any }) {
         >
           <Image
             alt={isPlaying ? "Pause" : "Play"}
-            src={isPlaying ? "/pause.svg" : "/pause.svg"}
+            src={isPlaying ? "/pause.svg" : "/play.png"} // Fixed: use play.svg for play state
             width={19}
             height={19}
           />
@@ -48,11 +63,11 @@ export function AudioPlayer({ transcription }: { transcription: any }) {
 
         {/* Audio element with ref */}
         <audio
-          ref={audioRef} // 👈 now the ref is actually connected
+          ref={audioRef}
           className="hidden"
           onEnded={() => setIsPlaying(false)}
         >
-          <source src={transcription.audio_url}      type="audio/webm"  />
+          <source src={transcription.audio_url} type="audio/webm" />
           Your browser does not support the audio element.
         </audio>
 

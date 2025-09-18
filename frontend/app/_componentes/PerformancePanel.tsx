@@ -1,6 +1,6 @@
 import { ChevronDown, Check, X } from 'lucide-react';
 import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AudioPlayer } from './AudioPlayer';
 
 interface Props {
@@ -11,7 +11,12 @@ export const MainDashboard = ({ transcription }: Props) => {
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [complianceOpen, setComplianceOpen] = useState(false);
   const [engagementOpen, setEngagementOpen] = useState(false);
+useEffect(()=>{
 
+
+console.log('transcription',transcription)
+
+},[])
   const compliance = transcription?.turns?.[0]?.compliance_flags ?? {};
   const engagement = transcription?.turns?.[0]?.engagement_metrics ?? {};
 

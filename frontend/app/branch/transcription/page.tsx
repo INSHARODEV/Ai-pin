@@ -61,7 +61,7 @@ const Index = () => {
   
       if (res?.data) {
         setTranscriptions(res.data);
-        setSelected(res.data[0]);
+     
       }
     }
   
@@ -125,7 +125,7 @@ const Index = () => {
           selectedId={selected?._id}
           onSelect={setSelected}
         />
-        <MainDashboard transcription={selected} />
+        <MainDashboard transcription={selected}  />
         <ChatPanel transcription={selected} />
       </div>
     </div>

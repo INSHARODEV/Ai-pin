@@ -34,7 +34,7 @@ export default function CompaniesPage() {
   const [page, setPage] = useState(1);
   const [numberOfPages, setNumberOfPages] = useState(0);
   const router = useRouter();
-
+ 
   // NOTE: matches the dropdown defaults (Date Joined - Newest first)
   const [sort, setSort] = useState<SortValue>({
     key: 'dateJoined',
@@ -78,7 +78,19 @@ export default function CompaniesPage() {
   }, [query, sort]);
 
  
- 
+  const searchByName=async (d :any)=>{
+    d.preventDefault()
+    console.log(query)
+  const res=await MakeApiCall({
+    method:Methods.GET,
+    url:`/company?limit=7&page=${page}&name=${query}`
+
+  }) as PaginatedData
+  console.log(res.data)
+  setCompanies((res.data as Company[]))
+  setPage(res.page)
+  setNumberOfPages(res.numberOfPages)
+ }
  
 
   return (
@@ -111,8 +123,8 @@ export default function CompaniesPage() {
               setPage(1);
             }}
           />
-
-          {/* Search */}
+ <form  onSubmit={(e)=>searchByName(e)} 
+  >
           <div className='flex items-center gap-2 rounded-xl px-4 py-2 bg-[#FEFEFE] shadow-custom'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
@@ -123,6 +135,7 @@ export default function CompaniesPage() {
               <path d='M10 4a6 6 0 104.472 10.028l4.25 4.25 1.415-1.414-4.25-4.25A6 6 0 0010 4zm0 2a4 4 0 110 8 4 4 0 010-8z' />
             </svg>
             <input
+            name='name'
               value={query}
               onChange={e => {
                 setQuery(e.target.value);
@@ -132,7 +145,7 @@ export default function CompaniesPage() {
               className='w-full bg-transparent text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none'
             />
             <button
-              type='button'
+              type='submit'
               className='grid h-8 w-8 px-2 place-items-center rounded-full bg-[#0D70C8] text-white'
               aria-label='Search'
             >
@@ -146,9 +159,9 @@ export default function CompaniesPage() {
               </svg>
             </button>
           </div>
+        </form>
         </div>
-
-        {/* Table */}
+      
     {  companies&& <div className='overflow-hidden rounded-lg'>
           <CompaniesTable rows={companies as Company[]} />
         </div>}

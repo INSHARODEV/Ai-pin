@@ -65,7 +65,7 @@ export default function LoginPage() {
           router.push('/sales');
           break;
         case Role.ADMIN:
-          router.push('/forms/company-form');
+          router.push('/admin');
           break;
       }
     } catch (err) {

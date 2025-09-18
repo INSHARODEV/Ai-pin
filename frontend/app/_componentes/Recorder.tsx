@@ -35,7 +35,7 @@ export const Recorder = ({ setRecording }: Params) => {
 
     try {
       const res = await MakeApiCall({
-        url: `/transcriptions/${shiftId}`,
+        url: `/trasncriptions/${shiftId}`,
         method: Methods.POST,
         body: formData,
       });
@@ -66,7 +66,7 @@ export const Recorder = ({ setRecording }: Params) => {
         // Create shift
         console.log('Creating shift...');
         const res = await MakeApiCall({
-          url: '/transcriptions/shift',
+          url: '/trasncriptions/shift',
           method: Methods.POST,
         });
 
