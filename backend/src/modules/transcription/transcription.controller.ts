@@ -31,7 +31,7 @@ import { SalseDataInteceptor } from './interceptors/data.interceptor';
 import { RoleMixin } from '../../common/Mixins/role.mixin';
 import { Role } from 'src/shared/ROLES';
 
-@Controller('transcriptions')
+@Controller('trasncriptions')
 @UseGuards(AuthGuard)
 export class TranscriptionController {
   constructor(

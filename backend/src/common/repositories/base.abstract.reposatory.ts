@@ -61,6 +61,7 @@ export abstract class BaseRepository<T> implements BaseRepositoryInterface<T> {
       `attemting to get user with its id ${id.slice(1, 5)}...`,
     );
     const exsistingDoc = await this.model.findById(id).populate(populate).lean().exec();
+    console.log(exsistingDoc)
     if (exsistingDoc) return exsistingDoc;
     this.logger.error(`we ware not able to find this ${id}  `);
     throw new NotFoundException();

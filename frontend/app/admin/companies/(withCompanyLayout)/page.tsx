@@ -9,23 +9,10 @@ import SortBy, {
   SortKey,
   SortValue,
 } from '../../../_componentes/SortBy';
-import { CompaniesTable } from '../../../_componentes/CompaniesTable';
+import { CompaniesTable, Company } from '../../../_componentes/CompaniesTable';
 import { useRouter } from 'next/navigation';
-import { MakeApiCall, Methods } from '../actions';
-import { PaginatedData } from '../../../shard/src';
- 
- 
-
-export type Company = {
-  id: string;
-  name: string;
-  dateJoined: Date;
-  manager: string;
-  branches: number;
-  sales: number;
-};
-
- 
+import { MakeApiCall, Methods } from '@/app/actions';
+import { PaginatedData } from '../../../../../shard/src';
 
 export default function CompaniesPage() {
 
@@ -58,7 +45,7 @@ export default function CompaniesPage() {
   const filteredSorted = useMemo(() => {
     const q = query.trim().toLowerCase();
     const filtered = q
-      ? companies?.filter(c => c.name.toLowerCase().includes(q))
+      ? companies?.filter(c => c.companyName.toLowerCase().includes(q))
       : companies;
 
     const sorted = companies?.sort((a, b) => {
@@ -68,7 +55,7 @@ export default function CompaniesPage() {
         return sort.dir === 'asc' ? d : -d;
       }
       if (sort.key === 'branches') {
-        const d = a.branches - b.branches;
+        const d = a.branches.length - b.branches.length;
         return sort.dir === 'asc' ? d : -d;
       }
       return 0;

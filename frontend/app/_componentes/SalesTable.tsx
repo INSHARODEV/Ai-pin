@@ -10,7 +10,7 @@ export type SalesRow = {
   email: string;
 };
 
-function formatDateLong(date: Date) {
+export function formatDateLong(date: Date) {
   return new Intl.DateTimeFormat('en-GB', {
     day: '2-digit',
     month: 'long',

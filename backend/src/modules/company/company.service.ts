@@ -68,4 +68,5 @@ async findOneBybranchAndCompanyId(companyId:any, branchId:any){
   remove(id: number) {
     return `This action removes a #${id} company`;
   }
+  
 }

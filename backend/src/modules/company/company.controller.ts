@@ -15,6 +15,7 @@ import { BranchInterceptor } from './intercepotrs/branch.Interceptor';
 import { EmpoyeeRepo, UsersRepo } from '../auth/auth.repo';
 import { PaginatedData } from 'src/common/types/paginateData.type';
 import { PaginationPipe } from 'src/common/pipes/pagination.pipe';
+ 
      @UseGuards(AuthGuard)
 @Controller('company')
 export class CompanyController {
@@ -69,8 +70,8 @@ console.log(companies)
        
         return {
           id:(company as any)._id,
-          name: company.name,
-          manger:company.manager.firstName,
+          companyName: company.name,
+          managerName:company.manager.firstName,
           dateJoined:( company as any).createdAt 
           ? new Date((company as any).createdAt).toISOString().split('T')[0]
           : new Date().toISOString().split('T')[0],
@@ -90,12 +91,66 @@ console.log(companies)
   
 
   @Get(':id')
-  @UseInterceptors(BranchInterceptor)
+  //@UseInterceptors(BranchInterceptor)
   @UseGuards(RoleMixin([Role.ADMIN]  ),/*PermissonsGuard*/)
   findOne(@Param('id') id: string,@Req() req :Request) {
     
     return this.companyService.findOne(id,{ 
       role:Role.MANAGER,firstName: req['user'].firstName});
+  }
+  @Get('company/:id')
+  //@UseInterceptors(BranchInterceptor)
+  @UseGuards(RoleMixin([Role.ADMIN]  ),/*PermissonsGuard*/)
+  async getOne(@Param('id') id: string,@Req() req :Request) {
+    
+    const company=await this.companyService.findOne(id,{ 
+      role:Role.MANAGER,firstName: req['user'].firstName}) as any;
+      let {branchs}=company;
+ 
+          let  totalNumber=await Promise.all(branchs.map(b=>
+          { let numberofEMps= this.EmpoyeeRepo.count( { branchId: b })
+           return numberofEMps
+    
+        }
+     
+           ))
+           const totalEmployees = totalNumber.reduce(
+            (sum, b) => sum + b,
+            0,
+           )
+           const supervisors = await Promise.all(
+            branchs.map(b =>
+              this.EmpoyeeRepo.find({
+                queryStr: { branchId: b, role: Role.SUPERVISOR },
+                fields: 'firstName email',
+                limit: 1555,
+                page: 1,
+                sort: 'asc',
+                popultae: '',
+                skip: 0,
+              })
+            )
+          );
+         
+       return {
+        id:company._id,
+        companyName:company.name,
+        branches:    branchs.map((b, i) => ({
+          id:b._id,
+         name:b.name,
+          supervisor: supervisors[i].data.map(d=>d.firstName)[0],  
+            email:supervisors[i].data.map(d=>d.email)[0]
+        })),
+        managerName:company.manager.firstName,
+        managerEmail:company.manager.email,
+        dateJoined:company.createdAt,
+        sales:totalEmployees
+              }  
+              
+
+
+        
+        
   }
 
   @Put(':id')

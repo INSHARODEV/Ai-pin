@@ -1,7 +1,7 @@
 // app/admin/companies/(withCompanyLayout)/[companyId]/layout.tsx
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname, useParams } from 'next/navigation';
 import KebabMenu from '@/components/ui/KebabMenu';
 import { Pencil, Trash2 } from 'lucide-react';
@@ -14,6 +14,8 @@ import {
   DeleteSuccessModal,
 } from '@/app/_componentes/company/DeleteModals';
 import CompanyEditModal from '@/app/_componentes/company/CompanyEditModal';
+ import { MakeApiCall, Methods } from '@/app/actions';
+import { Company } from '@/app/_componentes/CompaniesTable';
 
 type TabKey = 'overview' | 'branches' | 'sales';
 
@@ -28,15 +30,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { companyId } = useParams<{ companyId: string }>();
 
-  const [company, setCompany] = useState({
-    id: companyId ?? '1',
-    name: 'Company Name',
-    joined: new Date(2025, 7, 12),
-    managerName: 'Manager Name',
-    managerEmail: 'name@company.com',
-    branches: 5,
-    employees: 25,
-  });
+  const [company, setCompany] =  useState<Company>({} as Company)
+
+  useEffect(()=>{
+    async function getCompany(){
+   
+   
+     const company=await MakeApiCall({
+       method:Methods.GET,
+       url:`/company/company/${companyId}`
+   
+     })as any
+     
+     console.log(company)
+     let date = fmt.format(
+      company?.dateJoined ? new Date(company.dateJoined) : new Date()
+    );
+     setCompany({...company,dateJoined:date})
+   
+   }
+   getCompany()
+   },[])
 
   const base = `/admin/companies/${company.id}`;
   const active = getActiveTab(pathname, base);
@@ -60,11 +74,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className='flex items-start justify-between gap-4'>
           <div>
             <h1 className='font-poppins text-2xl font-bold text-gray-900'>
-              {company.name}
+              {company.companyName}
             </h1>
-            <p className='font-poppins mt-1 text-gray-500 font-medium text-[12px] leading-[100%] tracking-[0em]'>
-              Joined {fmt.format(company.joined)}
-            </p>
+            <p className='font-poppins mt-1 text-gray-500 font-medium text-[12px] leading-[100%] tracking-[0em]'> 
+  Joined {company?.dateJoined ? fmt.format(new Date(company.dateJoined)) : "N/A"}
+</p>
           </div>
 
           <KebabMenu
@@ -112,36 +126,30 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       <main>{children}</main>
 
-      <CompanyEditModal
+     {company&& <CompanyEditModal
         open={showEdit}
         onClose={() => setShowEdit(false)}
         initial={{
-          companyName: company.name,
-          managerName: company.managerName,
-          managerEmail: company.managerEmail,
-          branches: [
-            {
-              name: 'Branch A',
-              supervisor: 'Supervisor Name',
-              email: 'name@company.com',
-            },
-          ], // seed or fetch
+          companyName:company? company.companyName:'',
+          managerName: company? company.managerName:'',
+          managerEmail: company?company.managerEmail:'',
+          branches:company? company.branches:[],  
           members: [{ name: 'Member Name', email: 'member@company.com' }], // seed or fetch
         }}
         onSubmit={async payload => {
-          // Update local state from payload (or call your API then refresh)
+   
           setCompany(c => ({
             ...c,
-            name: payload.companyName || c.name,
+            name: payload.companyName || c.companyName  ,
             managerName: payload.managerName || c.managerName,
             managerEmail: payload.managerEmail || c.managerEmail,
-            branches: payload.branches?.length || c.branches,
-            employees: payload.members?.length ?? c.employees,
+            branches: payload.branches ||c.branches,
+            employees: payload.members?.length ?? c.sales,
           }));
           setShowEdit(false);
           setShowUpdateSuccess(true); // then show success
         }}
-      />
+      />}
 
       {/* Success + Delete popups */}
       <UpdateSuccessModal
@@ -153,7 +161,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <DeleteConfirmModal
         open={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
-        companyName={company.name}
+        companyName={company.companyName}
         onConfirm={async () => {
           // TODO: call delete API
           setShowDeleteConfirm(false);

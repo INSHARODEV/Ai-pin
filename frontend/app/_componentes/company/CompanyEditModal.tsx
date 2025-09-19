@@ -32,6 +32,11 @@ export default function CompanyEditModal({
   onSubmit,
   initial,
 }: CompanyEditModalProps) {
+  React.useEffect(()=>{
+
+console.log('initial',initial)
+
+  },[])
   const [step, setStep] = React.useState<Step>(1);
   const [saving, setSaving] = React.useState(false);
 
@@ -101,7 +106,15 @@ export default function CompanyEditModal({
       setSaving(false);
     }
   }
-
+  React.useEffect(() => {
+    if (initial) {
+      setCompanyName(initial.companyName ?? '');
+      setManagerName(initial.managerName ?? '');
+      setManagerEmail(initial.managerEmail ?? '');
+      setBranches(initial.branches?.length ? initial.branches : [{ name: '', supervisor: '', email: '' }]);
+      setMembers(initial.members?.length ? initial.members : [{ name: '', email: '' }]);
+    }
+  }, [initial]);
   const StepIndicator = () => (
     <div className='mb-6 flex items-center gap-3'>
       {[1, 2, 3].map(n => (

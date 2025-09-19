@@ -11,16 +11,13 @@ export enum Role {
   };
   
   export type Branch = {
-    id: string;
+    id?:ID
     name: string;
-    slug?: string;
+    supervisor: string;
+    email: string;
   };
   
-  export type Company = {
-    id: string;
-    name: string;
-    branches: ID[];
-  };
+ 
   
   export interface QueryString {
     fields: string;
@@ -97,3 +94,5 @@ export enum Role {
     numberOfPages: number;
     page: number;
   };
+  
+ 

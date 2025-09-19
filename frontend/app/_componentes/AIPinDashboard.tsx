@@ -66,11 +66,11 @@ const AIPinDashboard = () => {
               <FileText
                 className={`w-5 h-5 ${isActive('/branch/transcription') ? 'text-[#0D70C8]' : 'text-muted-foreground'}`}
               />
-              <span
+              {/* <span
                 className={`text-lg font-medium ${getTextClasses('/branch/transcription')}`}
               >
                 Transcription
-              </span>
+              </span> */}
             </div>
           </div>
         </Link>
@@ -85,17 +85,17 @@ const AIPinDashboard = () => {
           {empsNames &&
             empsNames.map(
               ({ name, _id }: { name: any; _id: any }, index: number) => (
-                <div
+                <Link
                   key={index}
-                  className='px-4 py-3 hover:bg-blue-200 transition-colors cursor-pointer rounded-r-lg'
-                >
-                  <Link
-                    className='text-muted-foreground'
-                    href={`branch/transcription/${_id}`}
-                  >
+                  className='px-4 py-3 hover:bg-blue-200 transition-colors cursor-pointer rounded-r-lg text-muted-foreground block'
+                
+                  
+                    
+                    href={`/branch/transcription/${_id}`}
+                 
+                    >
                     {name}
-                  </Link>
-                </div>
+                </Link>
               )
             )}
         </div>

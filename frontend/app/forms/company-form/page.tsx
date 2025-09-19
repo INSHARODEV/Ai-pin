@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import InputForm from "../../_componentes/reusable/Form";
 import { ArrowRight } from "lucide-react"; // for the arrow icon
 import Logo from "../../_componentes/icons/Logo";
@@ -8,7 +8,7 @@ import { MakeApiCall, Methods } from "../../actions";
  import { useRouter } from "next/navigation"; // ✅ FIX
 import { routes } from "@/app/_componentes/Form-sidebar";
 import { stepsContext } from "@/app/context/stesp.context";
-
+import loader from '../../loader'
 export interface Params{
   step:number;
 
@@ -16,6 +16,7 @@ export interface Params{
 export default function Page() {
   const router = useRouter();
   const {step,setStep}=useContext( stepsContext) as any
+
   const handleSubmit = async(data: any) => {
     const submittedData={
     name:data.name,
@@ -29,6 +30,7 @@ export default function Page() {
   
 }
 console.log(submittedData)
+
 const res=await MakeApiCall({  
   method:Methods.POST,
   url:'/company',
@@ -45,6 +47,7 @@ router.push(`/${routes(res._id,1) }`);
   };
 
   return (
+   
     <div className="  mx-auto mt-10 p-12 bg-white rounded-lg shadow h-[100%]">
  
       <h3 className="text-xl font-semibold mb-1">Company Setup</h3>

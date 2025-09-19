@@ -9,6 +9,7 @@ import { MakeApiCall, Methods } from "@/app/actions";
 import { useRouter } from "next/navigation"; // ✅ FIX
 import { routes } from "@/app/_componentes/Form-sidebar";
 import { stepsContext } from "@/app/context/stesp.context";
+import Loader from "@/app/loader";
 
 export interface BranchFormData {
   name?: string;
@@ -17,6 +18,8 @@ export interface BranchFormData {
 }
 
 export default function Page() {
+    const [loading,setLoading]=useState<boolean>(false)
+  
   const router = useRouter();
   const [branches, setBranches] = useState<BranchFormData[]>([]);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);  
@@ -74,7 +77,7 @@ export default function Page() {
 
  
 
-  return (
+    {  return  !branches?<Loader/>:
     <div className="mx-auto mt-10 p-12 bg-white rounded-lg shadow h-[100%]">
       <h3 className="text-xl font-semibold mb-1">Branches Setup</h3>
       <p className="text-gray-600 mb-6">
@@ -177,5 +180,5 @@ export default function Page() {
       
       </div>
     </div>
-  );
+}
 }

@@ -63,4 +63,7 @@ console.log(createBranchDto)
   remove(id: number) {
     return `This action removes a #${id} branch`;
   }
+async  findByComapnyId(qstr){
+return await this.branchrepo.findOne({_id:qstr})
+}
 }

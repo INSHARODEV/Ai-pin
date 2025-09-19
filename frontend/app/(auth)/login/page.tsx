@@ -65,7 +65,7 @@ export default function LoginPage() {
           router.push('/sales');
           break;
         case Role.ADMIN:
-          router.push('/admin');
+          router.push('/admin/companies');
           break;
       }
     } catch (err) {
@@ -132,9 +132,9 @@ export default function LoginPage() {
                 type={showPassword ? 'text' : 'password'}
                 {...register('password')}
                 className={`block w-full px-3 py-2 pr-10 border ${
-                  errors.password ? 'border-red-500' : 'border-gray-300'
+                  errors.password?.message ? 'border-red-500' : 'border-gray-300'
                 } rounded-md shadow-sm focus:outline-none focus:ring-2 ${
-                  errors.password ? 'focus:ring-red-500' : 'focus:ring-blue-500'
+                  errors.password?.message ? 'focus:ring-red-500' : 'focus:ring-blue-500'
                 }`}
                 required
               />
@@ -160,7 +160,7 @@ export default function LoginPage() {
           <button
             type='submit'
             className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white ${
-              error || !email || !password || loading
+               !email || !password || loading
                 ? 'bg-gray-300 cursor-not-allowed'
                 : 'bg-blue-600 hover:bg-blue-700 cursor-pointer'
             } focus:outline-none focus:ring-2 focus:ring-blue-500`}

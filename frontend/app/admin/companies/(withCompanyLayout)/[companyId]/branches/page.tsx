@@ -17,7 +17,8 @@ import AddBranchModal, {
   AddBranchPayload,
 } from '@/app/_componentes/branches/AddBranchModal';
 import BranchAddedSuccessModal from '@/app/_componentes/branches/BranchAddedSuccessModal';
-
+import { MakeApiCall, Methods } from '@/app/actions';
+  
 const PAGE_SIZE = 7;
 
 const COMPANY_SORT: SortOption[] = [
@@ -32,26 +33,38 @@ export default function CompanyBranchesPage() {
 
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
+  const [rows, setRows] =useState<BranchRow[]>([]) 
+  const fmt = new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  });
 
-  // Matches dropdown defaults (Date Joined - Newest first)
+  useEffect(() => {
+    async function getBranch() {
+      const res = await MakeApiCall({
+        method: Methods.GET,
+        url: `/branch/${companyId}`,
+      });
+  
+      // branch list is inside res.data.data
+   
+  console.log(res)
+      setRows(res?.data??[]);
+      setPage(res?.numberOfPages); // <-- use res.data.page
+    }
+  
+    getBranch();
+  }, []);
+  
   const [sort, setSort] = useState<SortValue>({
     key: 'dateJoined',
     dir: 'desc',
   });
 
   // Seed data
-  const [rows, setRows] = useState<BranchRow[]>(
-    Array.from({ length: 19 }).map((_, i) => ({
-      id: String(i + 1),
-      name: 'Branch Name',
-      dateCreated: new Date(2025, 7, 12),
-      supervisor: 'Supervisor Name',
-      sales: 8,
-      companyId,
-    }))
-  );
-
-  // Add Branch modals
+ 
+ 
   const [showAdd, setShowAdd] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 

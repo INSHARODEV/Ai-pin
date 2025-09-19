@@ -11,6 +11,7 @@ import { Branch, Role } from "../../../../../shard/src";
 import { Employee } from "../../../../../shard/src";
 import { stepsContext } from "@/app/context/stesp.context";
 import { createUserSchmea } from "@/app/utils/zodschama";
+import Loader from "@/app/loader";
  
 
 export interface SaleshFormData {
@@ -34,19 +35,19 @@ export default function Page() {
   const [branchEmps,setBrnachEmps]=useState<Employee[]>([])
   const { id } = useParams<{ id: string }>();
   const { step, setStep } = useContext(stepsContext) as any;
-
+  const [loading,setLoading]=useState<boolean>(false)
   useEffect(() => {
     async function getCompanies() {
       setStep(2)
-      const branchses = await MakeApiCall({
+      const {branchs} = await MakeApiCall({
         method: Methods.GET,
         url: `/company/${id}`,
       });
-      console.log(branchses);
+      console.log(branchs);
 
       // Add empty members array for each branch
       setBranches(
-        branchses.map((b: Branch) => ({
+        branchs.map((b: Branch) => ({
           ...b,
           members: [],
         }))
@@ -139,7 +140,7 @@ export default function Page() {
     );
   }
  
-  return (
+  {return  !branches?<Loader/>:(
     <div className="mx-auto mt-10 p-12 bg-white rounded-lg shadow h-[100%]">
       <h3 className="text-xl font-semibold mb-1">Sales Team Setup</h3>
       <p className="text-gray-600 mb-6">
@@ -227,5 +228,5 @@ export default function Page() {
         </button>
       </div>
     </div>
-  );
+  );}
 }

@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import KebabMenu from '@/components/ui/KebabMenu';
 import { Mail, Pencil } from 'lucide-react';
 import CompanyEditModal from '@/app/_componentes/company/CompanyEditModal';
@@ -11,20 +11,31 @@ import {
   DeleteConfirmModal,
   DeleteSuccessModal,
 } from '@/app/_componentes/company/DeleteModals';
+import { MakeApiCall, Methods } from '@/app/actions';
+import { Company } from '@/app/_componentes/CompaniesTable';
 
 export default function CompanyDetailsPage() {
+  const { companyId } = useParams<{ companyId: string }>();
   const router = useRouter();
+  const [company, setCompany] = React.useState<Company>({} as Company)
+React.useLayoutEffect(()=>{
+ async function getCompany(){
 
+
+  const company=await MakeApiCall({
+    method:Methods.GET,
+    url:`/company/company/${companyId}`
+
+  })
+  
+  console.log(company)
+  setCompany(company)
+
+}
+getCompany()
+},[])
   // Mock entity (replace with real data)
-  const [company, setCompany] = React.useState({
-    companyId: '1',
-    name: 'Company Name',
-    joined: new Date(2025, 7, 12),
-    managerName: 'Manager Name',
-    managerEmail: 'name@company.com',
-    branches: 5,
-    employees: 25,
-  });
+  
 
   const [tab, setTab] = React.useState<'overview' | 'branches' | 'sales'>(
     'overview'
@@ -52,11 +63,11 @@ export default function CompanyDetailsPage() {
     // TODO: API call
     setCompany(c => ({
       ...c,
-      name: payload.companyName || c.name,
+      name: payload.companyName || c.companyName,
       managerName: payload.managerName || c.managerName,
       managerEmail: payload.managerEmail || c.managerEmail,
-      branches: payload.branches?.length || c.branches,
-      employees: payload.members?.length || c.employees,
+      branches: payload.branches || c.branches,
+      employees: payload.members || c.sales,
     }));
     setShowEdit(false);
     setShowUpdateSuccess(true);
@@ -69,6 +80,8 @@ export default function CompanyDetailsPage() {
   }
 
   return (
+ 
+  
     <div className=''>
       <main className='mx-auto py-6'>
         {/* OVERVIEW TAB */}
@@ -132,7 +145,7 @@ export default function CompanyDetailsPage() {
                     Branches
                   </div>
                   <div className='mt-1 text-gray-900'>
-                    {company.branches} Branches
+                    { company?.branches?.length} Branches
                   </div>
                 </div>
                 <div>
@@ -140,7 +153,7 @@ export default function CompanyDetailsPage() {
                     Employees
                   </div>
                   <div className='mt-1 text-gray-900'>
-                    {company.employees} Employees
+                    {company.sales} Employees
                   </div>
                 </div>
               </div>
@@ -166,7 +179,7 @@ export default function CompanyDetailsPage() {
         onClose={() => setShowEdit(false)}
         onSubmit={handleUpdate}
         initial={{
-          companyName: company.name,
+          companyName: company.companyName,
           managerName: company.managerName,
           managerEmail: company.managerEmail,
           branches: [
@@ -189,7 +202,7 @@ export default function CompanyDetailsPage() {
       <DeleteConfirmModal
         open={showConfirm}
         onClose={() => setShowConfirm(false)}
-        companyName={company.name}
+        companyName={company.companyName}
         onConfirm={handleDelete}
       />
 
@@ -199,5 +212,5 @@ export default function CompanyDetailsPage() {
         onBack={() => router.push('/admin/companies')}
       />
     </div>
-  );
+  ) 
 }

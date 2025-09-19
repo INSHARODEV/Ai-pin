@@ -1,4 +1,5 @@
 import toast from "react-hot-toast";
+import { ur } from "zod/v4/locales";
 
 export enum Methods {
   POST = "POST",
@@ -78,8 +79,8 @@ const data=await res.json();
 console.log('data here',data)
     return data
   } catch (err: any) {
-    console.log(err);
-    toast.error(err.message);
-  //  throw new Error(err);
+    console.log(ur);
+    //toast.error(url.includes('/auth/signin')?'wrong email or password':err.message);
+   // throw new Error(url.includes('/auth/signin')?'wrong email or password':err.message);
   }
 }
