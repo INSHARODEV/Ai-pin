@@ -118,28 +118,27 @@ console.log(companies)
             (sum, b) => sum + b,
             0,
            )
-           const supervisors = await Promise.all(
-            branchs.map(b =>
-              this.EmpoyeeRepo.find({
-                queryStr: { branchId: b, role: Role.SUPERVISOR },
-                fields: 'firstName email',
-                limit: 1555,
-                page: 1,
-                sort: 'asc',
-                popultae: '',
-                skip: 0,
-              })
-            )
-          );
-         
+          
+             
+           const supervisors = await this.EmpoyeeRepo.find({
+            queryStr: { branchId: { $in: branchs }, role: Role.SUPERVISOR },
+            fields: 'firstName email',
+            limit: 1555,
+            page: 1,
+           skip:0,
+           sort:'asc',
+           popultae:''
+          
+          }) as any;
+          console.log('here',supervisors.data)
        return {
         id:company._id,
         companyName:company.name,
         branches:    branchs.map((b, i) => ({
           id:b._id,
          name:b.name,
-          supervisor: supervisors[i].data.map(d=>d.firstName)[0],  
-            email:supervisors[i].data.map(d=>d.email)[0]
+          supervisor: supervisors.data.map(d=>d.firstName)[0],  
+            email:supervisors.data.map(d=>d.email)[0]
         })),
         managerName:company.manager.firstName,
         managerEmail:company.manager.email,
