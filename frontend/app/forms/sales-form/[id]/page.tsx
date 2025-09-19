@@ -223,7 +223,7 @@ export default function Page() {
         <button className="flex w-12 h-12 items-center justify-center rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow">
           <ArrowLeft size={20} onClick={() => handleNavigatio(-1)} />
         </button>
-        <button   disabled className="flex w-12  h-12 items-center justify-center rounded-full bg-gray-600 hover:cursor-not-allowed text-white shadow"> 
+        <button    onClick={()=>router.push('/admin/companies')} className="flex w-12  h-12 items-center justify-center rounded-full bg-blue-600 hover:bg-blue-700   text-white shadow"> 
         <ArrowRight   size={20} onClick={()=>handleNavigatio(1)} />
         </button>
       </div>
