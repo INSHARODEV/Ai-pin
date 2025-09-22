@@ -28,16 +28,20 @@ import { map } from 'rxjs/operators';
 import { Company } from '../company/schemas/Cmopany.schema';
 import { PaginatedData } from 'src/common/types/paginateData.type';
 import { EmpoyeeRepo } from '../auth/auth.repo';
- 
+  
 @Controller('branch')
-@UseGuards(AuthGuard)
+ @UseGuards(AuthGuard)
 export class BranchController {
   constructor(
     private readonly branchService: BranchService,
     private readonly CompanyService: CompanyService,
     private readonly empRepo:EmpoyeeRepo
   ) {}
-
+  @Patch('')
+  async buklkUpdate(@Body() b:any){
+    console.log('hereeeee')
+    return  await this.branchService.blikUpdate(b)
+   }
   @Post(':companyId')
   @UseGuards(RoleMixin([Role.ADMIN]))
   async create(
@@ -56,6 +60,18 @@ export class BranchController {
     console.log(req['user']['email']);
     if (!exsisitngCompany)
       throw new BadRequestException('this comapny dose not exsisit');
+    if(Array.isArray(createBranchDto)) {
+      const insertedIds=await this.branchService.createMany(createBranchDto)
+      const bIds=Object.values(insertedIds.insertedIds)
+     const brash=await this.branchService.findAll({fields:'',limit:1222222222222,page:1,queryStr:  { _id: { $in: bIds }},skip:0,sort:'asc',popultae:''}, { role: Role.MANAGER, firstName: req['user'].firstName })
+       console.log((brash as any).data.map(b=>b._id) )
+     const doc=await this.CompanyService.update(
+        companyId,
+        { $addToSet: { branchs: { $each: (brash as any).data.map(b=>b._id)} } }, // <== important
+        { role: Role.MANAGER, firstName: req['user'].firstName },
+      );
+     return doc
+    }
     const newBranch = await this.branchService.create(createBranchDto, {
       email: req['user']['email'],
       firstName: req['user']['firstName'],
@@ -69,6 +85,7 @@ export class BranchController {
     );
     return newBranch;
   }
+  
   @Get(':companyId')
   @UseGuards(RoleMixin([Role.ADMIN]))
   async findAll(
@@ -171,4 +188,5 @@ export class BranchController {
   remove(@Param('id') id: string) {
     return this.branchService.remove(+id);
   }
+
 }

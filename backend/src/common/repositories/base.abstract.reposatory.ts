@@ -183,4 +183,5 @@ console.log('here',this.model)
   async exists(filter: Record<string, any>): Promise<any> {
     return await this.model.exists(filter);
   }
+ 
 }

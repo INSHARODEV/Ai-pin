@@ -7,7 +7,7 @@ export type BranchDocument = HydratedDocument<Branch>;
 @Schema({timestamps:true})
 export class Branch {
 
-    @Prop({required:true})
+    @Prop({})
     name:string
 
     @Prop()

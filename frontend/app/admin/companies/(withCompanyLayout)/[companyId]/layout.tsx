@@ -6,7 +6,7 @@ import { useRouter, usePathname, useParams } from 'next/navigation';
 import KebabMenu from '@/components/ui/KebabMenu';
 import { Pencil, Trash2 } from 'lucide-react';
 
-// ✅ use the real edit modal
+ 
 
 import UpdateSuccessModal from '@/app/_componentes/company/UpdateSuccessModal';
 import {
@@ -16,6 +16,7 @@ import {
 import CompanyEditModal from '@/app/_componentes/company/CompanyEditModal';
  import { MakeApiCall, Methods } from '@/app/actions';
 import { Company } from '@/app/_componentes/CompaniesTable';
+import { promise } from 'zod';
 
 type TabKey = 'overview' | 'branches' | 'sales';
 
@@ -148,7 +149,63 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           }));
           setShowEdit(false);
           setShowUpdateSuccess(true); // then show success
+        //edit compnay 
+
+        let  body=payload.branches.filter(b=>{return{
+          _id:(b as any).id,
+          name:b.name,
+          supervisor:{
+          _id:(b as any).supervisorId,
+          firstName:b.supervisor,
+          email:b.email,
+
+          }
+        }}) 
+      let  newBranchs=payload.branches.filter(b=>(b as any).id===undefined).map(b=>{return  {
+        name:b.name,
+        supervisor:{
+      "firstName":b.supervisor,
+      email: b.email?.toLowerCase(),
+        "role":"Superviosr"
+        }}})
+  
+     
+     console.log('newBranchs',newBranchs)
+
+        await Promise.all([    MakeApiCall({url:`/company/${companyId}`,
+          method:Methods.PATCH,
+          body:JSON.stringify({
+name:payload.companyName,
+manager:{
+  _id:(company as any).mangerid,
+  firstName:payload.managerName,
+  email:payload.managerEmail
+}
+          }),
+          headers:'json'
+        }),  
+          MakeApiCall({url:`/branch`,
+          method:Methods.PATCH,
+          
+          body:JSON.stringify(
+            body)
+      
+      ,
+          headers:'json'
+        }),
+        MakeApiCall({url:`/branch/${companyId}`,
+          method:Methods.POST,
+          
+          body:JSON.stringify(
+            newBranchs)
+      
+      ,
+          headers:'json'
+        })
+      ])
+ 
         }}
+        
       />}
 
       {/* Success + Delete popups */}

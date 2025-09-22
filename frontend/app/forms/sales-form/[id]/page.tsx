@@ -43,7 +43,7 @@ export default function Page() {
         method: Methods.GET,
         url: `/company/${id}`,
       });
-      console.log(branchs);
+      console.log('b',branchs);
 
       // Add empty members array for each branch
       setBranches(

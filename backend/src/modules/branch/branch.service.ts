@@ -16,6 +16,7 @@ export class BranchService {
     private readonly logger:Logger
   ){}
   async create(createBranchDto: CreateBranchDto,{email,firstName}:Partial<createUserDto>) {
+ 
     this.logger.verbose(` user ${firstName } with email ${email} is creating ${JSON.stringify(createBranchDto)}`)
     const hashedPassword = await argon2.hash(`changeMe`);
 
@@ -42,7 +43,43 @@ console.log(createBranchDto)
     )
     return newBranch
   }
+  async createMany(data: any[]) {
+    // Branch operations
+    const branchOperations = data.map(b => ({
+      insertOne: {
+        document: {
+          name: b.name,   // this will now actually insert `name`
+        }
+      }
+    }));
+  console.log('branchOperations',JSON.stringify(branchOperations))
+  const branchResult = await this.branchrepo.bulkWrite(branchOperations);
 
+  const supervisorsOperations = await Promise.all(
+    data.map(async (b, idx) => {
+      if (!b.supervisor) return null; // skip if no supervisor provided
+  
+      return {
+        insertOne: {
+          document: {
+            firstName: b.supervisor.firstName,
+            email: b.supervisor.email,
+            password: await argon2.hash("changeMe"),
+            role: Role.SUPERVISOR,
+            branchId: branchResult.insertedIds[idx],
+          },
+        },
+      };
+    })
+  );
+  
+    // Execute in parallel
+ 
+    const supervisorResult = await this.employeeRepo.bulkWrite(supervisorsOperations);
+    console.log('bulkWrite result', supervisorsOperations);
+  
+    return branchResult;
+  }
   async findAll({fields,limit,page,queryStr,skip,sort,popultae},{email,firstName}:Partial<createUserDto>) {
     this.logger.verbose(` user ${firstName } with email ${email} is retriving all branches  `)
  
@@ -65,5 +102,28 @@ console.log(createBranchDto)
   }
 async  findByComapnyId(qstr){
 return await this.branchrepo.findOne({_id:qstr})
+}
+async blikUpdate(data:any){
+  const branchsOperations = data.map(b => ({
+    updateOne: {
+      filter: { _id: b._id },
+      update: { $set: { name: b.name } }
+    }
+  }))
+  console.log(data)
+  const supervisorsOperations = data.map(b => ({
+    updateOne: {
+      filter: { _id: b.supervisor._id },
+      update: { $set: { 
+        firstName: b.supervisor.firstName, 
+        email: b.supervisor.email 
+      }}
+    }
+  }))
+  
+  console.log('bbbbb',branchsOperations)
+  console.log('sssss',supervisorsOperations)
+  return await Promise.all([this.branchrepo.bulkWrite(branchsOperations),this.employeeRepo.bulkWrite(supervisorsOperations)])
+ 
 }
 }
