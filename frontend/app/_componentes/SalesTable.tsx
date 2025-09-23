@@ -5,18 +5,18 @@ import Table, { type TableCell } from './reusable/Table';
 export type SalesRow = {
   id: string;
   name: string; // employee name
-  dateJoined: Date;
+  dateJoined: any;
   branch: string;
   email: string;
 };
 
-export function formatDateLong(date: Date) {
-  return new Intl.DateTimeFormat('en-GB', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  }).format(date);
-}
+// export function formatDateLong(date: Date) {
+//   return new Intl.DateTimeFormat('en-GB', {
+//     day: '2-digit',
+//     month: 'long',
+//     year: 'numeric',
+//   }).format(date);
+// }
 
 export function SalesTable({
   rows,
@@ -38,7 +38,7 @@ export function SalesTable({
 
   const data: TableCell[][] = rows.map(r => [
     r.name,
-    formatDateLong(r.dateJoined),
+   typeof  r.dateJoined ==='string' ?r.dateJoined :r.dateJoined.toIsString ,
     r.branch,
     r.email,
     <button

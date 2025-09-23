@@ -9,21 +9,34 @@ import {
 import * as argon2 from 'argon2';
 import { User } from '../users/schmas/users.schema';
 import { JWTAuthService } from '../utils/jwt.service';
-import { UsersRepo } from './auth.repo';
-
+import { EmpoyeeRepo, UsersRepo } from './auth.repo';
+import { IsArray } from 'class-validator';
+ 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly authRepo: UsersRepo,
+    private readonly EmpoyeeRepo: EmpoyeeRepo,
     private readonly logger: Logger,
     private readonly JwtService: JWTAuthService,
   ) {}
 
   async createUser(
-    createUserDto: createUserDto,
+    createUserDto: any,
     admin: { name: string; email: string },
   ) {
     this.logger.verbose(`${admin.name} is creating a new user `);
+    if(Array.isArray(createUserDto)){
+
+      const empOps = createUserDto.map(b => ({
+        insertOne: {
+          document: {
+          ...b
+          }
+        }
+      }));
+      return await this.EmpoyeeRepo.bulkWrite(empOps)
+    }
     try {
       //TODO we dont create it directly wwe sned a email witha alink and token and then finaly create ot or activate user
       this.logger.verbose(

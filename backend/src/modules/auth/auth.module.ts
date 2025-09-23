@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { UsersRepo } from './auth.repo';
+import { EmpoyeeRepo, UsersRepo } from './auth.repo';
 import { UsersModule } from '../users/users.module';
 import { EmpoyleeSchema, User, UserSchema } from '../users/schmas/users.schema';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -21,7 +21,7 @@ import { MongooseModule } from '@nestjs/mongoose';
       ]),
    ],
   controllers: [AuthController],
-  providers: [AuthService,UsersRepo],
+  providers: [AuthService,UsersRepo,EmpoyeeRepo],
   exports:[UsersRepo]
  
 })

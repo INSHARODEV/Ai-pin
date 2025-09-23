@@ -18,6 +18,7 @@ import AddBranchModal, {
 } from '@/app/_componentes/branches/AddBranchModal';
 import BranchAddedSuccessModal from '@/app/_componentes/branches/BranchAddedSuccessModal';
 import { MakeApiCall, Methods } from '@/app/actions';
+import { Role } from '../../../../../../../shard/src';
   
 const PAGE_SIZE = 7;
 
@@ -76,10 +77,10 @@ export default function CompanyBranchesPage() {
 
     const sorted = [...filtered].sort((a, b) => {
       // Using SortBy component keys; map 'dateJoined' -> dateCreated
-      if (sort.key === 'dateJoined') {
-        const d = a.dateCreated.getTime() - b.dateCreated.getTime();
-        return sort.dir === 'asc' ? d : -d;
-      }
+      // if (sort.key === 'dateJoined') {
+      //   const d = a.dateCreated.getTime() - b.dateCreated.getTime();
+      //   return sort.dir === 'asc' ? d : -d;
+      // }
       // Their second key is 'branches'—we'll map it to sales count here
       if (sort.key === 'branches') {
         const d = a.sales - b.sales;
@@ -101,21 +102,52 @@ export default function CompanyBranchesPage() {
     if (page > totalPages) setPage(1);
   }, [totalPages, page]);
 
-  async function handleCreateBranch(payload: AddBranchPayload) {
-    // TODO: call your API
-    setRows(prev => [
-      {
-        id: String(prev.length + 1),
-        name: payload.name,
-        dateCreated: new Date(),
-        supervisor: payload.supervisor,
-        sales: Math.max(1, payload.members.length), // demo: show something in Sales column
-        companyId,
-      },
-      ...prev,
-    ]);
-    setShowSuccess(true);
+  const handleSubmit = async (data: any) => {
+ 
+console.log('ddd',data)
+    
+      const submittedData={
+      name:data.name,
+      Superviosr:{
+    "firstName":data.name,
+    email: data.email?.toLowerCase(),
+      "role":"Superviosr"
+      }
+    
+  
+    
   }
+  console.log(submittedData)
+  const res=await MakeApiCall({  
+    method:Methods.POST,
+    url:`/branch/${companyId}`,
+    body:JSON.stringify(submittedData),
+      headers:'json'
+  
+  })
+  const {members}=data
+  let body=members.map((mem:any)=>{return {
+firstName:mem.name,
+email:mem.email,
+password:'$argon2id$v=19$m=65536,t=3,p=4$vY0JEqNe0/leVDsj38qQmg$64uOvXZa8/JqhZOajVXkMvpDGXe11y0lPG20oor7D0I',
+role:Role.SELLER,
+branchId:res._id,
+jobTitle:'Employee'
+
+
+  }})
+  console.log('body',body)
+  await MakeApiCall({
+    method: Methods.POST,
+    url: `/auth`,
+    body: JSON.stringify(body),
+    headers: "json",
+  });
+   
+
+    // setStep(step + 1); // if you want to move wizard forward
+    setShowSuccess(true);
+  };
 
   return (
     <div className='min-h-screen bg-gray-50'>
@@ -230,7 +262,7 @@ export default function CompanyBranchesPage() {
         open={showAdd}
         onClose={() => setShowAdd(false)}
         onSubmit={async payload => {
-          await handleCreateBranch(payload);
+          await handleSubmit(payload);
           setShowAdd(false);
         }}
       />

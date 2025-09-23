@@ -120,12 +120,13 @@ export class BranchController {
   
     const branchRows  = await Promise.all(
       (res.data as any[]).map(async (branch) => {
-        const [supervisor, sellerCount] = await Promise.all([
+        const [supervisor, sellerCount,sellers] = await Promise.all([
           this.empRepo.findOne({
             branchId: branch._id,
             role: Role.SUPERVISOR,
           }),
           this.empRepo.count({ branchId: branch._id, role: Role.SELLER }),
+          this.empRepo.find({queryStr:{ branchId: branch._id, role: Role.SELLER },fields:'',limit:500000,page:1,popultae:'',skip:0,sort:'asc'}),
         ]);
   
         return {
@@ -138,6 +139,11 @@ export class BranchController {
           }).format(new Date(branch.createdAt)),
           supervisor: supervisor ? (supervisor as any).firstName : null,
           sales: sellerCount,
+          salesData:( sellers as any).data.map(s=>{return{name:s.firstName, dateJoined:  new Intl.DateTimeFormat('en-GB', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+          }).format(new Date(branch.createdAt)),email:s.email}}),
           companyId: branch.companyId?.toString(),
         };
       }),

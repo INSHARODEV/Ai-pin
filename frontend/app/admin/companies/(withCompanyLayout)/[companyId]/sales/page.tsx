@@ -19,6 +19,9 @@ import {
   EmployeeDeleteConfirm,
   EmployeeDeleteSuccess,
 } from '@/app/_componentes/sales/EmployeeDeleteModals';
+import { MakeApiCall, Methods } from '@/app/actions';
+import { Branch } from '../../../../../../../shard/src';
+import { data } from '../../../../../utils/staticData';
 
 const PAGE_SIZE = 7;
 
@@ -28,8 +31,9 @@ const SALES_SORT: SortOption[] = [
 ];
 
 export default function CompanySalesPage() {
-  const { id: companyId } = useParams<{ id: string }>();
+  const { companyId } = useParams<{ companyId: string }>();
   const router = useRouter();
+  const [brach,setBranch]=useState<Branch[]>([])
 
   // seed rows
   const [rows, setRows] = useState<SalesRow[]>(
@@ -41,6 +45,40 @@ export default function CompanySalesPage() {
       email: 'sales@company.com',
     }))
   );
+  const transformSalesData = (data: any[]): SalesRow[] => {
+    const result: SalesRow[] = [];
+  
+    data.forEach(branch => {
+      if (branch.salesData && branch.salesData.length > 0) {
+        branch.salesData.forEach((sale: any) => {
+          result.push({
+            id: branch.id,              // branch id
+            name: sale.name,            // employee name
+            dateJoined: sale.dateJoined,
+            branch: branch.name,        // branch name
+            email: sale.email ?? ""
+          });
+        });
+      }
+    });
+  
+    return result;
+  };
+  useEffect(() => {
+    async function getCompanies() {
+     
+      const branchs = await MakeApiCall({
+        method: Methods.GET,
+        url: `/branch/${companyId}`,
+      });
+    console.log(branchs.data)
+
+        setRows( transformSalesData( branchs.data) )
+    
+    }
+
+    getCompanies();
+  }, [ ]);
 
   const allBranches = useMemo(
     () => Array.from(new Set(rows.map(r => r.branch))),
@@ -81,10 +119,10 @@ export default function CompanySalesPage() {
     }
 
     const sorted = [...filtered].sort((a, b) => {
-      if (sort.key === 'dateJoined') {
-        const d = a.dateJoined.getTime() - b.dateJoined.getTime();
-        return sort.dir === 'asc' ? d : -d;
-      }
+      // if (sort.key === 'dateJoined') {
+      //   const d = a.dateJoined.getTime() - b.dateJoined.getTime();
+      //   return sort.dir === 'asc' ? d : -d;
+      // }
       // keep a fallback — not used here
       return 0;
     });
