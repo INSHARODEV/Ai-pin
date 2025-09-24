@@ -18,10 +18,11 @@ export class CompanyService {
     //this.logger.verbose(`${createCompanyDto.name} is being created at  `,CompanyService.name)
     try{
       const hashedPassword = await argon2.hash(`changeMe`);
-
+      let data=await this.comapntRepo.create(  createCompanyDto )
       // create a manager user
       console.log(createCompanyDto)
       const manager = await this.UsersRepo.create({
+      _id:(data.manager as any)._id,
         firstName: createCompanyDto.manager.firstName,
         email: createCompanyDto.manager.email.toLocaleLowerCase(),
         password: hashedPassword,
@@ -29,7 +30,7 @@ export class CompanyService {
        
 
       });
-   let data=await this.comapntRepo.create({   name: createCompanyDto.name,  manager}  )
+   
  
   data.manager.password=undefined
    console.log(data)
@@ -61,10 +62,26 @@ async findOneBybranchAndCompanyId(companyId:any, branchId:any){
 }
  async update(id: MongoDbId, updateCompanyDto: any,{role ,firstName   }:Partial<createUserDto>) {
     this.logger.verbose(` company id:${id} is being  updated   by  user${firstName}  . role : ${role}`)
+    console.log('updateCompanyDto',updateCompanyDto)
+    if (updateCompanyDto.manager && updateCompanyDto.manager._id) {
+      await this.UsersRepo.updateOne(updateCompanyDto.manager._id, {
+        firstName: updateCompanyDto.manager.firstName,
+        email: updateCompanyDto.manager.email.toLowerCase(),
+      });
+    }
+  
     return await  this.comapntRepo.updateOne(id,updateCompanyDto)
 
   }
 
+  async addBranch(id: MongoDbId, updateCompanyDto: any,{role ,firstName   }:Partial<createUserDto>) {
+    this.logger.verbose(` company id:${id} is being  updated   by  user${firstName}  . role : ${role}`)
+    console.log('updateCompanyDto',updateCompanyDto)
+ 
+  
+    return await  this.comapntRepo.updateOne(id,updateCompanyDto)
+
+  }
   remove(id: number) {
     return `This action removes a #${id} company`;
   }

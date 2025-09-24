@@ -8,7 +8,7 @@ import { User, userModel } from 'src/modules/users/schmas/users.schema';
 export type CompanyDocument = HydratedDocument<Company>;
 
  
-@Schema({ _id: false })  
+@Schema( )  
 export class Manager extends User {
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: Branch.name  ,default:[]}])
   comapnyId?: mongoose.Types.ObjectId[];

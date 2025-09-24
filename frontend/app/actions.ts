@@ -39,7 +39,7 @@ export async function MakeApiCall({ url, method, body, queryString, headers }: P
       headers: customHeaders,
       credentials: "include",
     });
-
+console.log('insed dres',res)
     if (!res.ok) {
       if (res.status === 401) {
         try {
