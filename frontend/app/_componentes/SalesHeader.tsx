@@ -5,6 +5,7 @@ import { Activity, LogOut } from 'lucide-react';
 import Logo from './icons/Logo';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import { logout } from '../utils/logout';
 
 export interface SalesHeaderProps {
   userName?: string;
@@ -23,13 +24,7 @@ export default function SalesHeader({
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('user');
-    toast.success('Logged out');
-    router.replace('/login');
-    // if (onLogout) {
-    //   onLogout();
-    // }
+    logout();
     setShowLogout(false);
   };
 

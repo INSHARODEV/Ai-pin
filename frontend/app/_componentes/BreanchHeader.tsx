@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Activity, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { logout } from '../utils/logout';
 
 export interface BreanchHeaderProps {
   userName?: string;
@@ -22,13 +23,7 @@ export default function BreanchHeader({
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('user');
-    toast.success('Logged out');
-    router.replace('/login');
-    // if (onLogout) {
-    //   onLogout();
-    // }
+    logout();
     setShowLogout(false);
   };
 
