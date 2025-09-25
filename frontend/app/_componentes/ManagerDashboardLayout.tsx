@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState, ReactNode, useEffect } from 'react';
 import BarChartIcon from './icons/BarChartIcon';
 import { useShiftsContext } from '../branch/layout';
@@ -14,8 +14,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { MakeApiCall, Methods } from '../actions';
-import { useRouter } from 'next/router';
-
+ 
 type NamedItem = { _id: string; name: string };
 
 const ManagerDashboardLayout = () => {

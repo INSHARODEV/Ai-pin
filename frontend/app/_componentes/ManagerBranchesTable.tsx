@@ -11,14 +11,14 @@ type PerfLabel = 'High' | 'Average' | 'Critical' | 'Standard' | 'Low';
 type ChangeDir = 'up' | 'down' | 'flat';
 
 export interface ManagerBranchRow {
-  id: string;
-  branchName: string;
+  _id: string;
+  name: string;
   lastActive?: string;
   lastActiveDate?: string;
   lastActiveTime?: string;
   performance: number | PerfLabel;
   status?: StatusColor;
-  change?: ChangeDir; // performance change arrow
+  changes?: ChangeDir; // performance change arrow
 }
 
 export default function ManagerBranchesTable({
@@ -34,10 +34,10 @@ export default function ManagerBranchesTable({
 }) {
   const headers = [
     'Status',
-    'Branch',
+    'name',
     'Last Active',
     'Last Shift Performance',
-    'Changes',
+    'changes',
     'Details',
   ];
 
@@ -74,13 +74,13 @@ export default function ManagerBranchesTable({
 
     return [
       { kind: 'status', value: status },
-      b.branchName,
+      b.name,
       lastActive || 'Today',
       { kind: 'badge', value: perfLabel },
-      changeIcon(b.change ?? 'flat'),
+      changeIcon(b.changes ?? 'flat'),
       <Link
-        key={b.id}
-        href={`/branch/branches/${b.id}`}
+        key={b._id}
+        href={`/branch/branches/${b._id}`}
         className='text-blue-600 hover:underline'
       >
         View Details

@@ -43,7 +43,7 @@ export class BranchController {
     return  await this.branchService.blikUpdate(b)
    }
   @Post(':companyId')
-  @UseGuards(RoleMixin([Role.ADMIN]))
+  //@UseGuards(RoleMixin([Role.ADMIN]))
   async create(
     @Body() createBranchDto: CreateBranchDto,
     @Param('companyId', ParseMongoIdPipe) companyId: MongoDbId,
@@ -87,7 +87,7 @@ export class BranchController {
   }
   
   @Get(':companyId')
-  @UseGuards(RoleMixin([Role.ADMIN]))
+  //@UseGuards(RoleMixin([Role.ADMIN]))
   async findAll(
     @Param('companyId', new ParseMongoIdPipe()) companyId: string,
     @Req() req: Request,

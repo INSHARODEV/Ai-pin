@@ -16,6 +16,7 @@ export default function Page() {
     () => (user ? { branchId: user.branchId } : {}),
     [user?.branchId]
   );
+   
   const { rating, shifts, performanceDelta } = useShifts(query);
 
   const formatTime = (total: number) => {
