@@ -1,16 +1,12 @@
 'use client';
 
 import * as React from 'react';
- // note fro alll refactor page into its onwn componenet
-import { Shift } from '../types';
+// note fro alll refactor page into its onwn componenet
 import { ShiftsTable } from '../_componentes/ShiftsTable';
 import { useState, useEffect, useMemo } from 'react';
-import { useRef,  } from 'react';
- import { getChunckedDatat } from '../utils/checuked';
- import { useShifts } from '../hooks/useShifts';
- import { Recorder } from '../_componentes/Recorder';
+import { useShifts } from '../hooks/useShifts';
+import { Recorder } from '../_componentes/Recorder';
 import { StatCard } from '../_componentes/reusable/StatCard';
- 
 
 export default function Page() {
   const [user, setUser] = useState<any>(null);

@@ -2,7 +2,8 @@
 'use client';
 
 import { StatCard } from '@/app/_componentes/reusable/StatCard';
-import BranchTable from '../_componentes/BranchTable';
+import SupervisorLastShiftsTable from '../_componentes/SupervisorLastShiftsTable';
+import ManagerLastShiftsTable from '../_componentes/ManagerLastShiftsTable';
 import { useShiftsContext } from './layout';
 import EmptyState from '../_componentes/EmptyState';
 
@@ -15,11 +16,14 @@ export default function Page() {
     isLoading,
     error,
     userLoaded,
+    user,
   } = useShiftsContext();
 
+  const userRole = user?.role;
   const isUserLoading = !userLoaded;
   const isDataLoading = isLoading || isUserLoading;
 
+  const userName = 'name';
   if (isDataLoading) {
     return (
       <div className='min-h-screen bg-gray-50'>
@@ -75,10 +79,11 @@ export default function Page() {
     <div className='min-h-screen bg-gray-50'>
       <main className='px-6 py-8'>
         <div className='mb-8'>
-          <h1 className='mb-2 text-3xl font-bold text-gray-900'>Welcome!</h1>
+          <h1 className='mb-2 text-3xl font-bold text-gray-900'>
+            Welcome {userName}!
+          </h1>
           <p className='text-gray-600'>Analytics overview</p>
         </div>
-
         <section className='mb-8 grid grid-cols-1 gap-6 md:grid-cols-3'>
           <StatCard
             title='Rating'
@@ -105,12 +110,19 @@ export default function Page() {
             variant='blue'
           />
         </section>
-
-        {/* Always render table headers; show rows or inline empty state */}
-        <BranchTable
-          shifts={hasData ? shifts : []}
-          emptyMessage={emptyMessage}
-        />
+        <p className='font-semibold text-xl pb-4'>Last Shifts</p>
+        {userRole === 'SUPERVISOR' && (
+          <SupervisorLastShiftsTable
+            shifts={hasData ? shifts : []}
+            emptyMessage={emptyMessage}
+          />
+        )}
+        {(userRole === 'MANAGER' || userRole === 'ADMIN') && (
+          <ManagerLastShiftsTable
+            shifts={hasData ? shifts : []}
+            emptyMessage={emptyMessage}
+          />
+        )}
       </main>
     </div>
   );
