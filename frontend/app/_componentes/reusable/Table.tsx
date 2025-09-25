@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { Badge } from '../ui/Badge';
 
-type StatusColor = 'green' | 'red' | 'orange';
+type StatusColor = 'green' | 'red' | 'orange' | 'gray';
 
 export type BadgeValue = 'Low' | 'High' | 'Standard' | 'Critical' | 'Average';
 type LinkCell = {
@@ -46,6 +46,7 @@ export default function Table({ headers, data, emptyMessage }: TableProps) {
       green: 'bg-green-500',
       red: 'bg-red-500',
       orange: 'bg-orange-500',
+      gray: 'bg-gray-400',
     };
     return (
       <span
