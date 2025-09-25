@@ -4,7 +4,7 @@ import { Badge } from '../ui/Badge';
 
 type StatusColor = 'green' | 'red' | 'orange';
 
-export type BadgeValue = 'Low' | 'High' | 'Standard' | 'Critical';
+export type BadgeValue = 'Low' | 'High' | 'Standard' | 'Critical' | 'Average';
 type LinkCell = {
   kind: 'link';
   label: string;
@@ -29,6 +29,8 @@ export default function Table({ headers, data, emptyMessage }: TableProps) {
       case 'High':
         return 'success';
       case 'Low':
+        return 'warning';
+      case 'Average':
         return 'warning';
       case 'Critical':
         return 'destructive';

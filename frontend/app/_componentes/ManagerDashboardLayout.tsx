@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState, ReactNode } from 'react';
 import BarChartIcon from './icons/BarChartIcon';
 import { useShiftsContext } from '../branch/layout';
@@ -17,8 +17,10 @@ import {
 type NamedItem = { _id: string; name: string };
 
 const ManagerDashboardLayout = () => {
+  const router = useRouter();
   const pathname = usePathname();
   const ctx = useShiftsContext?.();
+
   const employees: NamedItem[] = (ctx?.empsNames as NamedItem[]) ?? [
     { _id: 'e1', name: 'Employee Name' },
     { _id: 'e2', name: 'Employee Name' },
@@ -34,7 +36,7 @@ const ManagerDashboardLayout = () => {
   const [openBranches, setOpenBranches] = useState(true);
   const [openEmployees, setOpenEmployees] = useState(true);
 
-  // Active state helpers
+  // --- Active helpers ---
   const isActive = (path: string) => {
     if (path === '/branch') return pathname === '/branch';
     return pathname.startsWith(path);
@@ -50,7 +52,13 @@ const ManagerDashboardLayout = () => {
   const getTextClasses = (path: string) =>
     isActive(path) ? 'text-[#0D70C8] font-semibold' : 'text-muted-foreground';
 
-  // Small UI helpers (no style changes)
+  // explicit flags for clarity
+  const isOverviewActive = pathname === '/branch';
+  const isTranscriptionActive = pathname.startsWith('/branch/transcription');
+  const isEmployeesActive = pathname.startsWith('/branch/employees');
+  const isBranchesActive = pathname.startsWith('/branch/branches');
+
+  // --- Small UI helper (collapsible header) ---
   const CollapsibleHeader = ({
     open,
     onToggle,
@@ -126,7 +134,7 @@ const ManagerDashboardLayout = () => {
         <Link href='/branch'>
           <div className={getNavClasses('/branch')}>
             <div className='flex items-center gap-3'>
-              <BarChartIcon isActive={isActive('/branch')} />
+              <BarChartIcon isActive={isOverviewActive} />
               <span
                 className={`text-lg font-medium ${getTextClasses('/branch')}`}
               >
@@ -142,7 +150,7 @@ const ManagerDashboardLayout = () => {
             <div className='flex items-center gap-3'>
               <FileText
                 className={`w-5 h-5 ${
-                  isActive('/branch/transcription')
+                  isTranscriptionActive
                     ? 'text-[#0D70C8]'
                     : 'text-muted-foreground'
                 }`}
@@ -157,41 +165,63 @@ const ManagerDashboardLayout = () => {
         </Link>
       </div>
 
-      {/* Branches */}
-      <button
-        type='button'
-        onClick={() => setOpenBranches(v => !v)}
-        className={`w-full flex items-center justify-between px-4 py-3 transition-colors ${
-          openBranches ? 'bg-blue-100' : 'hover:bg-blue-50'
+      {/* Branches (left navigates, right chevron toggles) */}
+      <div
+        className={`w-full flex items-center justify-between px-4 py-3 transition-colors rounded-r-lg ${
+          isBranchesActive ? 'bg-blue-100' : 'hover:bg-blue-50'
         }`}
       >
-        <div className='flex items-center gap-3'>
-          <span className={openBranches ? 'text-[#0D70C8]' : 'text-gray-400'}>
+        {/* Left: navigate to /branch/branches */}
+        <button
+          type='button'
+          onClick={() => router.push('/branch/branches')}
+          className='flex items-center gap-3 flex-1 text-left'
+        >
+          <span
+            className={isBranchesActive ? 'text-[#0D70C8]' : 'text-gray-400'}
+          >
             <ShoppingCart className='w-5 h-5' />
           </span>
           <span
-            className={`${
-              openBranches ? 'text-[#0D70C8] font-semibold' : 'text-gray-400'
-            }`}
+            className={
+              isBranchesActive
+                ? 'text-[#0D70C8] font-semibold'
+                : 'text-gray-400'
+            }
           >
             Branches
           </span>
-        </div>
+        </button>
 
-        {openBranches ? (
-          <ChevronUp
-            className={`w-5 h-5 ${openBranches ? 'text-[#0D70C8]' : 'text-gray-400'}`}
-          />
-        ) : (
-          <ChevronDown className='w-5 h-5 text-gray-400' />
-        )}
-      </button>
+        {/* Right: chevron only toggles collapse */}
+        <button
+          type='button'
+          onClick={() => setOpenBranches(v => !v)}
+          className='ml-2'
+          aria-label={openBranches ? 'Collapse branches' : 'Expand branches'}
+        >
+          {openBranches ? (
+            <ChevronUp
+              className={`w-5 h-5 ${
+                isBranchesActive ? 'text-[#0D70C8]' : 'text-gray-400'
+              }`}
+            />
+          ) : (
+            <ChevronDown
+              className={`w-5 h-5 ${
+                isBranchesActive ? 'text-[#0D70C8]' : 'text-gray-400'
+              }`}
+            />
+          )}
+        </button>
+      </div>
+
       {openBranches && (
         <div className='flex flex-col gap-8 pl-12 pt-6 pb-4'>
           {branches.map(b => (
             <Link
               key={b._id}
-              href={`/branch/#${b._id}`}
+              href={`/branch/branches#${b._id}`}
               className='text-gray-400 hover:text-[#0D70C8] transition-colors'
             >
               {b.name}
@@ -201,21 +231,50 @@ const ManagerDashboardLayout = () => {
       )}
 
       {/* Employees */}
-      <button
-        type='button'
-        onClick={() => setOpenEmployees(v => !v)}
-        className='w-full flex items-center justify-between px-4 py-3 transition-colors hover:bg-blue-50/40'
+      <div
+        className={`w-full flex items-center justify-between px-4 py-3 transition-colors rounded-r-lg ${
+          isEmployeesActive ? 'bg-blue-100' : 'hover:bg-blue-50/40'
+        }`}
       >
-        <div className='flex items-center gap-3'>
-          <UserRound className='w-5 h-5 text-gray-400' />
-          <span className='text-gray-400'>Employees</span>
-        </div>
-        {openEmployees ? (
-          <ChevronUp className='w-5 h-5 text-gray-400' />
-        ) : (
-          <ChevronDown className='w-5 h-5 text-gray-400' />
-        )}
-      </button>
+        {/* Left side: icon + text, clicking here navigates */}
+        <button
+          type='button'
+          onClick={() => router.push('/branch/employees')}
+          className='flex items-center gap-3 flex-1 text-left'
+        >
+          <UserRound
+            className={`w-5 h-5 ${isEmployeesActive ? 'text-[#0D70C8]' : 'text-gray-400'}`}
+          />
+          <span
+            className={
+              isEmployeesActive
+                ? 'text-[#0D70C8] font-semibold'
+                : 'text-gray-400'
+            }
+          >
+            Employees
+          </span>
+        </button>
+
+        {/* Right side: chevron, clicking here just toggles collapse */}
+        <button
+          type='button'
+          onClick={() => setOpenEmployees(v => !v)}
+          className='ml-2'
+        >
+          {openEmployees ? (
+            <ChevronUp
+              className={`w-5 h-5 ${isEmployeesActive ? 'text-[#0D70C8]' : 'text-gray-400'}`}
+            />
+          ) : (
+            <ChevronDown
+              className={`w-5 h-5 ${isEmployeesActive ? 'text-[#0D70C8]' : 'text-gray-400'}`}
+            />
+          )}
+        </button>
+      </div>
+
+      {/* Collapsible list */}
       {openEmployees && (
         <ListLinks
           items={employees}
