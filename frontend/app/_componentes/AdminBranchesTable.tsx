@@ -1,4 +1,4 @@
-// app/_componentes/BranchesTable.tsx
+// app/_componentes/AdminBranchesTable.tsx
 import * as React from 'react';
 import Table, { type TableCell } from './reusable/Table';
 
@@ -19,7 +19,7 @@ function formatDateLong(date: Date) {
   }).format(date);
 }
 
-export function BranchesTable({ rows }: { rows: BranchRow[] }) {
+export function AdminBranchesTable({ rows }: { rows: BranchRow[] }) {
   const headers = [
     'Branch',
     'Date Created',

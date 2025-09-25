@@ -10,15 +10,15 @@ import SortBy, {
   SortValue,
 } from '@/app/_componentes/SortBy';
 import {
-  BranchesTable,
+  AdminBranchesTable,
   type BranchRow,
-} from '@/app/_componentes/BranchesTable';
+} from '@/app/_componentes/AdminBranchesTable';
 import AddBranchModal, {
   AddBranchPayload,
 } from '@/app/_componentes/branches/AddBranchModal';
 import BranchAddedSuccessModal from '@/app/_componentes/branches/BranchAddedSuccessModal';
 import { MakeApiCall, Methods } from '@/app/actions';
-  
+
 const PAGE_SIZE = 7;
 
 const COMPANY_SORT: SortOption[] = [
@@ -33,7 +33,7 @@ export default function CompanyBranchesPage() {
 
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
-  const [rows, setRows] =useState<BranchRow[]>([]) 
+  const [rows, setRows] = useState<BranchRow[]>([]);
   const fmt = new Intl.DateTimeFormat('en-GB', {
     day: '2-digit',
     month: 'long',
@@ -46,25 +46,24 @@ export default function CompanyBranchesPage() {
         method: Methods.GET,
         url: `/branch/${companyId}`,
       });
-  
+
       // branch list is inside res.data.data
-   
-  console.log(res)
-      setRows(res?.data??[]);
+
+      console.log(res);
+      setRows(res?.data ?? []);
       setPage(res?.numberOfPages); // <-- use res.data.page
     }
-  
+
     getBranch();
   }, []);
-  
+
   const [sort, setSort] = useState<SortValue>({
     key: 'dateJoined',
     dir: 'desc',
   });
 
   // Seed data
- 
- 
+
   const [showAdd, setShowAdd] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -179,7 +178,7 @@ export default function CompanyBranchesPage() {
 
         {/* Table */}
         <div className='overflow-hidden rounded-lg'>
-          <BranchesTable rows={current} />
+          <AdminBranchesTable rows={current} />
         </div>
 
         {/* Pagination */}
