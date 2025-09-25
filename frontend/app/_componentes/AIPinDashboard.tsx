@@ -60,17 +60,17 @@ const AIPinDashboard = () => {
         </Link>
 
         {/* Transcription Section */}
-        <Link href='/branch/transcription'>
-          <div className={`${getNavClasses('/branch/transcription')} mb-6`}>
+        <Link href='/branch/transcription/1'>
+          <div className={`${getNavClasses('/branch/transcription/1')} mb-6`}>
             <div className='flex items-center gap-3'>
               <FileText
                 className={`w-5 h-5 ${isActive('/branch/transcription') ? 'text-[#0D70C8]' : 'text-muted-foreground'}`}
               />
-              {/* <span
+              <span
                 className={`text-lg font-medium ${getTextClasses('/branch/transcription')}`}
               >
                 Transcription
-              </span> */}
+              </span>
             </div>
           </div>
         </Link>
@@ -88,13 +88,9 @@ const AIPinDashboard = () => {
                 <Link
                   key={index}
                   className='px-4 py-3 hover:bg-blue-200 transition-colors cursor-pointer rounded-r-lg text-muted-foreground block'
-                
-                  
-                    
-                    href={`/branch/transcription/${_id}`}
-                 
-                    >
-                    {name}
+                  href={`/branch/transcription/${_id}`}
+                >
+                  {name}
                 </Link>
               )
             )}

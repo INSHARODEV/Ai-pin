@@ -5,6 +5,7 @@ import { Activity, LogOut } from 'lucide-react';
 import Logo from './icons/Logo';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import { logout } from '../utils/logout';
 
 export interface AdminHeaderProps {
   userName?: string;
@@ -23,14 +24,8 @@ export default function AdminHeader({
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('user');
+    logout();
     toast.success('Logged out');
-    router.replace('/login');
-    // if (onLogout) {
-    //   onLogout();
-    // }
-    setShowLogout(false);
   };
 
   return (

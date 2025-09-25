@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { loginSchema } from '@/app/utils/zodschama';
 import { MakeApiCall, Methods } from '@/app/actions';
@@ -10,10 +9,22 @@ import { userData } from '@/app/utils/user.data';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { Role, User } from '../../../../shard/src/index';
 
-type Inputs = {
-  email: string;
-  password: string;
-};
+export const dynamic = 'force-dynamic';
+
+function roleHome(role?: Role) {
+  switch (role) {
+    case Role.SUPERVISOR:
+      return '/branch';
+    case Role.SELLER:
+      return '/sales';
+    case Role.ADMIN:
+      return '/admin/companies';
+    default:
+      return '/';
+  }
+}
+
+type Inputs = { email: string; password: string };
 
 export default function LoginPage() {
   const {
@@ -30,46 +41,68 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+  const togglePasswordVisibility = () => setShowPassword(p => !p);
 
-  const submit: SubmitHandler<Inputs> = async (data: any) => {
-    const valdidatedData = loginSchema.safeParse(data);
-    console.log(email, password);
+  // If already authenticated, redirect away from /login
+  useEffect(() => {
+    const token =
+      typeof document !== 'undefined'
+        ? (document.cookie.match(/(?:^|;\s*)token=([^;]+)/)?.[1] ??
+          localStorage.getItem('accessToken'))
+        : null;
+
+    if (token) {
+      const saved =
+        typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+      if (saved) {
+        const parsed: User = JSON.parse(saved);
+        router.replace(roleHome(parsed.role));
+      } else {
+        try {
+          const payloadPart = token.split('.')[1];
+          const user: User = userData(payloadPart);
+          router.replace(roleHome(user.role));
+        } catch {
+          router.replace('/');
+        }
+      }
+    }
+  }, [router]);
+
+  const submit: SubmitHandler<Inputs> = async data => {
+    const validated = loginSchema.safeParse(data);
+    if (!validated.success) {
+      setError('Please check your email and password.');
+      return;
+    }
 
     try {
       setLoading(true);
+      setError('');
+
       const res = await MakeApiCall({
-        body: JSON.stringify(valdidatedData.data),
+        body: JSON.stringify(validated.data),
         url: `/auth/signin`,
         method: Methods.POST,
         headers: 'json',
       });
 
-      console.log(process.env.NEXT_PUBLIC_BASE_URL);
-      localStorage.setItem('accessToken', res.data);
+      const token: string = res.data;
+      if (!token) throw new Error('No token returned.');
 
-      console.log('res', res);
-      localStorage.setItem('accessToken', res.data);
-      const payloadPart = res.data.split('.')[1];
+      // Persist (localStorage for client; cookie for middleware/SSR)
+      localStorage.setItem('accessToken', token);
+
+      const payloadPart = token.split('.')[1];
       const user: User = userData(payloadPart);
       localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('user', JSON.stringify(user));
-      console.log(user.role);
-      switch (user.role) {
-        case Role.SUPERVISOR:
-          router.push('/branch');
-          break;
-        case Role.SELLER:
-          router.push('/sales');
-          break;
-        case Role.ADMIN:
-          router.push('/admin/companies');
-        case Role.MANAGER:
-          router.push('/mananger');
-          break;
-      }
+
+      // NOTE: For production, prefer HttpOnly cookies set by your API.
+      document.cookie = `token=${token}; Path=/; Max-Age=2592000; SameSite=Lax`;
+      document.cookie = `role=${user.role}; Path=/; Max-Age=2592000; SameSite=Lax`;
+
+      // Use replace to prevent going back to /login
+      router.replace(roleHome(user.role));
     } catch (err) {
       console.error('Login error:', err);
       setError(
@@ -87,7 +120,7 @@ export default function LoginPage() {
       className='min-h-screen flex items-center justify-center flex-col p-2 
     bg-[linear-gradient(to_top_right,_rgb(3,55,101),_rgb(13,112,200),_rgb(97,108,202),_rgb(127,174,215),_rgb(94,152,203))]'
     >
-      <div className=' text-center text-white text-4xl font-bold'> AI Pin</div>
+      <div className='text-center text-white text-4xl font-bold'>AI Pin</div>
       <div className='w-full max-w-md p-8 bg-white rounded-lg shadow-md'>
         <h2 className='text-2xl font-bold mb-6 text-center'>Welcome Back!</h2>
 
@@ -117,7 +150,7 @@ export default function LoginPage() {
             />
             {errors.email && (
               <p className='text-red-500 text-sm mt-1'>
-                {errors.email.message as any}
+                {String(errors.email.message)}
               </p>
             )}
           </div>
@@ -134,9 +167,13 @@ export default function LoginPage() {
                 type={showPassword ? 'text' : 'password'}
                 {...register('password')}
                 className={`block w-full px-3 py-2 pr-10 border ${
-                  errors.password?.message ? 'border-red-500' : 'border-gray-300'
+                  errors.password?.message
+                    ? 'border-red-500'
+                    : 'border-gray-300'
                 } rounded-md shadow-sm focus:outline-none focus:ring-2 ${
-                  errors.password?.message ? 'focus:ring-red-500' : 'focus:ring-blue-500'
+                  errors.password?.message
+                    ? 'focus:ring-red-500'
+                    : 'focus:ring-blue-500'
                 }`}
                 required
               />
@@ -154,7 +191,7 @@ export default function LoginPage() {
             </div>
             {errors.password && (
               <p className='text-red-500 text-sm mt-1'>
-                {errors.password.message}
+                {String(errors.password.message)}
               </p>
             )}
           </div>
@@ -162,7 +199,7 @@ export default function LoginPage() {
           <button
             type='submit'
             className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white ${
-               !email || !password || loading
+              !email || !password || loading
                 ? 'bg-gray-300 cursor-not-allowed'
                 : 'bg-blue-600 hover:bg-blue-700 cursor-pointer'
             } focus:outline-none focus:ring-2 focus:ring-blue-500`}
