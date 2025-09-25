@@ -106,17 +106,17 @@ return await this.branchrepo.findOne({_id:qstr})
 async blikUpdate(data:any){
   const branchsOperations = data.map(b => ({
     updateOne: {
-      filter: { _id: b._id },
+      filter: { _id: b.id },
       update: { $set: { name: b.name } }
     }
   }))
   console.log(data)
   const supervisorsOperations = data.map(b => ({
     updateOne: {
-      filter: { _id: b.supervisor._id },
+      filter: { _id: b.supervisorId },
       update: { $set: { 
-        firstName: b.supervisor.firstName, 
-        email: b.supervisor.email 
+        firstName: b.firstName, 
+        email: b.email 
       }}
     }
   }))

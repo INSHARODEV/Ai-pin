@@ -22,6 +22,7 @@ import {
 import { MakeApiCall, Methods } from '@/app/actions';
 import { Branch } from '../../../../../../../shard/src';
 import { data } from '../../../../../utils/staticData';
+import { ur } from 'zod/v4/locales';
 
 const PAGE_SIZE = 7;
 
@@ -36,15 +37,8 @@ export default function CompanySalesPage() {
   const [brach,setBranch]=useState<Branch[]>([])
 
   // seed rows
-  const [rows, setRows] = useState<SalesRow[]>(
-    Array.from({ length: 19 }).map((_, i) => ({
-      id: String(i + 1),
-      name: 'Sales Name',
-      dateJoined: new Date(2025, 7, 12),
-      branch: ['Branch A', 'Branch B', 'Branch C'][i % 3],
-      email: 'sales@company.com',
-    }))
-  );
+  const [rows, setRows] = useState<SalesRow[]>([])
+
   const transformSalesData = (data: any[]): SalesRow[] => {
     const result: SalesRow[] = [];
   
@@ -52,16 +46,18 @@ export default function CompanySalesPage() {
       if (branch.salesData && branch.salesData.length > 0) {
         branch.salesData.forEach((sale: any) => {
           result.push({
-            id: branch.id,              // branch id
+            id: branch.id,  
+                        // branch id
             name: sale.name,            // employee name
             dateJoined: sale.dateJoined,
             branch: branch.name,        // branch name
-            email: sale.email ?? ""
+            email: sale.email ?? "",
+            salllerId:sale.salllerId
           });
         });
       }
     });
-  
+ 
     return result;
   };
   useEffect(() => {
@@ -81,7 +77,7 @@ export default function CompanySalesPage() {
   }, [ ]);
 
   const allBranches = useMemo(
-    () => Array.from(new Set(rows.map(r => r.branch))),
+    () => Array.from(new Set(rows.map(r => {return{branch:r.branch,id:r.id}}))),
     [rows]
   );
 
@@ -145,7 +141,24 @@ export default function CompanySalesPage() {
     branch: string;
     name: string;
     email: string;
+    id:string
   }) {
+    console.log('iddd',data)
+    const submittedData = {
+      firstName: data.name,
+      email: data.email?.toLowerCase(),
+      branchId:data.id,
+      role: "SELLER",
+      jobTitle: "Employee",
+      password: "$argon2id$v=19$m=65536,t=3,p=4$vY0JEqNe0/leVDsj38qQmg$64uOvXZa8/JqhZOajVXkMvpDGXe11y0lPG20oor7D0I",
+    
+    };
+    await MakeApiCall({
+      method: Methods.POST,
+      url: `/auth`,
+      body: JSON.stringify(submittedData),
+      headers: "json",
+    });
     setRows(prev => [
       {
         id: String(prev.length + 1),
@@ -173,6 +186,8 @@ export default function CompanySalesPage() {
   }
 
   async function handleDelete() {
+    console.log('delTarget',delTarget)
+    await MakeApiCall({url:`/users/${delTarget?.salllerId}`,method:Methods.DELETE})
     if (!delTarget) return;
     setRows(prev => prev.filter(r => r.id !== delTarget.id));
     setDelOpen(false);
@@ -314,7 +329,7 @@ export default function CompanySalesPage() {
       <AddMemberModal
         open={addOpen}
         onClose={() => setAddOpen(false)}
-        branches={allBranches.length ? allBranches : ['Branch A']}
+        branches={allBranches } 
         onSubmit={async data => {
           await handleAdd(data);
           setAddOpen(false);
@@ -329,13 +344,14 @@ export default function CompanySalesPage() {
       <EditEmployeeModal
         open={editOpen}
         onClose={() => setEditOpen(false)}
-        branches={allBranches.length ? allBranches : ['Branch A']}
+        branches={allBranches.length ? allBranches : [ ]}
         initial={
           editTarget
             ? {
                 branch: editTarget.branch,
                 name: editTarget.name,
                 email: editTarget.email,
+                id:editTarget.email
               }
             : null
         }
@@ -345,7 +361,7 @@ export default function CompanySalesPage() {
       <EmployeeDeleteConfirm
         open={delOpen}
         onClose={() => setDelOpen(false)}
-        employeeName={delTarget?.name ?? 'this member'}
+        employeeName={delTarget?.id ?? 'this member'}
         onConfirm={handleDelete}
       />
       <EmployeeDeleteSuccess

@@ -143,7 +143,7 @@ export class BranchController {
             day: '2-digit',
             month: 'long',
             year: 'numeric',
-          }).format(new Date(branch.createdAt)),email:s.email}}),
+          }).format(new Date(branch.createdAt)),email:s.email,salllerId:s._id}}),
           companyId: branch.companyId?.toString(),
         };
       }),
@@ -176,7 +176,7 @@ export class BranchController {
   }
 
   @Put(':id')
-  @UseGuards(RoleMixin([Role.ADMIN]))
+  // @UseGuards(RoleMixin([Role.ADMIN,Role.MANAGER],))
   async update(
     @Param('id', new ParseMongoIdPipe()) id: MongoDbId,
     @Body() updateBranchDto: UpdateBranchDto,
@@ -194,5 +194,5 @@ export class BranchController {
   remove(@Param('id') id: string) {
     return this.branchService.remove(+id);
   }
-
+//
 }

@@ -13,8 +13,8 @@ export default function EditEmployeeModal({
 }: {
   open: boolean;
   onClose: () => void;
-  branches: string[];
-  initial: { branch: string; name: string; email: string } | null;
+  branches: any;
+  initial: { branch: string; name: string; email: string,id:any } | null;
   onUpdate: (data: {
     branch: string;
     name: string;
@@ -29,6 +29,7 @@ export default function EditEmployeeModal({
     setBranch(initial?.branch ?? branches[0] ?? '');
     setName(initial?.name ?? '');
     setEmail(initial?.email ?? '');
+    setEmail(initial?.id ?? '');
   }, [open, initial, branches]);
 
   return (
@@ -48,9 +49,9 @@ export default function EditEmployeeModal({
             onChange={e => setBranch(e.target.value)}
             className='w-full rounded-lg border border-gray-300 bg-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
           >
-            {branches.map(b => (
-              <option key={b} value={b}>
-                {b}
+            {branches.map((b : any) => (
+              <option key={b.id} value={b.id}>
+                {b.branch}
               </option>
             ))}
           </select>
@@ -83,7 +84,7 @@ export default function EditEmployeeModal({
       <div className='mt-6 flex justify-end'>
         <button
           onClick={async () => {
-            await onUpdate({ branch, name, email });
+            await onUpdate({ branch, name, email , });
           }}
           className='rounded-xl bg-[#0D70C8] px-4 py-2 text-sm font-semibold text-white'
         >

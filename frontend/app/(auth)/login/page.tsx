@@ -66,6 +66,8 @@ export default function LoginPage() {
           break;
         case Role.ADMIN:
           router.push('/admin/companies');
+        case Role.MANAGER:
+          router.push('/mananger');
           break;
       }
     } catch (err) {

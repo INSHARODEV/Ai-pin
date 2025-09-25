@@ -1,4 +1,3 @@
-// components/sales/AddMemberModal.tsx
 'use client';
 
 import * as React from 'react';
@@ -12,24 +11,42 @@ export default function AddMemberModal({
 }: {
   open: boolean;
   onClose: () => void;
-  branches: string[];
+  branches: any[]
   onSubmit: (data: {
+    id: any,
     branch: string;
     name: string;
     email: string;
   }) => Promise<void> | void;
 }) {
-  const [branch, setBranch] = React.useState(branches[0] ?? 'All Branches');
+  const [selectedBranchId, setSelectedBranchId] = React.useState('');
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
 
   React.useEffect(() => {
     if (!open) {
-      setBranch(branches[0] ?? 'All Branches');
+      setSelectedBranchId('');
       setName('');
       setEmail('');
     }
-  }, [open, branches]);
+  }, [open]);
+
+  // Get the selected branch object to display the branch name
+  const selectedBranch = branches.find(b => b.id === selectedBranchId);
+
+  const handleSubmit = async () => {
+    if (!selectedBranchId || !selectedBranch) {
+      alert('Please select a branch');
+      return;
+    }
+    
+    await onSubmit({
+      id: selectedBranchId,
+      branch: selectedBranch.branch, // branch name
+      name,
+      email
+    });
+  };
 
   return (
     <Modal
@@ -39,7 +56,7 @@ export default function AddMemberModal({
       maxWidthClass='max-w-lg'
     >
       <p className='mb-4 text-sm text-gray-600'>
-        Write all the details and we’ll send them an email with their initial
+        Write all the details and we'll send them an email with their initial
         password.
       </p>
 
@@ -49,13 +66,15 @@ export default function AddMemberModal({
             Branch Name
           </label>
           <select
-            value={branch}
-            onChange={e => setBranch(e.target.value)}
+            value={selectedBranchId}
+            onChange={e => setSelectedBranchId(e.target.value)}
             className='w-full rounded-lg border border-gray-300 bg-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
           >
-            {branches.map(b => (
-              <option key={b} value={b}>
-                {b}
+            <option value="">Select a branch...</option>
+            {branches.map((b: any) => (
+              <option key={b.id} value={b.id}>
+                
+                {b. branch || ''}
               </option>
             ))}
           </select>
@@ -87,10 +106,9 @@ export default function AddMemberModal({
 
       <div className='mt-6 flex justify-end'>
         <button
-          onClick={async () => {
-            await onSubmit({ branch, name, email });
-          }}
-          className='rounded-xl bg-[#0D70C8] px-4 py-2 text-sm font-semibold text-white'
+          onClick={handleSubmit}
+          disabled={!selectedBranchId || !name || !email}
+          className='rounded-xl bg-[#0D70C8] px-4 py-2 text-sm font-semibold text-white disabled:bg-gray-400'
         >
           Done
         </button>

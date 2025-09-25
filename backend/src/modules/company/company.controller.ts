@@ -68,11 +68,10 @@ export class CompanyController {
         // Get employee counts per branch
         const branchWithEmpCounts = await Promise.all(
           branches.map(async (branch) => {
-            const empCount = await this.EmpoyeeRepo.count({ branchId: branch });
+            const empCount = await this.EmpoyeeRepo.count({ branchId: branch,role: Role.SELLER });
 
             return {
               id: branch,
-
               employeeCount: empCount,
             };
           }),
@@ -82,7 +81,6 @@ export class CompanyController {
           (sum, b) => sum + b.employeeCount,
           0,
         );
-
         return {
           id: (company as any)._id,
           companyName: company.name,
@@ -91,6 +89,7 @@ export class CompanyController {
             ? new Date((company as any).createdAt).toISOString().split('T')[0]
             : new Date().toISOString().split('T')[0],
           branches: branches.length,
+        
           sales: totalEmployees,
         };
       }),
@@ -125,8 +124,10 @@ export class CompanyController {
   
     // count employees per branch
     let totalNumber = await Promise.all(
-      branchs.map((b) => this.EmpoyeeRepo.count({ branchId: b }))
+      branchs.map((b) => this.EmpoyeeRepo.count({ branchId: b,role: Role.SELLER  }))
     );
+    console.log('branchWithEmpCounts',totalNumber)
+
     const totalEmployees = totalNumber.reduce((sum, b) => sum + b, 0);
   
     // fetch supervisors linked to company branches
@@ -178,6 +179,11 @@ export class CompanyController {
       role: Role.MANAGER,
       firstName: req['user'].firstName,
     });
+  }
+  @Get(':mangerId/comapny')
+  findOneByMangerId(@Param('mangerId') id: string, @Req() req: Request) {
+    return this.companyService.findByMangerId(id, 
+    );
   }
   @Patch(':id')
   async updatecomanyData(

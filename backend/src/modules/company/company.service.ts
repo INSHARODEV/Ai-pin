@@ -54,12 +54,22 @@ export class CompanyService {
   }
 async findOneBybranchAndCompanyId(companyId:any, branchId:any){
   this .logger.warn(` retrinvg hte comapny assoited with this id ${companyId.slice(0,4)}... and branch id stats with  ${branchId }...`)
- return await this.comapntRepo.findOne({ _id:companyId,   branchId: { $in: [branchId] }}
+ return await this.comapntRepo.findOne({ _id:companyId,  }
    
     
   )
 
 }
+
+ 
+async findByMangerId(companyId:any,  ){
+ 
+ return await this.comapntRepo    .findOne( {"manager._id": companyId} ,'', 'branchs')
+   
+}
+ 
+
+ 
  async update(id: MongoDbId, updateCompanyDto: any,{role ,firstName   }:Partial<createUserDto>) {
     this.logger.verbose(` company id:${id} is being  updated   by  user${firstName}  . role : ${role}`)
     console.log('updateCompanyDto',updateCompanyDto)

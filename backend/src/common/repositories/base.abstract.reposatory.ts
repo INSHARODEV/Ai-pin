@@ -70,6 +70,7 @@ export abstract class BaseRepository<T> implements BaseRepositoryInterface<T> {
   async findOne(
     options: FilterQuery<T>,
     fileds: string = '',
+    populate: string = '',
   ): Promise<unknown | null> {
     this.logger.debug(
       `geting the ${this.model.name} uisng data =>${JSON.stringify(options)}`,
@@ -77,9 +78,10 @@ export abstract class BaseRepository<T> implements BaseRepositoryInterface<T> {
     const exsistingDoc = await this.model
       .findOne(options)
       .select(fileds)
+      .populate(populate)
       .lean()
       .exec();
-
+ 
     if (!exsistingDoc) throw new BadRequestException(`Failed to finde`);
     return exsistingDoc;
   }
@@ -153,6 +155,7 @@ console.log('here',this.model)
   }
 
   async deleteOne(id: string): Promise<T | null> {
+   
     const deletedDoc = await this.model.findByIdAndDelete(id);
     if (!deletedDoc) throw new NotFoundException(`  not found`);
     return deletedDoc;

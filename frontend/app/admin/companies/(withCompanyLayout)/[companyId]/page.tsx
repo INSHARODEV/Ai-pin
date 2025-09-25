@@ -93,15 +93,8 @@ getCompany()
                 <h2 className='text-lg font-semibold text-gray-900'>
                   Manager’s Information
                 </h2>
-                <KebabMenu
-                  items={[
-                    {
-                      label: 'Edit Info',
-                      icon: <Pencil className='h-4 w-4' />,
-                      onClick: () => setShowEdit(true),
-                    },
-                  ]}
-                />
+             
+             
               </div>
 
               <div className='grid gap-6 sm:grid-cols-2'>
@@ -174,24 +167,7 @@ getCompany()
       </main>
 
       {/* Modals */}
-      <CompanyEditModal
-        open={showEdit}
-        onClose={() => setShowEdit(false)}
-        onSubmit={handleUpdate}
-        initial={{
-          companyName: company.companyName,
-          managerName: company.managerName,
-          managerEmail: company.managerEmail,
-          branches: [
-            {
-              name: 'Branch A',
-              supervisor: 'Supervisor Name',
-              email: 'name@company.com',
-            },
-          ],
-          members: [{ name: 'Member Name', email: 'member@company.com' }],
-        }}
-      />
+       
 
       <UpdateSuccessModal
         open={showUpdateSuccess}

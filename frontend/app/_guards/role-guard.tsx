@@ -21,7 +21,7 @@ function getUserRole(): Role | null {
 const ALLOW: Record<string, string[]> = {
   SUPERVISOR: ['/branch'],
   SELLER: ['/sales'],
-  ADMIN: ['/forms', '/branch', '/sales', '/admin', '/forms'],
+  ADMIN: ['/forms', '/branch', '/sales', '/admin', '/forms','/mananger'],
   MANAGER: ['/forms', '/branch', '/sales'],
 };
 

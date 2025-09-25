@@ -47,13 +47,7 @@ export default function BranchPage() {
 
   // SALES (employees) for this branch
   const [rows, setRows] = useState<SalesRow[]>(
-    Array.from({ length: 15 }).map((_, i) => ({
-      id: String(i + 1),
-      name: 'Sales Name',
-      dateJoined: new Date(2025, 7, 12),
-      branch: branch.name,
-      email: 'sales@company.com',
-    }))
+    []
   );
 
   // Controls
@@ -123,6 +117,7 @@ export default function BranchPage() {
         dateJoined: new Date(),
         branch: branch.name,
         email: data.email,
+        
       },
       ...prev,
     ]);
@@ -345,6 +340,7 @@ export default function BranchPage() {
                 branch: branch.name,
                 name: editEmpTarget.name,
                 email: editEmpTarget.email,
+                id:editEmpTarget.id
               }
             : null
         }

@@ -8,7 +8,7 @@ export default function BranchFilter({
   value,
   onChange,
 }: {
-  branches: string[];
+  branches: any ;
   value: string; // 'All Branches' or branch name
   onChange: (val: string) => void;
 }) {
@@ -63,9 +63,10 @@ export default function BranchFilter({
         >
           {['All Branches', ...branches].map(b => (
             <button
-              key={b}
+              key={b.id}
               onClick={() => {
-                onChange(b);
+                console.log('bsss',b. branch)
+                onChange(b.branch);
                 setOpen(false);
               }}
               className={`block w-full rounded-xl px-4 py-3 text-left text-[15px] ${
@@ -74,7 +75,8 @@ export default function BranchFilter({
                   : 'hover:bg-gray-50'
               }`}
             >
-              {b}
+
+              {b. branch}
             </button>
           ))}
         </div>

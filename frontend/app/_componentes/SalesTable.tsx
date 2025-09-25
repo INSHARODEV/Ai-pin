@@ -8,6 +8,7 @@ export type SalesRow = {
   dateJoined: any;
   branch: string;
   email: string;
+  salllerId?:any
 };
 
 // export function formatDateLong(date: Date) {
@@ -51,6 +52,7 @@ export function SalesTable({
     </button>,
     <button
       key={`del-${r.id}`}
+      //#TOTD ADD THE DELETE
       onClick={() => onDelete(r)}
       className='text-red-600 hover:text-red-700'
       type='button'
