@@ -7,7 +7,7 @@ type StatusColor = 'green' | 'orange' | 'red' | 'gray';
 
 export interface BranchEmployeeItem {
   id: string;
-  name: string;
+  firstName: string;
   email: string;
   status: StatusColor;
 }
@@ -36,7 +36,7 @@ export default function BranchEmployeesList({
         >
           <div>
             <div className='flex items-center gap-2 text-gray-900'>
-              <span className='font-medium'>{e.name}</span>
+              <span className='font-medium'>{e.firstName}</span>
               {dot(e.status)}
             </div>
             <div className='text-xs text-gray-500'>{e.email}</div>

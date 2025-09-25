@@ -87,7 +87,7 @@ console.log(createBranchDto)
   }
 
   async findOne(id: string,{email,firstName}:Partial<createUserDto>) {
-    this.logger.verbose(` user ${firstName } with email ${email} is retriving all branche with id: ${id}  `)
+console.log('bbbbbbbbbbbbbbbbbbbbbbbbbbbr',id)
     return  await this.branchrepo.findOneById(id)
   }
 

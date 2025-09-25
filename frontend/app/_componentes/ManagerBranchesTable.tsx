@@ -11,7 +11,7 @@ type PerfLabel = 'High' | 'Average' | 'Critical' | 'Standard' | 'Low';
 type ChangeDir = 'up' | 'down' | 'flat';
 
 export interface ManagerBranchRow {
-  _id: string;
+  id: string;
   name: string;
   lastActive?: string;
   lastActiveDate?: string;
@@ -78,8 +78,8 @@ export default function ManagerBranchesTable({
       { kind: 'badge', value: perfLabel },
       changeIcon(b.changes ?? 'flat'),
       <Link
-        key={b._id}
-        href={`/branch/branches/${b._id}`}
+        key={b.id}
+        href={`/branch/branches/${b.id}`}
         className='text-blue-600 hover:underline'
       >
         View Details

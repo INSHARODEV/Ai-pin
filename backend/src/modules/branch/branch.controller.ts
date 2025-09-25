@@ -28,6 +28,7 @@ import { map } from 'rxjs/operators';
 import { Company } from '../company/schemas/Cmopany.schema';
 import { PaginatedData } from 'src/common/types/paginateData.type';
 import { EmpoyeeRepo } from '../auth/auth.repo';
+import { shiftRepo } from '../transcription/shift.repo';
   
 @Controller('branch')
  @UseGuards(AuthGuard)
@@ -35,7 +36,8 @@ export class BranchController {
   constructor(
     private readonly branchService: BranchService,
     private readonly CompanyService: CompanyService,
-    private readonly empRepo:EmpoyeeRepo
+    private readonly empRepo:EmpoyeeRepo,
+    private readonly shift:shiftRepo
   ) {}
   @Patch('')
   async buklkUpdate(@Body() b:any){
@@ -157,22 +159,25 @@ export class BranchController {
   }
   
 
-  @Get(':id')
-  @UseGuards(RoleMixin([Role.ADMIN]))
+
+  @Get('branch/:id')
   async findOne(
     @Param('id', new ParseMongoIdPipe()) id: string,
-    @Param('companyId', new ParseMongoIdPipe()) companyId: string,
+   
 
     @Req() req: Request,
   ) {
-    const exsisitngCompany =
-      await this.CompanyService.findOneBybranchAndCompanyId(companyId, id);
-    if (!exsisitngCompany)
-      throw new BadRequestException('this comapny dose not exsisit');
-    return await this.branchService.findOne(id, {
-      email: req['user']['email'],
-      firstName: req['user']['firstName'],
-    });
+  const branch=   await this.branchService.findOne(id, {
+    email: req['user']['email'],
+    firstName: req['user']['firstName'],
+  });
+  const salesCount=await this.empRepo.count({branchId:id,role:Role.SELLER})
+  const sellers=await this.empRepo.find({queryStr:{branchId:id,role:Role.SELLER},limit:100000000,fields:'',popultae:'',skip:0,sort:'asc',page:1})
+  const supervisor=await this.empRepo.findOne({branchId:id,role:Role.SUPERVISOR})
+  const shifts=await this.shift.find({queryStr:{branchId:id},limit:100000000,fields:'',popultae:'',skip:0,sort:'asc',page:1})
+  
+  
+   return {...branch as any,supervisor,sellers:sellers.data,salesCount,shifts:shifts.data}
   }
 
   @Put(':id')

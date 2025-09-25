@@ -11,6 +11,8 @@ import { Company, CompanySchema, MangerSchema } from '../company/schemas/Cmopany
 import {  EmpoyeeRepo, UsersRepo } from '../auth/auth.repo';
 import { UsersModule } from '../users/users.module';
 import { UserSchema, User, Empoylee, EmpoyleeSchema } from '../users/schmas/users.schema';
+import { shiftRepo } from '../transcription/shift.repo';
+import { ShfitSchema, Shift } from '../transcription/schemas/transcitionSchema';
  
 @Module({
   imports:[ UsersModule,   
@@ -27,11 +29,15 @@ import { UserSchema, User, Empoylee, EmpoyleeSchema } from '../users/schmas/user
         name: Branch.name,
         useFactory: () => BranchSchema,
       },
+      {
+        name: Shift.name,
+        useFactory: () => ShfitSchema,
+      },
     ]),
     
   ],  
   controllers: [BranchController],
-  providers: [BranchService,branchrepo,CompanyService,CompnayRepo,EmpoyeeRepo],
+  providers: [BranchService,branchrepo,CompanyService,CompnayRepo,EmpoyeeRepo,shiftRepo],
 
 })
 export class BranchModule  {
