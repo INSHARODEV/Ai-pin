@@ -93,7 +93,7 @@ export class TranscriptionController {
   }
 
   @Get()
-  @UseGuards(RoleMixin([Role.SUPERVISOR]))
+ @UseGuards(RoleMixin([Role.SUPERVISOR,Role.MANAGER,Role.ADMIN]))
   async getAllTrasnciptions(
     @Req() req: Request,
     @Query()

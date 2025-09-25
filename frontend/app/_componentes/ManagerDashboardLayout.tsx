@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState, ReactNode } from 'react';
+import { useState, ReactNode, useEffect } from 'react';
 import BarChartIcon from './icons/BarChartIcon';
 import { useShiftsContext } from '../branch/layout';
 import {
@@ -13,23 +13,71 @@ import {
   ChevronUp,
   ChevronDown,
 } from 'lucide-react';
+import { MakeApiCall, Methods } from '../actions';
 
 type NamedItem = { _id: string; name: string };
 
 const ManagerDashboardLayout = () => {
   const pathname = usePathname();
-  const ctx = useShiftsContext?.();
-  const employees: NamedItem[] = (ctx?.empsNames as NamedItem[]) ?? [
-    { _id: 'e1', name: 'Employee Name' },
-    { _id: 'e2', name: 'Employee Name' },
-    { _id: 'e3', name: 'Employee Name' },
-  ];
 
-  const branches: NamedItem[] = (ctx?.branches as NamedItem[]) ?? [
-    { _id: 'b1', name: 'Branch Name' },
-    { _id: 'b2', name: 'Branch Name' },
-    { _id: 'b3', name: 'Branch Name' },
-  ];
+  const [branch, setBranch] = useState([]);
+  const [branchEmps, setbranchEmps] = useState([]);
+  const [userId, setUserId] = useState(null);
+
+  // Get user ID from localStorage on component mount
+  useEffect(() => {
+    const user = localStorage.getItem('user');
+    if (user) {
+      try {
+        const userData = JSON.parse(user);
+        if (userData && userData._id) {
+          setUserId(userData._id);
+        }
+      } catch (error) {
+        console.error('Error parsing user data from localStorage:', error);
+      }
+    }
+  }, []);
+
+  // Fetch branches when userId is available
+  useEffect(() => {
+    async function getBranches() {
+      if (!userId) return; // Null check for userId
+      
+      try {
+        const res = await MakeApiCall({
+          method: Methods.GET,
+          url: `/company/${userId}/comapny`, // Using userId instead of hardcoded ID
+        });
+
+        setBranch(res.branchs);
+        console.log('branches only', res.branchs);
+      } catch (error) {
+        console.error('Error fetching branches:', error);
+      }
+    }
+    
+    getBranches();
+  }, [userId]); // Dependency on userId
+
+  const ctx = useShiftsContext?.();
+  const employees: NamedItem[] = branchEmps;
+
+  // Function to get employees by branch ID
+  async function selectEmp(branchId: string) {
+    try {
+      const res = await MakeApiCall({
+        method: Methods.GET,
+        url: `/users/branch/${branchId}`,
+      });
+      console.log('Branch employees:', res);
+      setbranchEmps(res.data);
+    } catch (error) {
+      console.error('Error fetching branch employees:', error);
+    }
+  }
+
+  const branches: NamedItem[] = branch;
 
   const [openBranches, setOpenBranches] = useState(true);
   const [openEmployees, setOpenEmployees] = useState(true);
@@ -105,7 +153,7 @@ const ManagerDashboardLayout = () => {
           href={hrefFor(item)}
           className='text-gray-400 hover:text-[#0D70C8] transition-colors'
         >
-          {item.name}
+          {(item as any).firstName}
         </Link>
       ))}
     </div>
@@ -189,13 +237,13 @@ const ManagerDashboardLayout = () => {
       {openBranches && (
         <div className='flex flex-col gap-8 pl-12 pt-6 pb-4'>
           {branches.map(b => (
-            <Link
+            <button
               key={b._id}
-              href={`/branch/#${b._id}`}
-              className='text-gray-400 hover:text-[#0D70C8] transition-colors'
+              onClick={() => selectEmp(b._id)} // Call selectEmp with branch ID when clicked
+              className='text-left text-gray-400 hover:text-[#0D70C8] transition-colors'
             >
-              {b.name}
-            </Link>
+              {(b as any).name}
+            </button>
           ))}
         </div>
       )}
