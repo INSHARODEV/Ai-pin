@@ -7,6 +7,7 @@ import AddBranchModal, {
   type AddBranchPayload,
 } from '@/app/_componentes/branches/AddBranchModal';
 import BranchAddedSuccessModal from '@/app/_componentes/branches/BranchAddedSuccessModal';
+
 import ManagerBranchesTable, {
   type ManagerBranchRow,
 } from '@/app/_componentes/ManagerBranchesTable';
@@ -70,100 +71,7 @@ export default function Page() {
         });
 
         console.log('Branch list response:', res);
-        
-        // Fixed shifts call - added missing & and removed extra brace
-        if (res?.data && res.data.length > 0) {
-          const shifts = await Promise.all(res.data.map(async (b) => {
-            // Added null check for b.id
-            if (!b.id) {
-              console.warn('Branch ID is undefined for branch:', b);
-              return { branch: b, shifts: null };
-            }
-            
-            try {
-              const shiftData = await MakeApiCall({
-                method: Methods.GET,
-                url: `/shift?branchId=${b.id}&limit=100000&order=desc`, // Get all shifts for performance calculation
-              });
-              return { branch: b, shifts: shiftData };
-            } catch (error) {
-              console.error(`Error fetching shifts for branch ${b.id}:`, error);
-              return { branch: b, shifts: null };
-            }
-          }));
-          
-          // Calculate performance for each branch and add it to branch object
-          const branchesWithPerformance = shifts.map(({ branch, shifts: shiftData }) => {
-            let totalPerformance = 0;
-            let shiftCount = 0;
-            let changes = 0; // Default change value
-            
-            if (shiftData?.data && Array.isArray(shiftData.data)) {
-              // Sort shifts by date/time to ensure proper order (most recent first)
-              const sortedShifts = [...shiftData.data].sort((a, b) => {
-                // Assuming the API returns shifts in chronological order, but sorting to be safe
-                return new Date(b.date).getTime() - new Date(a.date).getTime();
-              });
-              
-              // Sum up all performance values from shifts
-              sortedShifts.forEach(shift => {
-                if (typeof shift.performance === 'number') {
-                  totalPerformance += shift.performance;
-                  shiftCount++;
-                }
-              });
-              
-              // Calculate changes based on last shift vs previous 7 shifts average
-              if (sortedShifts.length >= 2) {
-                const lastShift = sortedShifts[0]; // Most recent shift
-                const previousShifts = sortedShifts.slice(1, 8); // Previous 7 shifts (or less if not enough data)
-                
-                if (previousShifts.length > 0) {
-                  // Calculate average of previous shifts
-                  const previousTotal = previousShifts.reduce((sum, shift) => {
-                    return sum + (typeof shift.performance === 'number' ? shift.performance : 0);
-                  }, 0);
-                  const previousAvg = previousTotal / previousShifts.length;
-                  
-                  // Compare last shift performance with previous average
-                  const lastShiftPerformance = typeof lastShift.performance === 'number' ? lastShift.performance : 0;
-                  
-                  if (lastShiftPerformance > previousAvg) {
-                    changes = 1; // Upward trend
-                  } else if (lastShiftPerformance < previousAvg) {
-                    changes = -1; // Downward trend
-                  } else {
-                    changes = 0; // No change
-                  }
-                  
-                  console.log(`Branch ${branch.name || branch.id}: Last shift: ${lastShiftPerformance}, Previous avg: ${previousAvg.toFixed(2)}, Change: ${changes}`);
-                }
-              }
-            }
-            
-            // Calculate average performance or set to 0 if no shifts
-            const averagePerformance = shiftCount > 0 ? totalPerformance / shiftCount : 0;
-            
-            // Add performance and changes fields to branch
-            return {
-              ...branch,
-              performance: averagePerformance,
-              totalShifts: shiftCount,
-              changes: changes // 1 for up, -1 for down, 0 for no change
-            };
-          });
-          
-          console.log('Branches with performance:', branchesWithPerformance);
-          setBranchs(branchesWithPerformance as any);
-          
-          // Log first branch's shifts data for debugging
-          if (shifts[0]?.shifts?.data) {
-            console.log('Shifts data:', shifts[0].shifts.data);
-          }
-        } else {
-          setBranchs(res?.data ?? []);
-        }
-        
+        setBranchs(res?.data ?? []);
         setPage(res?.numberOfPages ?? 0);
       } catch (error) {
         console.error('Error fetching branch list:', error);
@@ -213,7 +121,7 @@ export default function Page() {
       headers: "json",
     });
 
-     
+    // Refresh the branches list after adding a new branch
     const updatedRes = await MakeApiCall({
       method: Methods.GET,
       url: `/branch/${companyId}`,
@@ -223,7 +131,6 @@ export default function Page() {
 
     setSuccess(true); // Show success modal
     setOpen(false); // Close the add branch modal
-
   };
 
   return (

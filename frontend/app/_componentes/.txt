@@ -1,0 +1,12 @@
+onst [user, setUser] = useState<any>(null);
+const [userLoaded, setUserLoaded] = useState(false);
+useEffect(() => {
+  const stored = localStorage.getItem('user');
+  if (stored) setUser(JSON.parse(stored));
+  setUserLoaded(true);
+}, []);
+const query = useMemo(
+  () => (user ? { branchId: user.branchId } : null),
+  [user?.branchId]
+);
+const {currentPageNumber,emps,empsNames,error,firstGroup,isLoading,numberOfPages,performanceDelta,rating,secondGroup,shifts,} = useShifts(query ?? {});
