@@ -24,12 +24,11 @@ export interface ManagerBranchRow {
 export default function ManagerBranchesTable({
   branches,
   emptyMessage,
-  open,
   setOpen,
 }: {
   branches: ManagerBranchRow[] | null | undefined;
   emptyMessage?: React.ReactNode;
-  open: boolean;
+  open?: boolean;
   setOpen: (open: boolean) => void;
 }) {
   const headers = [

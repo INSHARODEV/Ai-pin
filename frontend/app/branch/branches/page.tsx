@@ -7,7 +7,6 @@ import AddBranchModal, {
   type AddBranchPayload,
 } from '@/app/_componentes/branches/AddBranchModal';
 import BranchAddedSuccessModal from '@/app/_componentes/branches/BranchAddedSuccessModal';
-
 import ManagerBranchesTable, {
   type ManagerBranchRow,
 } from '@/app/_componentes/ManagerBranchesTable';
