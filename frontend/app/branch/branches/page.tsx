@@ -18,10 +18,10 @@ export default function Page() {
   const [open, setOpen] = React.useState(false);
   const [userId, setuserId] = React.useState('');
   const [branch, setBranch] = React.useState('');
-  const [companyId, setcompanyId] = React.useState('');
   const [success, setSuccess] = React.useState(false);
   const [branchs, setBranchs] = useState([]);
   const [page, setPage] = useState(0);
+  const [companyId, setcompanyId] = React.useState('');
 
   // Get user ID from localStorage
   useEffect(() => {

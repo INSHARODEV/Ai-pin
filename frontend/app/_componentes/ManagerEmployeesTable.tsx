@@ -69,7 +69,7 @@ export default function ManagerEmployeesTable({
       { kind: 'badge', value: perfLabel },
       <Link
         key={e.id}
-        href={`/employee-profile/${e.id}`}
+        href={`/branch/employees/${e.id}`}
         className='text-blue-600 hover:underline'
       >
         View Profile

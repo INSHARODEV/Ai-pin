@@ -22,7 +22,7 @@ const ALLOW: Record<string, string[]> = {
   SUPERVISOR: ['/branch'],
   SELLER: ['/sales'],
   ADMIN: ['/forms', '/branch', '/sales', '/admin', '/forms','/mananger'],
-  MANAGER: ['/forms', '/branch', '/sales'],
+  MANAGER: ['/forms', '/branch', '/sales','/employees'],
 };
 
 // Default landing for a role:

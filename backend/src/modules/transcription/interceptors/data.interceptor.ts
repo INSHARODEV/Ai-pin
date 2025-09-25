@@ -32,13 +32,15 @@ export class SalseDataInteceptor implements NestInterceptor {
           let perforance = 0;
           let allTurns = 0;
         
-          console.log(shift._id)
+          console.log('shift,',shift.branchId.name)
           console.log(shift?.emp?._id)
         
           return {
             _id:shift._id,
             fullName:shift.emp?shift.emp.firstName:'',
             empId:shift?.emp?._id||'',
+            email:shift?.emp?.email,
+            branchName:shift.branchId.name,
             duration: `${durationHours} hours ${durationMinutes} minutes`,
             endTime: `${updatedAtAtDate.getHours() - 12 > 0 ? updatedAtAtDate.getHours() - 12 + ' : ' + updatedAtAtDate.getUTCMinutes() + ' ' + 'pm' : updatedAtAtDate.getHours() + ' : ' + updatedAtAtDate.getUTCMinutes() + ' ' + 'am'}`,
             performance:shift.transcriptionsId.reduce((acc, t) => acc + (t.performance || 0), 0) /

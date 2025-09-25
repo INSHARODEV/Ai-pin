@@ -16,11 +16,10 @@ import {
   EmployeeDeleteSuccess,
 } from '@/app/_componentes/sales/EmployeeDeleteModals';
 import EmployeeUpdateSuccessModal from '@/app/_componentes/EmployeeUpdateSuccessModal';
-
+import { useShifts } from '@/app/hooks/useShifts';
+ 
 export default function EmployeePage() {
-  const { employeeId } = useParams<{ employeeId: string }>();
   const router = useRouter();
-  const { shifts } = useShiftsContext();
 
   // kebab state
   const [actionsOpen, setActionsOpen] = React.useState(false);
@@ -32,8 +31,19 @@ export default function EmployeePage() {
   const [editSuccessOpen, setEditSuccessOpen] = React.useState(false);
   const [delOpen, setDelOpen] = React.useState(false);
   const [delSuccessOpen, setDelSuccessOpen] = React.useState(false);
+  
+  const { employeeId } = useParams<{ employeeId: string }>();
+  
+  // Get branch context
+  const shiftsContext = useShiftsContext();
+  const branchId = shiftsContext?.branchId; // Adjust this based on your context structure
+  
+  // Fetch shifts data
+  const { rating, shifts, performanceDelta, isLoading, error } = useShifts({
+    branchId: branchId,
+    emp: employeeId
+  });
 
-  // Close kebab on ESC
   React.useEffect(() => {
     if (!actionsOpen) return;
     const onKey = (e: KeyboardEvent) =>
@@ -44,6 +54,8 @@ export default function EmployeePage() {
 
   // Close kebab when focus leaves
   React.useEffect(() => {
+    console.log('emp id', employeeId);
+    console.log('shifts data:', shifts);
     if (!actionsOpen) return;
     const onFocus = (e: FocusEvent) => {
       const target = e.target as Node;
@@ -57,9 +69,39 @@ export default function EmployeePage() {
     };
     window.addEventListener('focusin', onFocus);
     return () => window.removeEventListener('focusin', onFocus);
-  }, [actionsOpen]);
+  }, [actionsOpen, shifts]);
 
-  // ---- adapter for shifts -> table rows ----
+  // Helper function to parse duration string to hours
+  const parseDurationToHours = (duration: string): number => {
+    if (!duration) return 0;
+    
+    // Handle formats like "7 hrs, 59 mins", "5 hrs", "45 mins", etc.
+    const hoursMatch = duration.match(/(\d+)\s*hrs?/i);
+    const minutesMatch = duration.match(/(\d+)\s*mins?/i);
+    
+    const hours = hoursMatch ? parseInt(hoursMatch[1]) : 0;
+    const minutes = minutesMatch ? parseInt(minutesMatch[1]) : 0;
+    
+    return hours + (minutes / 60);
+  };
+
+  // Calculate total working hours from shifts
+  const totalWorkingHours = useMemo(() => {
+    if (!Array.isArray(shifts) || shifts.length === 0) return 0;
+    
+    const employeeShifts = shifts.filter(
+      (s: any) => !employeeId || String(s.empId) === String(employeeId)
+    );
+    
+    const totalHours = employeeShifts.reduce((total, shift) => {
+      const duration = shift.duration || '0 hrs';
+      return total + parseDurationToHours(duration);
+    }, 0);
+    
+    return Math.round(totalHours * 10) / 10; // Round to 1 decimal place
+  }, [shifts, employeeId]);
+
+  // Adapter for shifts -> table rows
   const rows: EmployeeShiftRow[] = useMemo(() => {
     const arr = Array.isArray(shifts) ? shifts : [];
     return arr
@@ -77,16 +119,41 @@ export default function EmployeePage() {
       }));
   }, [shifts, employeeId]);
 
-  // ---- demo header data (replace with real) ----
-  const employee = {
-    name: 'Sales Name',
-    mood: 'Friendly',
-    email: 'sales.email@gmail.com',
-    branch: 'Branch Name',
-    rating: 4.2,
-    totalHours: 278,
-    skillDelta: -12,
-  };
+  // Employee data using actual data from shifts
+  const employee = useMemo(() => {
+    // Try to get employee info from the first shift
+    const employeeShift = shifts?.find((s: any) => 
+      String(s.empId) === String(employeeId)
+    );
+    
+    return {
+      name: employeeShift?.fullName || 'Employee Name',
+      mood: 'Friendly', // This might come from somewhere else
+      email: employeeShift?.email || 'employee@email.com',
+      branch: employeeShift?.branchName || 'Branch Name',
+      rating: rating || 0,
+      totalHours: totalWorkingHours,
+      skillDelta: performanceDelta || 0,
+    };
+  }, [shifts, employeeId, rating, totalWorkingHours, performanceDelta]);
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="p-6">
+        <div className="text-center">Loading employee data...</div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="p-6">
+        <div className="text-center text-red-600">Error: {error}</div>
+      </div>
+    );
+  }
 
   // handlers
   async function handleUpdate(data: {
@@ -112,7 +179,7 @@ export default function EmployeePage() {
         <Link href='/branch/employees' className='hover:underline'>
           Employees Overview
         </Link>{' '}
-        &nbsp;›&nbsp; <span className='text-gray-700'>Employee</span>
+        &nbsp;›&nbsp; <span className='text-gray-700'>{employee.name}</span>
       </div>
 
       {/* Header Card */}
@@ -208,13 +275,13 @@ export default function EmployeePage() {
           />
           <StatCard
             title='Rating'
-            value={employee.rating}
+            value={ rating}
             description='For the last 7 shifts'
             variant='green'
           />
           <StatCard
             title='Skill Improvement'
-            value={`${employee.skillDelta}%`}
+            value={`${employee.skillDelta > 0 ? '+' : ''}${employee.skillDelta.toFixed(1)}%`}
             description='Change in performance'
             variant={
               employee.skillDelta > 0
@@ -231,7 +298,7 @@ export default function EmployeePage() {
       <section className='space-y-4'>
         <div>
           <h2 className='text-base font-semibold text-gray-800'>
-            Last 30 days Shifts
+            Last 30 days Shifts ({rows.length} shifts)
           </h2>
         </div>
 
@@ -246,6 +313,7 @@ export default function EmployeePage() {
         onClose={() => setEditOpen(false)}
         branches={[employee.branch]}
         initial={{
+          id: employeeId,
           branch: employee.branch,
           name: employee.name,
           email: employee.email,

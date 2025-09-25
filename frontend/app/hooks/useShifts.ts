@@ -22,8 +22,9 @@ export const useShifts = (queryString: any) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+  console.log(queryString)
     // If you ONLY want to fetch when branchId exists, early-return until it's present:
-    if (!queryString || !queryString.branchId) {
+    if (!queryString) {
       // Reset to clean empty state while we wait for user/branch
       setShifts([]);
       setNumberOfPages(1);
@@ -59,7 +60,7 @@ export const useShifts = (queryString: any) => {
           method: Methods.GET,
           queryString: query,
         });
-console.log(numberOfPages)
+        console.log('all shifts',data)
         const fetchedShifts = (data as Shift[]) ?? [];
         setShifts(fetchedShifts);
         setNumberOfPages(numberOfPages ?? 1);
@@ -114,6 +115,7 @@ console.log(numberOfPages)
     }
 
     getShifts(queryString);
+ 
   }, [JSON.stringify(queryString)]); // stable dep for object
 
   return {
