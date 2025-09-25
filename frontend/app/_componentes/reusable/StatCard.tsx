@@ -55,7 +55,7 @@ export function StatCard({
   }
 
   return (
-    <div className='rounded-2xl shadow-md flex w-full flex-col justify-between bg-[#FEFEFE]'>
+    <div className='rounded-2xl shadow-custom flex w-full flex-col justify-between bg-[#FEFEFE]'>
       <div className='px-6 py-4 flex flex-col gap-4'>
         <h3 className='text-xl font-semibold'>{title}</h3>
         <div className='flex items-center justify-between'>
