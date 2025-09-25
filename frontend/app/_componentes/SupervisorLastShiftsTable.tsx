@@ -1,4 +1,4 @@
-// components/BranchTable.tsx
+// components/SupervisorLastShiftsTable.tsx
 import * as React from 'react';
 import Table, { type TableCell } from './reusable/Table';
 import { Shift } from '../types';
@@ -9,7 +9,10 @@ interface Props {
   emptyMessage?: React.ReactNode; // NEW
 }
 
-export default function BranchTable({ shifts, emptyMessage }: Props) {
+export default function SupervisorLastShiftsTable({
+  shifts,
+  emptyMessage,
+}: Props) {
   const headers = ['Name', 'Date', 'Time', 'Shift Performance', 'Details'];
 
   const rows: TableCell[][] = (shifts ?? []).map(shift => [
