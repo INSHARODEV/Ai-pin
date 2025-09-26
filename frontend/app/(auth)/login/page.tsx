@@ -15,6 +15,8 @@ function roleHome(role?: Role) {
   switch (role) {
     case Role.SUPERVISOR:
       return '/branch';
+    case Role.MANAGER:
+      return '/branch';
     case Role.SELLER:
       return '/sales';
     case Role.ADMIN:

@@ -928,7 +928,7 @@ export default function EmployeePage() {
     });
     
     const mostRecentShift = sortedShifts[0];
-    return mostRecentShift.lastActive || 'No date available';
+    return (mostRecentShift as any)?.lastActive || 'No date available';
   }, [shifts, employeeId]);
 
   // Calculate total working hours from shifts
@@ -980,13 +980,13 @@ export default function EmployeePage() {
     return {
       name: employeeShift?.fullName || 'Employee Name',
       mood: 'Friendly', // This might come from somewhere else
-      email: employeeShift?.email || 'employee@email.com',
-      branch: employeeShift?.branchName || 'Branch Name',
-      branchId: employeeShift?.branchId || 'Branch Name',
+      email: (employeeShift as any)?.email || 'employee@email.com',
+      branch: (employeeShift as any)?.branchName || 'Branch Name',
+      branchId: (employeeShift as any)?.branchId || 'Branch Name',
       rating: rating || 0,
       totalHours: totalWorkingHours,
       skillDelta: performanceDelta || 0,
-      lastActive:employeeShift?.lastActive, // Use the lastActive from API response
+      lastActive:(employeeShift as any)?.lastActive, // Use the lastActive from API response
     };
   }, [shifts, employeeId, rating, totalWorkingHours, performanceDelta, getLastActive]);
 

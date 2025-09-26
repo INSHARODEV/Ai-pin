@@ -7,8 +7,7 @@ import SupervisorEmployeesTable from '@/app/_componentes/SupervisorEmployeesTabl
 import EmployeesToolbar from '@/app/_componentes/employees/EmployeesToolbar';
 import AddEmployeeButton from '@/app/_componentes/employees/AddEmployeeButton';
 import { MakeApiCall, Methods } from '@/app/actions';
-import { RealtimeTranscriber } from 'assemblyai';
-
+ 
 function Page() {
   const { user } = useShiftsContext();
   const [open, setOpen] = React.useState(false);
