@@ -69,14 +69,14 @@ const Index = () => {
   }, [id, startDate, endDate]);
 
   return (
-    <div className="h-screen flex flex-col py-4 gap-3 bg-[#F9FAFB]">
+    <div className="h-screen flex flex-col py-4 gap-3 bg-[#F9FAFB] z-0">
       <div className="px-4 relative">
-        <header className="flex items-center justify-evenly bg-white rounded-2xl p-2 shadow-custom relative">
+        <header className="flex items-center justify-evenly bg-white rounded-2xl p-2 shadow-custom relative z-0">
           <div className="flex items-start px-2 gap-4 w-full">
             {/* 📅 Date range button */}
             <button
               onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
-              className="flex items-center gap-2 text-sm font-semibold"
+              className="flex items-center gap-2 text-sm font-semibold z-0"
             >
               <div className="p-2 rounded-full bg-[#0D70C81A]">
                 <Calendar color="#0D70C8" className="w-4 h-4" />

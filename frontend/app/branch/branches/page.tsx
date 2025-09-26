@@ -70,6 +70,7 @@ export default function Page() {
           url: `/branch/${companyId}`,
         });
 
+ 
         console.log('Branch list response:', res);
         setBranchs(res?.data ?? []);
         setPage(res?.numberOfPages ?? 0);
@@ -113,7 +114,6 @@ export default function Page() {
       };
     });
 
-    console.log('body', body);
     await MakeApiCall({
       method: Methods.POST,
       url: `/auth`,
@@ -124,7 +124,7 @@ export default function Page() {
     // Refresh the branches list after adding a new branch
     const updatedRes = await MakeApiCall({
       method: Methods.GET,
-      url: `/branch/${companyId}`,
+      url: `/branch/company/${companyId}`,
     });
     setBranchs(updatedRes?.data ?? []);
     setPage(updatedRes?.numberOfPages);

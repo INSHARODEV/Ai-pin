@@ -1,3 +1,826 @@
+//  'use client';
+
+// // import React, { useMemo } from 'react';
+// // import Link from 'next/link';
+// // import { useParams, useRouter } from 'next/navigation';
+// // import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+// // import { useShiftsContext } from '@/app/branch/layout';
+// // import { StatCard } from '@/app/_componentes/reusable/StatCard';
+// // import BranchesToolbar from '@/app/_componentes/branches/BranchesToolbar';
+// // import EmployeeShiftsTable, {
+// //   EmployeeShiftRow,
+// // } from '@/app/_componentes/EmployeeShiftsTable';
+// // import EditEmployeeModal from '@/app/_componentes/sales/EditEmployeeModal';
+// // import {
+// //   EmployeeDeleteConfirm,
+// //   EmployeeDeleteSuccess,
+// // } from '@/app/_componentes/sales/EmployeeDeleteModals';
+// // import EmployeeUpdateSuccessModal from '@/app/_componentes/EmployeeUpdateSuccessModal';
+// // import { useShifts } from '@/app/hooks/useShifts';
+ 
+// // export default function EmployeePage() {
+// //   const router = useRouter();
+
+// //   // kebab state
+// //   const [actionsOpen, setActionsOpen] = React.useState(false);
+// //   const actionsBtnRef = React.useRef<HTMLButtonElement | null>(null);
+// //   const menuRef = React.useRef<HTMLDivElement | null>(null);
+
+// //   // modals state
+// //   const [editOpen, setEditOpen] = React.useState(false);
+// //   const [editSuccessOpen, setEditSuccessOpen] = React.useState(false);
+// //   const [delOpen, setDelOpen] = React.useState(false);
+// //   const [delSuccessOpen, setDelSuccessOpen] = React.useState(false);
+  
+// //   const { employeeId } = useParams<{ employeeId: string }>();
+  
+// //   // Get branch context
+// //   const shiftsContext = useShiftsContext();
+// //   const branchId = shiftsContext?.branchId; // Adjust this based on your context structure
+  
+// //   // Fetch shifts data
+// //   const { rating, shifts, performanceDelta, isLoading, error } = useShifts({
+// //     emp: employeeId
+// //   });
+
+// //   React.useEffect(() => {
+// //     if (!actionsOpen) return;
+// //     const onKey = (e: KeyboardEvent) =>
+// //       e.key === 'Escape' && setActionsOpen(false);
+// //     window.addEventListener('keydown', onKey);
+// //     return () => window.removeEventListener('keydown', onKey);
+// //   }, [actionsOpen]);
+
+// //   // Close kebab when focus leaves
+// //   React.useEffect(() => {
+// //     console.log('emp id', employeeId);
+// //     console.log('shifts data:', shifts);
+// //     if (!actionsOpen) return;
+// //     const onFocus = (e: FocusEvent) => {
+// //       const target = e.target as Node;
+// //       if (
+// //         target &&
+// //         !menuRef.current?.contains(target) &&
+// //         !actionsBtnRef.current?.contains(target)
+// //       ) {
+// //         setActionsOpen(false);
+// //       }
+// //     };
+// //     window.addEventListener('focusin', onFocus);
+// //     return () => window.removeEventListener('focusin', onFocus);
+// //   }, [actionsOpen, shifts]);
+
+// //   // Helper function to parse duration string to hours
+// //   const parseDurationToHours = (duration: string): number => {
+// //     if (!duration) return 0;
+    
+// //     // Handle formats like "7 hrs, 59 mins", "5 hrs", "45 mins", "0 hours 1 minutes", etc.
+// //     const hoursMatch = duration.match(/(\d+)\s*(?:hrs?|hours?)/i);
+// //     const minutesMatch = duration.match(/(\d+)\s*(?:mins?|minutes?)/i);
+    
+// //     const hours = hoursMatch ? parseInt(hoursMatch[1]) : 0;
+// //     const minutes = minutesMatch ? parseInt(minutesMatch[1]) : 0;
+    
+// //     return hours + (minutes / 60);
+// //   };
+
+// //   // Helper function to parse date string and convert to Date object for sorting
+// //   const parseShiftDate = (dateStr: string): Date => {
+// //     if (!dateStr) return new Date(0);
+    
+// //     // Handle format like "26   Sept 2025"
+// //     const cleanedDate = dateStr.replace(/\s+/g, ' ').trim();
+// //     const dateParts = cleanedDate.split(' ');
+    
+// //     if (dateParts.length >= 3) {
+// //       const day = parseInt(dateParts[0]);
+// //       const monthStr = dateParts[1];
+// //       const year = parseInt(dateParts[2]);
+      
+// //       const monthMap: { [key: string]: number } = {
+// //         'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+// //         'Jul': 6, 'Aug': 7, 'Sept': 8, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+// //       };
+      
+// //       const month = monthMap[monthStr] ?? 0;
+// //       return new Date(year, month, day);
+// //     }
+    
+// //     return new Date(dateStr);
+// //   };
+
+// //   // Get the most recent shift's end date and time
+// //   const getLastActive = useMemo(() => {
+// //     if (!Array.isArray(shifts) || shifts.length === 0) return 'No shifts available';
+    
+// //     const employeeShifts = shifts.filter(
+// //       (s: any) => !employeeId || String(s.empId) === String(employeeId)
+// //     );
+    
+// //     if (employeeShifts.length === 0) return 'No shifts available';
+    
+// //     // Sort shifts by date (most recent first)
+// //     const sortedShifts = employeeShifts.sort((a, b) => {
+// //       const dateA = parseShiftDate(a.date || '');
+// //       const dateB = parseShiftDate(b.date || '');
+// //       return dateB.getTime() - dateA.getTime();
+// //     });
+    
+// //     const mostRecentShift = sortedShifts[0];
+// //     return `${mostRecentShift.date} at ${mostRecentShift.endTime}`;
+// //   }, [shifts, employeeId]);
+
+// //   // Calculate total working hours from shifts
+// //   const totalWorkingHours = useMemo(() => {
+// //     if (!Array.isArray(shifts) || shifts.length === 0) return 0;
+    
+// //     const employeeShifts = shifts.filter(
+// //       (s: any) => !employeeId || String(s.empId) === String(employeeId)
+// //     );
+    
+// //     const totalHours = employeeShifts.reduce((total, shift) => {
+// //       const duration = shift.duration || '0 hours';
+// //       return total + parseDurationToHours(duration);
+// //     }, 0);
+    
+// //     return Math.round(totalHours * 10) / 10; // Round to 1 decimal place
+// //   }, [shifts, employeeId]);
+
+// //   // Adapter for shifts -> table rows
+// //   const rows: EmployeeShiftRow[] = useMemo(() => {
+// //     const arr = Array.isArray(shifts) ? shifts : [];
+// //     return arr
+// //       .filter((s: any) => !employeeId || String(s.empId) === String(employeeId))
+// //       .map((s: any) => ({
+// //         id: String(s._id ?? s.id ?? Math.random()),
+// //         date: s.date ?? '12th August 2025',
+// //         time: s.startTime ?? '2:39 PM',
+// //         duration: s.duration ?? '7 hrs, 59 mins',
+// //         performance:
+// //           typeof s.performance === 'number'
+// //             ? s.performance
+// //             : (s.performance ?? 'Average'),
+// //         status: s.status ?? undefined,
+// //       }));
+// //   }, [shifts, employeeId]);
+
+// //   // Employee data using actual data from shifts
+// //   const employee = useMemo(() => {
+// //     // Try to get employee info from the first shift
+// //     const employeeShift = shifts?.find((s: any) => 
+// //       String(s.empId) === String(employeeId)
+// //     );
+    
+// //     return {
+// //       name: employeeShift?.fullName || 'Employee Name',
+// //       mood: 'Friendly', // This might come from somewhere else
+// //       email: employeeShift?.email || 'employee@email.com',
+// //       branch: employeeShift?.branchName || 'Branch Name',
+// //       rating: rating || 0,
+// //       totalHours: totalWorkingHours,
+// //       skillDelta: performanceDelta || 0,
+// //       lastActive: getLastActive,
+// //     };
+// //   }, [shifts, employeeId, rating, totalWorkingHours, performanceDelta, getLastActive]);
+
+// //   // Show loading state
+// //   if (isLoading) {
+// //     return (
+// //       <div className="p-6">
+// //         <div className="text-center">Loading employee data...</div>
+// //       </div>
+// //     );
+// //   }
+
+// //   // Show error state
+// //   if (error) {
+// //     return (
+// //       <div className="p-6">
+// //         <div className="text-center text-red-600">Error: {error}</div>
+// //       </div>
+// //     );
+// //   }
+
+// //   // handlers
+// //   async function handleUpdate(data: {
+// //     branch: string;
+// //     name: string;
+// //     email: string;
+// //   }) {
+// //     // TODO: call your API
+// //     setEditOpen(false);
+// //     setEditSuccessOpen(true);
+// //   }
+
+// //   async function handleDelete() {
+// //     // TODO: call your API
+// //     setDelOpen(false);
+// //     setDelSuccessOpen(true);
+// //   }
+
+// //   return (
+// //     <div className='p-6 space-y-6'>
+// //       {/* Breadcrumb */}
+// //       <div className='text-sm text-gray-500'>
+// //         <Link href='/branch/employees' className='hover:underline'>
+// //           Employees Overview
+// //         </Link>{' '}
+// //         &nbsp;›&nbsp; <span className='text-gray-700'>{employee.name}</span>
+// //       </div>
+
+// //       {/* Header Card */}
+// //       <section className=''>
+// //         <div className='rounded-2xl bg-white shadow-custom'>
+// //           <div className='p-6 flex items-start justify-between'>
+// //             <div>
+// //               <div className='flex items-center gap-3'>
+// //                 <h1 className='text-2xl font-semibold text-gray-900'>
+// //                   {employee.name}
+// //                 </h1>
+// //                 <span className='inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700'>
+// //                   {employee.mood}
+// //                 </span>
+// //               </div>
+
+// //               <div className='mt-4 grid gap-4 sm:grid-cols-2'>
+// //                 <div>
+// //                   <div className='text-xs text-gray-500'>Email</div>
+// //                   <div className='text-gray-800'>{employee.email}</div>
+// //                 </div>
+// //                 <div>
+// //                   <div className='text-xs text-gray-500'>Branch</div>
+// //                   <div className='text-gray-800'>{employee.branch}</div>
+// //                 </div>
+// //                 <div>
+// //                   <div className='text-xs text-gray-500'>Last Active</div>
+// //                   <div className='text-gray-800'>{employee.lastActive}</div>
+// //                 </div>
+// //               </div>
+// //             </div>
+
+// //             {/* Kebab actions */}
+// //             <div className='relative'>
+// //               <button
+// //                 type='button'
+// //                 aria-haspopup='menu'
+// //                 aria-expanded='false'
+// //                 aria-label='Employee actions'
+// //                 className='rounded-full p-2 hover:bg-gray-100 text-gray-500'
+// //                 onClick={() => setActionsOpen(v => !v)}
+// //                 ref={actionsBtnRef}
+// //               >
+// //                 <MoreHorizontal className='h-5 w-5' />
+// //               </button>
+
+// //               {actionsOpen && (
+// //                 <>
+// //                   <div
+// //                     className='fixed inset-0 z-40'
+// //                     onClick={() => setActionsOpen(false)}
+// //                   />
+// //                   <div
+// //                     ref={menuRef}
+// //                     role='menu'
+// //                     aria-label='Employee actions'
+// //                     className='absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-custom'
+// //                   >
+// //                     <button
+// //                       type='button'
+// //                       role='menuitem'
+// //                       onClick={() => {
+// //                         setActionsOpen(false);
+// //                         setEditOpen(true);
+// //                       }}
+// //                       className='flex w-full items-center gap-2 px-4 py-3 text-left text-gray-700 hover:bg-gray-50'
+// //                     >
+// //                       <Pencil className='h-4 w-4' />
+// //                       Edit Info
+// //                     </button>
+// //                     <button
+// //                       type='button'
+// //                       role='menuitem'
+// //                       onClick={() => {
+// //                         setActionsOpen(false);
+// //                         setDelOpen(true);
+// //                       }}
+// //                       className='flex w-full items-center gap-2 px-4 py-3 text-left text-rose-600 hover:bg-rose-50'
+// //                     >
+// //                       <Trash2 className='h-4 w-4' />
+// //                       Delete Employee
+// //                     </button>
+// //                   </div>
+// //                 </>
+// //               )}
+// //             </div>
+// //           </div>
+// //         </div>
+
+// //         {/* Stats */}
+// //         <div className='py-4 grid gap-4 md:grid-cols-3'>
+// //           <StatCard
+// //             title='Total Working Hours'
+// //             value={employee.totalHours}
+// //             description='For the last 30 Days'
+// //             variant='blue'
+// //           />
+// //           <StatCard
+// //             title='Rating'
+// //             value={rating}
+// //             description='For the last 7 shifts'
+// //             variant='green'
+// //           />
+// //           <StatCard
+// //             title='Skill Improvement'
+// //             value={`${employee.skillDelta > 0 ? '+' : ''}${employee.skillDelta.toFixed(1)}%`}
+// //             description='Change in performance'
+// //             variant={
+// //               employee.skillDelta > 0
+// //                 ? 'green'
+// //                 : employee.skillDelta < 0
+// //                   ? 'red'
+// //                   : 'orange'
+// //             }
+// //           />
+// //         </div>
+// //       </section>
+
+// //       {/* Shifts Section */}
+// //       <section className='space-y-4'>
+// //         <div>
+// //           <h2 className='text-base font-semibold text-gray-800'>
+// //             Last 30 days Shifts ({rows.length} shifts)
+// //           </h2>
+// //         </div>
+
+// //         <BranchesToolbar onChange={() => {}} />
+
+// //         <EmployeeShiftsTable shifts={rows} />
+// //       </section>
+
+// //       {/* Modals */}
+// //       <EditEmployeeModal
+// //         open={editOpen}
+// //         onClose={() => setEditOpen(false)}
+// //         branches={[employee.branch]}
+// //         initial={{
+// //           id: employeeId,
+// //           branch: employee.branch,
+// //           name: employee.name,
+// //           email: employee.email,
+// //         }}
+// //         onUpdate={handleUpdate}
+// //       />
+// //       <EmployeeUpdateSuccessModal
+// //         open={editSuccessOpen}
+// //         onClose={() => setEditSuccessOpen(false)}
+// //         onUpdateAgain={() => {
+// //           setEditSuccessOpen(false);
+// //           setEditOpen(true);
+// //         }}
+// //       />
+// //       <EmployeeDeleteConfirm
+// //         open={delOpen}
+// //         onClose={() => setDelOpen(false)}
+// //         employeeName={employee.name}
+// //         onConfirm={handleDelete}
+// //       />
+// //       <EmployeeDeleteSuccess
+// //         open={delSuccessOpen}
+// //         onClose={() => setDelSuccessOpen(false)}
+// //         onBack={() => router.push('/branch/employees')}
+// //       />
+// //     </div>
+// //   );
+// // }'use client';
+
+// import React, { useMemo } from 'react';
+// import Link from 'next/link';
+// import { useParams, useRouter } from 'next/navigation';
+// import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+// import { useShiftsContext } from '@/app/branch/layout';
+// import { StatCard } from '@/app/_componentes/reusable/StatCard';
+// import BranchesToolbar from '@/app/_componentes/branches/BranchesToolbar';
+// import EmployeeShiftsTable, {
+//   EmployeeShiftRow,
+// } from '@/app/_componentes/EmployeeShiftsTable';
+// import EditEmployeeModal from '@/app/_componentes/sales/EditEmployeeModal';
+// import {
+//   EmployeeDeleteConfirm,
+//   EmployeeDeleteSuccess,
+// } from '@/app/_componentes/sales/EmployeeDeleteModals';
+// import EmployeeUpdateSuccessModal from '@/app/_componentes/EmployeeUpdateSuccessModal';
+// import { useShifts } from '@/app/hooks/useShifts';
+ 
+// export default function EmployeePage() {
+//   const router = useRouter();
+
+//   // kebab state
+//   const [actionsOpen, setActionsOpen] = React.useState(false);
+//   const actionsBtnRef = React.useRef<HTMLButtonElement | null>(null);
+//   const menuRef = React.useRef<HTMLDivElement | null>(null);
+
+//   // modals state
+//   const [editOpen, setEditOpen] = React.useState(false);
+//   const [editSuccessOpen, setEditSuccessOpen] = React.useState(false);
+//   const [delOpen, setDelOpen] = React.useState(false);
+//   const [delSuccessOpen, setDelSuccessOpen] = React.useState(false);
+  
+//   const { employeeId } = useParams<{ employeeId: string }>();
+  
+//   // Get branch context
+//   const shiftsContext = useShiftsContext();
+//   const branchId = shiftsContext?.branchId;
+  
+//   // Fetch shifts data
+//   const { rating, shifts, performanceDelta, isLoading, error } = useShifts({
+//     emp: employeeId
+//   });
+
+//   React.useEffect(() => {
+//     if (!actionsOpen) return;
+//     const onKey = (e: KeyboardEvent) =>
+//       e.key === 'Escape' && setActionsOpen(false);
+//     window.addEventListener('keydown', onKey);
+//     return () => window.removeEventListener('keydown', onKey);
+//   }, [actionsOpen]);
+
+//   // Close kebab when focus leaves
+//   React.useEffect(() => {
+//     console.log('emp id', employeeId);
+//     console.log('shifts data:', shifts);
+//     if (!actionsOpen) return;
+//     const onFocus = (e: FocusEvent) => {
+//       const target = e.target as Node;
+//       if (
+//         target &&
+//         !menuRef.current?.contains(target) &&
+//         !actionsBtnRef.current?.contains(target)
+//       ) {
+//         setActionsOpen(false);
+//       }
+//     };
+//     window.addEventListener('focusin', onFocus);
+//     return () => window.removeEventListener('focusin', onFocus);
+//   }, [actionsOpen, shifts]);
+
+//   // Helper function to parse duration string to hours
+//   const parseDurationToHours = (duration: string): number => {
+//     if (!duration) return 0;
+    
+//     // Handle formats like "7 hrs, 59 mins", "5 hrs", "45 mins", "0 hours 1 minutes", etc.
+//     const hoursMatch = duration.match(/(\d+)\s*(?:hrs?|hours?)/i);
+//     const minutesMatch = duration.match(/(\d+)\s*(?:mins?|minutes?)/i);
+    
+//     const hours = hoursMatch ? parseInt(hoursMatch[1]) : 0;
+//     const minutes = minutesMatch ? parseInt(minutesMatch[1]) : 0;
+    
+//     return hours + (minutes / 60);
+//   };
+
+//   // Helper function to parse date string and convert to Date object for sorting
+//   const parseShiftDate = (dateStr: string): Date => {
+//     if (!dateStr) return new Date(0);
+    
+//     // Handle format like "26   Sept 2025"
+//     const cleanedDate = dateStr.replace(/\s+/g, ' ').trim();
+//     const dateParts = cleanedDate.split(' ');
+    
+//     if (dateParts.length >= 3) {
+//       const day = parseInt(dateParts[0]);
+//       const monthStr = dateParts[1];
+//       const year = parseInt(dateParts[2]);
+      
+//       const monthMap: { [key: string]: number } = {
+//         'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+//         'Jul': 6, 'Aug': 7, 'Sept': 8, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+//       };
+      
+//       const month = monthMap[monthStr] ?? 0;
+//       return new Date(year, month, day);
+//     }
+    
+//     return new Date(dateStr);
+//   };
+
+//   // Get the most recent shift's end date and time
+//   const getLastActive = useMemo(() => {
+//     if (!Array.isArray(shifts) || shifts.length === 0) return 'No shifts available';
+    
+//     const employeeShifts = shifts.filter(
+//       (s: any) => !employeeId || String(s.empId) === String(employeeId)
+//     );
+    
+//     if (employeeShifts.length === 0) return 'No shifts available';
+    
+//     // Sort shifts by date (most recent first)
+//     const sortedShifts = employeeShifts.sort((a, b) => {
+//       const dateA = parseShiftDate(a.date || '');
+//       const dateB = parseShiftDate(b.date || '');
+//       return dateB.getTime() - dateA.getTime();
+//     });
+    
+//     const mostRecentShift = sortedShifts[0];
+//     return `${mostRecentShift.date} at ${mostRecentShift.endTime}`;
+//   }, [shifts, employeeId]);
+
+//   // Calculate total working hours from shifts
+//   const totalWorkingHours = useMemo(() => {
+//     if (!Array.isArray(shifts) || shifts.length === 0) return 0;
+    
+//     const employeeShifts = shifts.filter(
+//       (s: any) => !employeeId || String(s.empId) === String(employeeId)
+//     );
+    
+//     const totalHours = employeeShifts.reduce((total, shift) => {
+//       const duration = shift.duration || '0 hours';
+//       return total + parseDurationToHours(duration);
+//     }, 0);
+    
+//     return Math.round(totalHours * 10) / 10; // Round to 1 decimal place
+//   }, [shifts, employeeId]);
+
+//   // Adapter for shifts -> table rows
+//   const rows: EmployeeShiftRow[] = useMemo(() => {
+//     const arr = Array.isArray(shifts) ? shifts : [];
+//     return arr
+//       .filter((s: any) => !employeeId || String(s.empId) === String(employeeId))
+//       .map((s: any) => ({
+//         id: String(s._id ?? s.id ?? Math.random()),
+//         date: s.date ?? '12th August 2025',
+//         time: s.startTime ?? '2:39 PM',
+//         duration: s.duration ?? '7 hrs, 59 mins',
+//         performance:
+//           typeof s.performance === 'number'
+//             ? s.performance
+//             : (s.performance ?? 'Average'),
+//         status: s.status ?? undefined,
+//       }));
+//   }, [shifts, employeeId]);
+
+//   // Employee data using actual data from shifts
+//   const employee = useMemo(() => {
+//     // Try to get employee info from the first shift
+//     const employeeShift = shifts?.find((s: any) => 
+//       String(s.empId) === String(employeeId)
+//     );
+//     console.log('employeeShift',employeeShift)
+//     return {
+//       name: employeeShift?.fullName || 'Employee Name',
+//       mood: 'Friendly', // This might come from somewhere else
+//       email: employeeShift?.email || 'employee@email.com',
+//       branch: employeeShift?.branchName || 'Branch Name',
+//       branchId: employeeShift?.branchId || 'Branch Name',
+//       rating: rating || 0,
+//       totalHours: totalWorkingHours,
+//       skillDelta: performanceDelta || 0,
+//       lastActive: employeeShift?.lastActive ?? new Intl.DateTimeFormat('en-GB', {
+//         day: '2-digit',
+//         month: 'long',
+//         year: 'numeric',
+//       }).format(new Date()),
+//     };
+//   }, [shifts, employeeId, rating, totalWorkingHours, performanceDelta, getLastActive]);
+
+//   // Create branches array for the modal - just return branch names as strings like the original modal expects
+//   const availableBranches = useMemo(() => {
+//     // Use Map to deduplicate by branchId
+//     const uniqueBranchesMap = new Map();
+    
+//     shifts
+//       .filter((shift: any) => shift.branchName && shift.branchId)
+//       .forEach((shift: any) => {
+//         // Use branchId as the key to ensure uniqueness
+//         uniqueBranchesMap.set(shift.branchId, {
+//           branch: shift.branchName,
+//           id: shift.branchId
+//         });
+//       });
+    
+//     // Convert Map values to array
+//     const uniqueBranches = Array.from(uniqueBranchesMap.values());
+    
+//     console.log('unique branches:', uniqueBranches);
+    
+//     // If no branches found in shifts, use current employee's branch
+//     if (uniqueBranches.length === 0) {
+//       return [{
+//         branch: employee.branch,
+//         id: 'fallback-id' // You might want to use actual employee branchId if available
+//       }];
+//     }
+    
+//     return uniqueBranches;
+//   }, [shifts, employee.branch]);
+//   // Show loading state
+//   if (isLoading) {
+//     return (
+//       <div className="p-6">
+//         <div className="text-center">Loading employee data...</div>
+//       </div>
+//     );
+//   }
+
+//   // Show error state
+//   if (error) {
+//     return (
+//       <div className="p-6">
+//         <div className="text-center text-red-600">Error: {error}</div>
+//       </div>
+//     );
+//   }
+
+//   // handlers
+//   async function handleUpdate(data: {
+//     branch: string;
+//     name: string;
+//     email: string;
+//   }) {
+//     // TODO: call your API
+//     console.log('Updating employee with data:', data);
+//     setEditOpen(false);
+//     setEditSuccessOpen(true);
+//   }
+
+//   async function handleDelete() {
+//     // TODO: call your API
+//     setDelOpen(false);
+//     setDelSuccessOpen(true);
+//   }
+
+//   return (
+//     <div className='p-6 space-y-6'>
+//       {/* Breadcrumb */}
+//       <div className='text-sm text-gray-500'>
+//         <Link href='/branch/employees' className='hover:underline'>
+//           Employees Overview
+//         </Link>{' '}
+//         &nbsp;›&nbsp; <span className='text-gray-700'>{employee.name}</span>
+//       </div>
+
+//       {/* Header Card */}
+//       <section className=''>
+//         <div className='rounded-2xl bg-white shadow-custom'>
+//           <div className='p-6 flex items-start justify-between'>
+//             <div>
+//               <div className='flex items-center gap-3'>
+//                 <h1 className='text-2xl font-semibold text-gray-900'>
+//                   {employee.name}
+//                 </h1>
+//                 <span className='inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700'>
+//                   {employee.mood}
+//                 </span>
+//               </div>
+
+//               <div className='mt-4 grid gap-4 sm:grid-cols-2'>
+//                 <div>
+//                   <div className='text-xs text-gray-500'>Email</div>
+//                   <div className='text-gray-800'>{employee.email}</div>
+//                 </div>
+//                 <div>
+//                   <div className='text-xs text-gray-500'>Branch</div>
+//                   <div className='text-gray-800'>{employee.branch}</div>
+//                 </div>
+//                 <div>
+//                   <div className='text-xs text-gray-500'>Last Active</div>
+//                   <div className='text-gray-800'>{employee.lastActive}</div>
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* Kebab actions */}
+//             {/* <div className='relative'>
+//               <button
+//                 type='button'
+//                 aria-haspopup='menu'
+//                 aria-expanded='false'
+//                 aria-label='Employee actions'
+//                 className='rounded-full p-2 hover:bg-gray-100 text-gray-500'
+//                 onClick={() => setActionsOpen(v => !v)}
+//                 ref={actionsBtnRef}
+//               >
+//                 <MoreHorizontal className='h-5 w-5' />
+//               </button>
+
+//               {actionsOpen && (
+//                 <>
+//                   <div
+//                     className='fixed inset-0 z-40'
+//                     onClick={() => setActionsOpen(false)}
+//                   />
+//                   <div
+//                     ref={menuRef}
+//                     role='menu'
+//                     aria-label='Employee actions'
+//                     className='absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-custom'
+//                   >
+//                     <button
+//                       type='button'
+//                       role='menuitem'
+//                       onClick={() => {
+//                         setActionsOpen(false);
+//                         setEditOpen(true);
+//                       }}
+//                       className='flex w-full items-center gap-2 px-4 py-3 text-left text-gray-700 hover:bg-gray-50'
+//                     >
+//                       <Pencil className='h-4 w-4' />
+//                       Edit Info
+//                     </button>
+//                     <button
+//                       type='button'
+//                       role='menuitem'
+//                       onClick={() => {
+//                         setActionsOpen(false);
+//                         setDelOpen(true);
+//                       }}
+//                       className='flex w-full items-center gap-2 px-4 py-3 text-left text-rose-600 hover:bg-rose-50'
+//                     >
+//                       <Trash2 className='h-4 w-4' />
+//                       Delete Employee
+//                     </button>
+//                   </div>
+//                 </>
+//               )}
+//             </div> */}
+//           </div>
+//         </div>
+
+//         {/* Stats */}
+//         <div className='py-4 grid gap-4 md:grid-cols-3'>
+//           <StatCard
+//             title='Total Working Hours'
+//             value={employee.totalHours}
+//             description='For the last 30 Days'
+//             variant='blue'
+//           />
+//           <StatCard
+//             title='Rating'
+//             value={rating}
+//             description='For the last 7 shifts'
+//             variant='green'
+//           />
+//           <StatCard
+//             title='Skill Improvement'
+//             value={`${employee.skillDelta > 0 ? '+' : ''}${employee.skillDelta.toFixed(1)}%`}
+//             description='Change in performance'
+//             variant={
+//               employee.skillDelta > 0
+//                 ? 'green'
+//                 : employee.skillDelta < 0
+//                   ? 'red'
+//                   : 'orange'
+//             }
+//           />
+//         </div>
+//       </section>
+
+//       {/* Shifts Section */}
+//       <section className='space-y-4'>
+//         <div>
+//           <h2 className='text-base font-semibold text-gray-800'>
+//             Last 30 days Shifts ({rows.length} shifts)
+//           </h2>
+//         </div>
+
+//         <BranchesToolbar onChange={() => {}} />
+
+//         <EmployeeShiftsTable shifts={rows} />
+//       </section>
+
+//       {/* Modals */}
+//       <EditEmployeeModal
+//         open={editOpen}
+//         onClose={() => setEditOpen(false)}
+//         branches={availableBranches}
+//         initial={{
+//           id: employeeId,
+//           branch: employee.branch, // Use branch name as your modal expects
+//           name: employee.name,
+//           email: employee.email,
+//         }}
+//         onUpdate={handleUpdate}
+//       />
+//       <EmployeeUpdateSuccessModal
+//         open={editSuccessOpen}
+//         onClose={() => setEditSuccessOpen(false)}
+//         onUpdateAgain={() => {
+//           setEditSuccessOpen(false);
+//           setEditOpen(true);
+//         }}
+//       />
+//       <EmployeeDeleteConfirm
+//         open={delOpen}
+//         onClose={() => setDelOpen(false)}
+//         employeeName={employee.name}
+//         onConfirm={handleDelete}
+//       />
+//       <EmployeeDeleteSuccess
+//         open={delSuccessOpen}
+//         onClose={() => setDelSuccessOpen(false)}
+//         onBack={() => router.push('/branch/employees')}
+//       />
+//     </div>
+//   );
+// }
 'use client';
 
 import React, { useMemo } from 'react';
@@ -36,11 +859,10 @@ export default function EmployeePage() {
   
   // Get branch context
   const shiftsContext = useShiftsContext();
-  const branchId = shiftsContext?.branchId; // Adjust this based on your context structure
+  const branchId = shiftsContext?.branchId;
   
   // Fetch shifts data
   const { rating, shifts, performanceDelta, isLoading, error } = useShifts({
-    branchId: branchId,
     emp: employeeId
   });
 
@@ -75,15 +897,39 @@ export default function EmployeePage() {
   const parseDurationToHours = (duration: string): number => {
     if (!duration) return 0;
     
-    // Handle formats like "7 hrs, 59 mins", "5 hrs", "45 mins", etc.
-    const hoursMatch = duration.match(/(\d+)\s*hrs?/i);
-    const minutesMatch = duration.match(/(\d+)\s*mins?/i);
+    // Handle formats like "7 hrs, 59 mins", "5 hrs", "45 mins", "0 hours 1 minutes", etc.
+    const hoursMatch = duration.match(/(\d+)\s*(?:hrs?|hours?)/i);
+    const minutesMatch = duration.match(/(\d+)\s*(?:mins?|minutes?)/i);
     
     const hours = hoursMatch ? parseInt(hoursMatch[1]) : 0;
     const minutes = minutesMatch ? parseInt(minutesMatch[1]) : 0;
     
     return hours + (minutes / 60);
   };
+
+  // Get the most recent lastActive from shifts data
+  const getLastActive = useMemo(() => {
+    if (!Array.isArray(shifts) || shifts.length === 0) return 'No shifts available';
+    
+    const employeeShifts = shifts.filter(
+      (s: any) => !employeeId || String(s.empId) === String(employeeId)
+    );
+    
+    if (employeeShifts.length === 0) return 'No shifts available';
+    
+    // Get the most recent shift's lastActive
+    // Since shifts might already be sorted by most recent, we can take the first one
+    // Or we could sort by date to be sure
+    const sortedShifts = employeeShifts.sort((a, b) => {
+      // Parse dates to compare (assuming date format is consistent)
+      const dateA = new Date(a.date?.replace(/\s+/g, ' ') || '');
+      const dateB = new Date(b.date?.replace(/\s+/g, ' ') || '');
+      return dateB.getTime() - dateA.getTime();
+    });
+    
+    const mostRecentShift = sortedShifts[0];
+    return mostRecentShift.lastActive || 'No date available';
+  }, [shifts, employeeId]);
 
   // Calculate total working hours from shifts
   const totalWorkingHours = useMemo(() => {
@@ -94,7 +940,7 @@ export default function EmployeePage() {
     );
     
     const totalHours = employeeShifts.reduce((total, shift) => {
-      const duration = shift.duration || '0 hrs';
+      const duration = shift.duration || '0 hours';
       return total + parseDurationToHours(duration);
     }, 0);
     
@@ -111,31 +957,69 @@ export default function EmployeePage() {
         date: s.date ?? '12th August 2025',
         time: s.startTime ?? '2:39 PM',
         duration: s.duration ?? '7 hrs, 59 mins',
+        lastActive:s.LastActive,
         performance:
           typeof s.performance === 'number'
             ? s.performance
             : (s.performance ?? 'Average'),
         status: s.status ?? undefined,
       }));
+ 
+
   }, [shifts, employeeId]);
 
   // Employee data using actual data from shifts
   const employee = useMemo(() => {
+  
     // Try to get employee info from the first shift
     const employeeShift = shifts?.find((s: any) => 
       String(s.empId) === String(employeeId)
     );
+  
     
     return {
       name: employeeShift?.fullName || 'Employee Name',
       mood: 'Friendly', // This might come from somewhere else
       email: employeeShift?.email || 'employee@email.com',
       branch: employeeShift?.branchName || 'Branch Name',
+      branchId: employeeShift?.branchId || 'Branch Name',
       rating: rating || 0,
       totalHours: totalWorkingHours,
       skillDelta: performanceDelta || 0,
+      lastActive:employeeShift?.lastActive, // Use the lastActive from API response
     };
-  }, [shifts, employeeId, rating, totalWorkingHours, performanceDelta]);
+  }, [shifts, employeeId, rating, totalWorkingHours, performanceDelta, getLastActive]);
+
+  // Create branches array for the modal
+  const availableBranches = useMemo(() => {
+    // Use Map to deduplicate by branchId
+    const uniqueBranchesMap = new Map();
+    
+    shifts
+      .filter((shift: any) => shift.branchName && shift.branchId)
+      .forEach((shift: any) => {
+        // Use branchId as the key to ensure uniqueness
+        uniqueBranchesMap.set(shift.branchId, {
+          branch: shift.branchName,
+          id: shift.branchId
+        });
+      });
+    
+    // Convert Map values to array
+    const uniqueBranches = Array.from(uniqueBranchesMap.values());
+    
+    console.log('unique branches:', uniqueBranches);
+    
+    // If no branches found in shifts, use current employee's branch
+    if (uniqueBranches.length === 0) {
+      return [{
+        branch: employee.branch,
+        id: 'fallback-id'
+      }];
+    }
+    
+    return uniqueBranches;
+  }, [shifts, employee.branch]);
 
   // Show loading state
   if (isLoading) {
@@ -162,6 +1046,7 @@ export default function EmployeePage() {
     email: string;
   }) {
     // TODO: call your API
+    console.log('Updating employee with data:', data);
     setEditOpen(false);
     setEditSuccessOpen(true);
   }
@@ -205,11 +1090,15 @@ export default function EmployeePage() {
                   <div className='text-xs text-gray-500'>Branch</div>
                   <div className='text-gray-800'>{employee.branch}</div>
                 </div>
+                <div>
+                  <div className='text-xs text-gray-500'>Last Active</div>
+                  <div className='text-gray-800'>{employee.lastActive}</div>
+                </div>
               </div>
             </div>
 
-            {/* Kebab actions */}
-            <div className='relative'>
+            {/* Kebab actions - commented out as in your code */}
+            {/* <div className='relative'>
               <button
                 type='button'
                 aria-haspopup='menu'
@@ -261,7 +1150,7 @@ export default function EmployeePage() {
                   </div>
                 </>
               )}
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -275,7 +1164,7 @@ export default function EmployeePage() {
           />
           <StatCard
             title='Rating'
-            value={ rating}
+            value={rating}
             description='For the last 7 shifts'
             variant='green'
           />
@@ -311,7 +1200,7 @@ export default function EmployeePage() {
       <EditEmployeeModal
         open={editOpen}
         onClose={() => setEditOpen(false)}
-        branches={[employee.branch]}
+        branches={availableBranches}
         initial={{
           id: employeeId,
           branch: employee.branch,

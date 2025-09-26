@@ -338,13 +338,15 @@ export default function BranchPage() {
   // Create employees array from API response
   const employees: BranchEmployeeItem[] = useMemo(() => {
     if (!branche.sellers) return [];
-    
-    return branche.sellers.map((seller: any, index: number) => ({
+    const res= branche.sellers.map((seller: any, index: number) => ({
       id: seller._id,
       name: seller.firstName,
       email: seller.email,
       status: (['green', 'orange', 'red'] as const)[index % 3], // Rotate through statuses
     }));
+    console.log('seller',res)
+
+    return res 
   }, [branche.sellers]);
 
   // Map shifts to table rows
@@ -393,10 +395,10 @@ export default function BranchPage() {
   return (
     <div className='p-6'>
       {/* Header grid */}
-      <section className='flex gap-2'>
+      <section className='flex gap-2 '>
         {/* Left: Branch summary */}
-        <div className='rounded-2xl bg-white shadow-custom p-5 w-2/3 flex flex-col gap-6'>
-          <div className='flex items-start justify-between'>
+        <div className='rounded-2xl  shadow-custom p-5 w-2/3 flex flex-col gap-6 bg-[rgb(249_250_251)]'>
+          <div className='flex items-start justify-between bg-white p-5'>
             <div className='flex flex-col gap-2'>
               <div className='flex items-center gap-3'>
                 <h1 className='text-2xl font-semibold text-gray-900'>
@@ -429,7 +431,7 @@ export default function BranchPage() {
 
             {/* Kebab trigger */}
             <div className='relative'>
-              <button
+              {/* <button
                 ref={actionsBtnRef}
                 type='button'
                 aria-haspopup='menu'
@@ -439,7 +441,7 @@ export default function BranchPage() {
                 className='rounded-full p-2 hover:bg-gray-100 text-gray-600'
               >
                 {/* three dots icon */}
-                <svg
+                {/* <svg
                   viewBox='0 0 24 24'
                   className='h-5 w-5'
                   fill='currentColor'
@@ -447,8 +449,8 @@ export default function BranchPage() {
                   <circle cx='5' cy='12' r='2' />
                   <circle cx='12' cy='12' r='2' />
                   <circle cx='19' cy='12' r='2' />
-                </svg>
-              </button>
+                </svg> */}
+              {/* </button> */}  
 
               {actionsOpen && (
                 <>

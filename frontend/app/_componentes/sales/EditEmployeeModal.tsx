@@ -26,10 +26,11 @@ export default function EditEmployeeModal({
   const [email, setEmail] = React.useState(initial?.email ?? '');
 
   React.useEffect(() => {
+    console.log(branches,'email')
     setBranch(initial?.branch ?? branches[0] ?? '');
     setName(initial?.name ?? '');
     setEmail(initial?.email ?? '');
-    setEmail(initial?.id ?? '');
+ 
   }, [open, initial, branches]);
 
   return (

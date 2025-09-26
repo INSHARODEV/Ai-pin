@@ -17,6 +17,15 @@ export default function BreanchHeader({
 }: BreanchHeaderProps) {
   const [showLogout, setShowLogout] = React.useState(false);
   const router = useRouter();
+  const[user,setUser]=React.useState('')
+  React.useEffect(() => {
+    const stored = localStorage.getItem('user');
+    if (stored) {
+      const userData = JSON.parse(stored);
+      setUser(userData);
+    }
+    
+  }, []);
 
   const handleIconClick = () => {
     setShowLogout(!showLogout);
@@ -28,11 +37,11 @@ export default function BreanchHeader({
   };
 
   return (
-    <header className='bg-[#FEFEFE] shadow-b-sm px-16 py-4 z-0 relative'>
+    <header className='bg-[#FEFEFE] shadow-b-sm px-[20px] py-4 z-0 relative'>
       <div className='flex items-center justify-between'>
         {/* Left side */}
         <h2 className='text-2xl font-bold text-gray-900'>
-          Branch Transcription
+        Overview
         </h2>
 
         {/* Right side */}
@@ -42,7 +51,7 @@ export default function BreanchHeader({
               {userName.charAt(0)}
             </span>
 
-            <span className='font-semibold text-gray-900'>{userName}</span>
+            <span className='font-semibold text-gray-900'>{(user as any)?.firstName||'name'}</span>
           </div>
           <button
             onClick={handleIconClick}

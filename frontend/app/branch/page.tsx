@@ -80,7 +80,7 @@ export default function Page() {
       <main className='px-6 py-8'>
         <div className='mb-8'>
           <h1 className='mb-2 text-3xl font-bold text-gray-900'>
-            Welcome {userName}!
+            Welcome {JSON.parse(localStorage.getItem('user') as any)?.firstName||userName}
           </h1>
           <p className='text-gray-600'>Analytics overview</p>
         </div>

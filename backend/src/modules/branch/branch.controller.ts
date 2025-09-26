@@ -106,7 +106,32 @@ export class BranchController {
   
     const { branchs } = existingCompany;
   
-    // ✅ Fetch paginated branches
+    // 🔹 Fetch all shifts with populated transcriptions.performance
+    const shifts = await this.shift.find({
+      queryStr: { branchId: { $in: branchs } },
+      fields: 'updatedAt branchId',
+      limit: 100000,
+      page: 1,
+      sort: 'desc',
+      skip: 0,
+      popultae: { path: 'transcriptionsId', select: 'performance' },
+    });
+  
+    // 🔹 Build map { branchId: lastPerformance }
+    const performanceMap = (shifts.data as any).reduce((acc, shift) => {
+      const branchId = shift.branchId.toString();
+      const lastTranscription =
+        shift.transcriptionsId?.[shift.transcriptionsId.length - 1];
+  
+      if (lastTranscription?.performance !== undefined) {
+        // Only store the first (latest) shift’s last transcription
+        if (!acc[branchId]) acc[branchId] = lastTranscription.performance;
+      }
+  
+      return acc ??null;
+    }, {} as Record<string, any>);
+  
+    // 🔹 Fetch paginated branches
     const res = await this.branchService.findAll(
       {
         fields,
@@ -120,33 +145,50 @@ export class BranchController {
       { email: req['user']['email'] },
     );
   
-    const branchRows  = await Promise.all(
+    // 🔹 Attach supervisor, sellers, and performance
+    const branchRows = await Promise.all(
       (res.data as any[]).map(async (branch) => {
-        const [supervisor, sellerCount,sellers] = await Promise.all([
+        const [supervisor, sellerCount, sellers] = await Promise.all([
           this.empRepo.findOne({
             branchId: branch._id,
             role: Role.SUPERVISOR,
           }),
           this.empRepo.count({ branchId: branch._id, role: Role.SELLER }),
-          this.empRepo.find({queryStr:{ branchId: branch._id, role: Role.SELLER },fields:'',limit:500000,page:1,popultae:'',skip:0,sort:'asc'}),
+          this.empRepo.find({
+            queryStr: { branchId: branch._id, role: Role.SELLER },
+            fields: '',
+            limit: 500000,
+            page: 1,
+            popultae: '',
+            skip: 0,
+            sort: 'asc',
+          }),
         ]);
   
         return {
           id: branch._id.toString(),
           name: branch.name,
-          dateJoined:  new Intl.DateTimeFormat('en-GB', {
+          dateJoined: new Intl.DateTimeFormat('en-GB', {
             day: '2-digit',
             month: 'long',
             year: 'numeric',
           }).format(new Date(branch.createdAt)),
           supervisor: supervisor ? (supervisor as any).firstName : null,
           sales: sellerCount,
-          salesData:( sellers as any).data.map(s=>{return{name:s.firstName, dateJoined:  new Intl.DateTimeFormat('en-GB', {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric',
-          }).format(new Date(branch.createdAt)),email:s.email,salllerId:s._id}}),
+          salesData: (sellers as any).data.map((s) => ({
+            name: s.firstName,
+            dateJoined: new Intl.DateTimeFormat('en-GB', {
+              day: '2-digit',
+              month: 'long',
+              year: 'numeric',
+            }).format(new Date(branch.createdAt)),
+            email: s.email,
+            salllerId: s._id,
+          })),
           companyId: branch.companyId?.toString(),
+  
+          // ✅ Attach last performance from latest shift
+        performance: performanceMap[branch._id.toString()] ?? null,
         };
       }),
     );
@@ -155,10 +197,11 @@ export class BranchController {
       data: branchRows,
       numberOfPages: res.numberOfPages,
       page: res.page,
-    }  
+    };
   }
   
-
+  
+ 
 
   @Get('branch/:id')
   async findOne(
@@ -174,8 +217,8 @@ export class BranchController {
   const salesCount=await this.empRepo.count({branchId:id,role:Role.SELLER})
   const sellers=await this.empRepo.find({queryStr:{branchId:id,role:Role.SELLER},limit:100000000,fields:'',popultae:'',skip:0,sort:'asc',page:1})
   const supervisor=await this.empRepo.findOne({branchId:id,role:Role.SUPERVISOR})
-  const shifts=await this.shift.find({queryStr:{branchId:id},limit:100000000,fields:'',popultae:'',skip:0,sort:'asc',page:1})
-  
+  const shifts=await this.shift.find({queryStr:{branchId:id},limit:100000000,fields:'updatedAt',popultae:'',skip:0,sort:'asc',page:1})
+  console.log('emps')
   
    return {...branch as any,supervisor,sellers:sellers.data,salesCount,shifts:shifts.data}
   }

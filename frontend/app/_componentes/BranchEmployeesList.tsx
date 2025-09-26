@@ -1,13 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 type StatusColor = 'green' | 'orange' | 'red' | 'gray';
 
 export interface BranchEmployeeItem {
   id: string;
-  firstName: string;
+  name: string;
   email: string;
   status: StatusColor;
 }
@@ -27,6 +27,11 @@ export default function BranchEmployeesList({
 }: {
   employees: BranchEmployeeItem[];
 }) {
+  useEffect(()=>{
+
+    console.log('employees',employees)
+    
+    },[])
   return (
     <div className='space-y-3'>
       {employees.map(e => (
@@ -36,7 +41,7 @@ export default function BranchEmployeesList({
         >
           <div>
             <div className='flex items-center gap-2 text-gray-900'>
-              <span className='font-medium'>{e.firstName}</span>
+              <span className='font-medium'>{e.name}</span>
               {dot(e.status)}
             </div>
             <div className='text-xs text-gray-500'>{e.email}</div>

@@ -7,7 +7,7 @@ import { QueryString } from "src/common/types/queryString.type";
 @Injectable()
 export class shiftService{
     constructor(private readonly shiftRepo:shiftRepo){}
-
+ 
     async createShift(CreateShiftDto:CreateShiftDton){
         return await this.shiftRepo.create(CreateShiftDto)
     }
@@ -26,6 +26,12 @@ export class shiftService{
     }
     async getAll({fields,limit,skip,sort,page ,queryStr,popultae}:QueryString  ){
        return await this.shiftRepo.find({fields,  popultae:{ path: 'transcriptionsId emp branchId',select: ' performance firstName lastName email name',},limit,queryStr ,skip,sort:{'createdAt':-1},page} )
+    }
+    async getOne(id){
+    
+        const res= await this.shiftRepo.findOne({emp:id},'', { path: 'transcriptionsId emp branchId',select: ' performance firstName lastName email name',})
+ 
+    return res
     }
      
 }

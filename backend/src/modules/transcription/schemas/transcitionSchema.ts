@@ -15,7 +15,7 @@ export class Shift {
   branchId: MongoDbId;
 
  
-  
+ 
 }
 @Schema({ _id: false })
 export class EngagementMetrics {

@@ -7,6 +7,7 @@ import SupervisorEmployeesTable from '@/app/_componentes/SupervisorEmployeesTabl
 import EmployeesToolbar from '@/app/_componentes/employees/EmployeesToolbar';
 import AddEmployeeButton from '@/app/_componentes/employees/AddEmployeeButton';
 import { MakeApiCall, Methods } from '@/app/actions';
+import { RealtimeTranscriber } from 'assemblyai';
 
 function Page() {
   const { user } = useShiftsContext();
@@ -66,22 +67,44 @@ function Page() {
           method: Methods.GET,
           url: `/branch/${companyId}`,
         });
+        async function getPerformance(id: string) {
+          const res = await MakeApiCall({ url: `/shift/${id}`, method: Methods.GET });
         
-        console.log('Branches response:', branchesRes);
+          if (!res || !Array.isArray(res.transcriptionsId) || res.transcriptionsId.length === 0) {
+            return 0; // no data → 0 performance
+          }
+        
+          // Sum all performances
+          const total = res.transcriptionsId.reduce(
+            (sum: number, item: any) => sum + (item.performance ?? 0),
+            0
+          );
+        
+          // Average
+          const avg = total / res.transcriptionsId.length;
+        
+          // Ensure in 1–100 range
+          const normalized = Math.max(1, Math.min(100, Math.round(avg)));
+        
+          console.log("Employee Performance:", normalized);
+        
+          return normalized;
+        }
+        console.log('Branches responsesssss:', branchesRes);
         
         if (branchesRes.data && Array.isArray(branchesRes.data)) {
           // Extract all employees from salesData of each branch and transform to ManagerEmployeeRow format
           const allEmployees = branchesRes.data.flatMap((branch: any) => {
             const branchEmployees = branch.salesData || [];
-            
+          
             return branchEmployees.map((employee: any) => ({
               id: employee.salllerId || employee.id || '',
               fullName: employee.name || '',
               branchName: branch.name || 'Unknown Branch',
-              lastActive: employee.lastActive || undefined,
+              lastActive: branchesRes.data.lastActive || undefined,
               lastActiveDate: employee.lastActiveDate || undefined,
               lastActiveTime: employee.lastActiveTime || undefined,
-              performance: employee.performance || 0,
+              performance: getPerformance(employee.salllerId)||undefined,
               status: employee.status || undefined
             }));
           });

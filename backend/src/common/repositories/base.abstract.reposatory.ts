@@ -70,7 +70,7 @@ export abstract class BaseRepository<T> implements BaseRepositoryInterface<T> {
   async findOne(
     options: FilterQuery<T>,
     fileds: string = '',
-    populate: string = '',
+    populate: any = '',
   ): Promise<unknown | null> {
     this.logger.debug(
       `geting the ${this.model.name} uisng data =>${JSON.stringify(options)}`,

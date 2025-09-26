@@ -29,7 +29,7 @@ export default function AdminHeader({
   };
 
   return (
-    <header className='bg-white shadow-sm px-16 py-4 z-0 relative'>
+    <header className='bg-white shadow-sm px-16 py-4 '>
       <div className='flex items-center justify-between'>
         {/* Left side */}
         <div className='flex items-center space-x-3'>
@@ -38,7 +38,7 @@ export default function AdminHeader({
         </div>
 
         {/* Right side */}
-        <div className='relative flex items-center gap-4'>
+        <div className='relative flex items-center gap-4  z-40 '>
           <div className='flex items-center gap-3'>
             <span className='flex h-8 w-8 items-center justify-center rounded-full bg-teal-500 text-lg font-bold text-white'>
               {userName.charAt(0)}
@@ -69,7 +69,7 @@ export default function AdminHeader({
 
           {/* Floating logout dropdown */}
           {showLogout && (
-            <div className='absolute right-0 top-12 z-50 w-40 rounded-md border border-gray-200 bg-white shadow-lg animate-fade-in'>
+            <div className='absolute right-0   top-12  w-40 rounded-md border border-gray-200 bg-white shadow-lg animate-fade-in'>
               <button
                 onClick={handleLogout}
                 className='w-full px-4 py-2 text-left font-semibold text-red-600 hover:bg-red-50 flex items-center gap-2'

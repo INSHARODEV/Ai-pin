@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Get, Query, Req, UseGuards, UseInterceptors } from "@nestjs/common";
+import { BadRequestException, Controller, Get, Param, Query, Req, UseGuards, UseInterceptors } from "@nestjs/common";
 import { shiftService } from "./shift.service";
 import { AuthGuard } from "src/common/guards/auth/auth.gurd";
 import { PaginationPipe } from "src/common/pipes/pagination.pipe";
@@ -20,33 +20,33 @@ export class ShiftController{
       @Query(PaginationPipe) { fields, limit, queryStr, skip, sort, page, popultae }: QueryString,
       @Req() req: Request
     ) {
-      if (!queryStr?.emp && !queryStr?.branchId) {
-        throw new BadRequestException('You must provide emp or branchId to fetch shifts.');
-      }
+    //   if (!queryStr?.emp && !queryStr?.branchId) {
+    //     throw new BadRequestException('You must provide emp or branchId to fetch shifts.');
+    //   }
     
-      const filter: any = {};
+    //   const filter: any = {};
     
-      if (queryStr.emp) {
-        if (!isValidObjectId(queryStr.emp)) {
-          throw new BadRequestException('Invalid employee ID format.');
-        }
-        filter.emp = queryStr.emp;
-      }
+    //   if (queryStr.emp) {
+    //     if (!isValidObjectId(queryStr.emp)) {
+    //       throw new BadRequestException('Invalid employee ID format.');
+    //     }
+    //     filter.emp = queryStr.emp;
+    //   }
     
-     else if (queryStr.branchId) {
-        if (!isValidObjectId(queryStr.branchId)) {
-          throw new BadRequestException('Invalid branch ID format.');
-        }
-        filter.branchId = queryStr.branchId;
-      }else{
-        filter.branchId=undefined
-        filter.emp=undefined
-      }
+    //  else if (queryStr.branchId) {
+    //     if (!isValidObjectId(queryStr.branchId)) {
+    //       throw new BadRequestException('Invalid branch ID format.');
+    //     }
+    //     filter.branchId = queryStr.branchId;
+    //   }else{
+    //     filter.branchId=undefined
+    //     filter.emp=undefined
+    //   }
     
       const data = await this.shiftService.getAll({
         fields,
         limit,
-        queryStr: filter,
+        queryStr,
         skip,
         sort,
         page,
@@ -58,6 +58,12 @@ export class ShiftController{
       }
     
       return data;
+    }
+    @Get(':id')
+   async getOneShfit(@Param('id' ) id:string){
+       
+    console.log( 'rssssssssssssssssssssssssssssssssss')
+    return       await this.shiftService.getOne(id)
     }
 
 }
