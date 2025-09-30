@@ -13,16 +13,18 @@ export const useShifts = (queryString: any) => {
   const [secondGroup, setSecondGroup] = useState<Shift[]>([]);
   const [performanceDelta, setPerformanceDelta] = useState<number>(0);
   const [emps, setEmps] = useState<number>(0);
-  const [empsNames, setEmpsNames] = useState<{
-    name: string | undefined;
-    _id: string | undefined;
-}[]>();
+  const [empsNames, setEmpsNames] = useState<
+    {
+      name: string | undefined;
+      _id: string | undefined;
+    }[]
+  >();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-  console.log(queryString)
+    console.log(queryString);
     // If you ONLY want to fetch when branchId exists, early-return until it's present:
     if (!queryString) {
       // Reset to clean empty state while we wait for user/branch
@@ -58,29 +60,32 @@ export const useShifts = (queryString: any) => {
         const { numberOfPages, page, data } = await MakeApiCall({
           url: '/shift',
           method: Methods.GET,
-          queryString: query,
+          queryString: `${query}&limit=14`,
         });
-        console.log('all shifts',data)
+        console.log('all shifts', data);
         const fetchedShifts = (data as Shift[]) ?? [];
         setShifts(fetchedShifts);
         setNumberOfPages(numberOfPages ?? 1);
         setCurrentPage(page ?? 1);
 
         // Unique employees
-        const allEmps = [  
-          ...new Map(  
-            fetchedShifts.map(shift => [shift.fullName, { name: shift.fullName, _id: shift.empId }])  
-          ).values()  
+        const allEmps = [
+          ...new Map(
+            fetchedShifts.map(shift => [
+              shift.fullName,
+              { name: shift.fullName, _id: shift.empId },
+            ])
+          ).values(),
         ];
-        setEmpsNames(allEmps)
-        setEmps(allEmps.length)
+        setEmpsNames(allEmps);
+        setEmps(allEmps.length);
         // Rating calculation
         if (fetchedShifts.length === 0) {
           setRating(0);
         } else if (fetchedShifts.length >= 7) {
           const performances = fetchedShifts
             .slice(0, 6)
-            .map((shift) => Number(shift.performance));
+            .map(shift => Number(shift.performance));
           const sum = performances.reduce((a, b) => a + b, 0);
           setRating(sum / 7);
         } else if (fetchedShifts.length > 0) {
@@ -115,7 +120,6 @@ export const useShifts = (queryString: any) => {
     }
 
     getShifts(queryString);
- 
   }, [JSON.stringify(queryString)]); // stable dep for object
 
   return {

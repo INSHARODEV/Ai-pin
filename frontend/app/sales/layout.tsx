@@ -14,8 +14,8 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   return (
-    <div>
-      <SalesHeader userName='Full Name' />
+    <div className='bg-[#F9FAFB]'>
+      <SalesHeader />
 
       <main className='px-10'>
         <RoleGuard>{children}</RoleGuard>

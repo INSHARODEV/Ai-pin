@@ -1,4 +1,3 @@
-// components/reusable/Table.tsx
 import * as React from 'react';
 import { Badge } from '../ui/Badge';
 
@@ -11,7 +10,7 @@ type LinkCell = {
   href?: string;
   onClick?: () => void;
 };
-type BadgeCell = { kind: 'badge'; value: BadgeValue };
+type BadgeCell = { kind: 'badge'; value: BadgeValue }; // keep flexible
 type StatusCell = { kind: 'status'; value: StatusColor };
 type PlainCell = string | number | React.ReactNode;
 
@@ -25,16 +24,17 @@ export interface TableProps {
 
 export default function Table({ headers, data, emptyMessage }: TableProps) {
   const getPerformanceBadgeVariant = (performance: string) => {
-    switch (performance) {
-      case 'High':
+    const p = (performance || '').toLowerCase();
+    switch (p) {
+      case 'high':
         return 'success';
-      case 'Low':
+      case 'low':
         return 'warning';
-      case 'Average':
+      case 'average':
         return 'warning';
-      case 'Critical':
+      case 'critical':
         return 'destructive';
-      case 'Standard':
+      case 'standard':
         return 'neutral';
       default:
         return 'secondary';
@@ -85,7 +85,7 @@ export default function Table({ headers, data, emptyMessage }: TableProps) {
             data.map((row, rowIndex) => (
               <tr
                 key={rowIndex}
-                className={rowIndex % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
+                className={`${rowIndex % 2 === 0 ? 'bg-[#FEFEFE]' : 'bg-[#0D70C80D]'} hover:bg-gray-100/60`}
               >
                 {row.map((cell, cellIndex) => {
                   if (
@@ -100,11 +100,11 @@ export default function Table({ headers, data, emptyMessage }: TableProps) {
                           <Badge
                             variant={
                               getPerformanceBadgeVariant(
-                                (c as BadgeCell).value
+                                (c as BadgeCell).value as string
                               ) as any
                             }
                           >
-                            {(c as BadgeCell).value}
+                            {String((c as BadgeCell).value).toUpperCase()}
                           </Badge>
                         ) : c.kind === 'status' ? (
                           getStatusDot((c as StatusCell).value)

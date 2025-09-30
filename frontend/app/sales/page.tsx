@@ -1,7 +1,7 @@
+// page.tsx
 'use client';
 
 import * as React from 'react';
-// note fro alll refactor page into its onwn componenet
 import { ShiftsTable } from '../_componentes/ShiftsTable';
 import { useState, useEffect, useMemo } from 'react';
 import { useShifts } from '../hooks/useShifts';
@@ -16,8 +16,10 @@ export default function Page() {
     () => (user ? { branchId: user.branchId } : {}),
     [user?.branchId]
   );
-   
+
   const { rating, shifts, performanceDelta } = useShifts(query);
+
+  // console.log(shifts);
 
   const formatTime = (total: number) => {
     const h = Math.floor(total / 3600);
@@ -37,9 +39,7 @@ export default function Page() {
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
-    if (stored) {
-      setUser(JSON.parse(stored));
-    }
+    if (stored) setUser(JSON.parse(stored));
   }, []);
 
   return (
@@ -47,15 +47,16 @@ export default function Page() {
       <main className='px-6 py-8'>
         <div className='mb-8'>
           <h1 className='mb-2 text-3xl font-bold text-gray-900'>
-            Welcome Name!
+            Welcome {user?.firstName || ''}!
           </h1>
           <p className='text-gray-600'>12th Aug 2025, 12:45 PM</p>
         </div>
+
         <section className='mb-8 grid grid-cols-1 gap-6 md:grid-cols-3'>
           <StatCard
             title='Rating'
             value={rating}
-            description='For the last 7 shifts'
+            description='For the last shifts'
             variant={rating > 2.5 ? 'green' : 'red'}
           />
 
@@ -85,13 +86,14 @@ export default function Page() {
                   </span>
                 </div>
               ) : (
-                <p className='text-gray-600 min-w-40'>Ready to begin ?</p>
+                <p className='min-w-40 text-gray-600'>Ready to begin ?</p>
               )}
               <Recorder setRecording={setRecording} />
             </div>
           </div>
         </section>
 
+        {/* 👇 pass two pages (7 + 7) */}
         <ShiftsTable shifts={shifts} />
       </main>
     </div>
