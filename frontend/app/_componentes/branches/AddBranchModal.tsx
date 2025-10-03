@@ -69,19 +69,65 @@ export default function AddBranchModal({
   }
 
   const Stepper = () => (
-    <div className='mb-4 flex items-center gap-3'>
-      {[1, 2].map(n => (
+    <div className='mb-6'>
+      {/* Circles + connecting line */}
+      <div className='relative flex items-center justify-between px-2'>
+        {/* base line */}
         <div
-          key={n}
-          className={`grid h-8 w-8 place-items-center rounded-full text-sm font-semibold ${
-            n === step ? 'bg-[#0D70C8] text-white' : 'bg-gray-100 text-gray-600'
-          }`}
-        >
-          {n}
+          className={`absolute left-30 right-24 top-1/3 -translate-y-1/2 h-[2px] ${step === 2 ? 'bg-[#0D70C8]' : 'bg-gray-200'}`}
+        />
+        {/* progress fill */}
+        {/* <div
+          className='absolute left-30 top-1/3 -translate-y-1/2 h-[2px] bg-[#0D70C8] transition-all'
+          style={{ width: step === 2 ? 'calc(100% - 5rem)' : 0 }}
+        /> */}
+
+        {/* step 1 */}
+        <div className='flex flex-col items-center gap-2'>
+          <button
+            type='button'
+            // onClick={() => setStep(1)}
+            aria-current={step === 1}
+            className={[
+              'grid h-10 w-10 place-items-center rounded-full text-sm font-semibold shadow-sm',
+              step >= 1
+                ? 'bg-[#0D70C8] text-white'
+                : 'bg-gray-100 text-gray-600',
+            ].join(' ')}
+          >
+            1
+          </button>
+          <span
+            className={[
+              'text-[15px] font-semibold',
+              step === 2 ? 'text-[#0D70C8]' : 'text-gray-400',
+            ].join(' ')}
+          >
+            Branch Setup (required)
+          </span>
         </div>
-      ))}
-      <div className='ml-2 text-sm text-gray-500'>
-        {step === 1 ? 'Branch Setup (required)' : 'Employees Setup'}
+
+        {/* step 2 */}
+        <div className='flex flex-col items-center gap-2'>
+          <button
+            type='button'
+            // onClick={() => setStep(2)}
+            aria-current={step === 2}
+            className={[
+              'grid h-10 w-10 place-items-center rounded-full text-sm font-semibold shadow-sm',
+              step === 2
+                ? 'bg-gray-200 text-gray-700'
+                : 'bg-gray-100 text-gray-500',
+            ].join(' ')}
+          >
+            2
+          </button>
+          <span
+            className={['text-[15px] font-semibold text-gray-400'].join(' ')}
+          >
+            Employees Setup
+          </span>
+        </div>
       </div>
     </div>
   );

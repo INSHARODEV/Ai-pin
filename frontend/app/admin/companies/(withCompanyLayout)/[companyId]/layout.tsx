@@ -6,15 +6,13 @@ import { useRouter, usePathname, useParams } from 'next/navigation';
 import KebabMenu from '@/components/ui/KebabMenu';
 import { Pencil, Trash2 } from 'lucide-react';
 
- 
-
 import UpdateSuccessModal from '@/app/_componentes/company/UpdateSuccessModal';
 import {
   DeleteConfirmModal,
   DeleteSuccessModal,
 } from '@/app/_componentes/company/DeleteModals';
 import CompanyEditModal from '@/app/_componentes/company/CompanyEditModal';
- import { MakeApiCall, Methods } from '@/app/actions';
+import { MakeApiCall, Methods } from '@/app/actions';
 import { Company } from '@/app/_componentes/CompaniesTable';
 import { promise } from 'zod';
 
@@ -31,27 +29,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { companyId } = useParams<{ companyId: string }>();
 
-  const [company, setCompany] =  useState<Company>({} as Company)
+  const [company, setCompany] = useState<Company>({} as Company);
 
-  useEffect(()=>{
-    async function getCompany(){
-   
-   
-     const company=await MakeApiCall({
-       method:Methods.GET,
-       url:`/company/company/${companyId}`
-   
-     })as any
-     
-     console.log(company)
-     let date = fmt.format(
-      company?.dateJoined ? new Date(company.dateJoined) : new Date()
-    );
-     setCompany({...company,dateJoined:date})
-   
-   }
-   getCompany()
-   },[])
+  useEffect(() => {
+    async function getCompany() {
+      const company = (await MakeApiCall({
+        method: Methods.GET,
+        url: `/company/company/${companyId}`,
+      })) as any;
+
+      console.log(company);
+      let date = fmt.format(
+        company?.dateJoined ? new Date(company.dateJoined) : new Date()
+      );
+      setCompany({ ...company, dateJoined: date });
+    }
+    getCompany();
+  }, []);
 
   const base = `/admin/companies/${company.id}`;
   const active = getActiveTab(pathname, base);
@@ -77,9 +71,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <h1 className='font-poppins text-2xl font-bold text-gray-900'>
               {company.companyName}
             </h1>
-            <p className='font-poppins mt-1 text-gray-500 font-medium text-[12px] leading-[100%] tracking-[0em]'> 
-  Joined {company?.dateJoined ? fmt.format(new Date(company.dateJoined)) : "N/A"}
-</p>
+            <p className='font-poppins mt-1 text-gray-500 font-medium text-[12px] leading-[100%] tracking-[0em]'>
+              Joined{' '}
+              {company?.dateJoined
+                ? fmt.format(new Date(company.dateJoined))
+                : 'N/A'}
+            </p>
           </div>
 
           <KebabMenu
@@ -104,7 +101,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className='flex gap-6'>
         {(
           [
-            { key: 'overview', href: '/admin/companies', label: 'Overview' },
+            { key: 'overview', href: `${base}`, label: 'Overview' },
             { key: 'branches', href: `${base}/branches`, label: 'Branches' },
             { key: 'sales', href: `${base}/sales`, label: 'Sales' },
           ] as Array<{ key: TabKey; href: string; label: string }>
@@ -127,86 +124,90 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       <main>{children}</main>
 
-     {company&& <CompanyEditModal
-        open={showEdit}
-        onClose={() => setShowEdit(false)}
-        initial={{
-          companyName:company? company.companyName:'',
-          managerName: company? company.managerName:'',
-          managerEmail: company?company.managerEmail:'',
-          branches:company? company.branches:[],  
-          members: [{ name: 'Member Name', email: 'member@company.com' }], // seed or fetch
-        }}
-        onSubmit={async payload => {
-   
-          setCompany(c => ({
-            ...c,
-            name: payload.companyName || c.companyName  ,
-            managerName: payload.managerName || c.managerName,
-            managerEmail: payload.managerEmail || c.managerEmail,
-            branches: payload.branches ||c.branches,
-            employees: payload.members?.length ?? c.sales,
-          }));
-          setShowEdit(false);
-          setShowUpdateSuccess(true); // then show success
-        //edit compnay 
+      {company && (
+        <CompanyEditModal
+          open={showEdit}
+          onClose={() => setShowEdit(false)}
+          initial={{
+            companyName: company ? company.companyName : '',
+            managerName: company ? company.managerName : '',
+            managerEmail: company ? company.managerEmail : '',
+            branches: company ? company.branches : [],
+            members: [{ name: 'Member Name', email: 'member@company.com' }], // seed or fetch
+          }}
+          onSubmit={async payload => {
+            setCompany(c => ({
+              ...c,
+              name: payload.companyName || c.companyName,
+              managerName: payload.managerName || c.managerName,
+              managerEmail: payload.managerEmail || c.managerEmail,
+              branches: payload.branches || c.branches,
+              employees: payload.members?.length ?? c.sales,
+            }));
+            setShowEdit(false);
+            setShowUpdateSuccess(true); // then show success
+            //edit compnay
 
-        let  body=payload.branches.filter(b=>{return{
-          _id:(b as any).id,
-          name:b.name,
-          supervisor:{
-          _id:(b as any).supervisorId,
-          firstName:b.supervisor,
-          email:b.email,
+            let body = payload.branches.filter(b => {
+              return {
+                _id: (b as any).id,
+                name: b.name,
+                supervisor: {
+                  _id: (b as any).supervisorId,
+                  firstName: b.supervisor,
+                  email: b.email,
+                },
+              };
+            });
+            let newBranchs = payload.branches
+              .filter(b => (b as any).id === undefined)
+              .map(b => {
+                return {
+                  name: b.name,
+                  supervisor: {
+                    firstName: b.supervisor,
+                    email: b.email?.toLowerCase(),
+                    role: 'Superviosr',
+                  },
+                };
+              });
 
-          }
-        }}) 
-      let  newBranchs=payload.branches.filter(b=>(b as any).id===undefined).map(b=>{return  {
-        name:b.name,
-        supervisor:{
-      "firstName":b.supervisor,
-      email: b.email?.toLowerCase(),
-        "role":"Superviosr"
-        }}})
-  
-     
-     console.log('newBranchs',newBranchs)
+            console.log('newBranchs', newBranchs);
 
-        await Promise.all([    MakeApiCall({url:`/company/${companyId}`,
-          method:Methods.PATCH,
-          body:JSON.stringify({
-name:payload.companyName,
-manager:{
-  _id:(company as any).mangerid,
-  firstName:payload.managerName,
-  email:payload.managerEmail
-}
-          }),
-          headers:'json'
-        }),  
-          MakeApiCall({url:`/branch`,
-          method:Methods.PATCH,
-          
-          body:JSON.stringify(
-            body)
-      
-      ,
-          headers:'json'
-        }),
-        MakeApiCall({url:`/branch/${companyId}`,
-          method:Methods.POST,
-          
-          body:JSON.stringify(
-            newBranchs)
-      
-      ,
-          headers:'json'
-        })
-      ])
- 
-        }}
-        
-      />}
+            await Promise.all([
+              MakeApiCall({
+                url: `/company/${companyId}`,
+                method: Methods.PATCH,
+                body: JSON.stringify({
+                  name: payload.companyName,
+                  manager: {
+                    _id: (company as any).mangerid,
+                    firstName: payload.managerName,
+                    email: payload.managerEmail,
+                  },
+                }),
+                headers: 'json',
+              }),
+              MakeApiCall({
+                url: `/branch`,
+                method: Methods.PATCH,
+
+                body: JSON.stringify(body),
+
+                headers: 'json',
+              }),
+              MakeApiCall({
+                url: `/branch/${companyId}`,
+                method: Methods.POST,
+
+                body: JSON.stringify(newBranchs),
+
+                headers: 'json',
+              }),
+            ]);
+          }}
+        />
+      )}
 
       {/* Success + Delete popups */}
       <UpdateSuccessModal

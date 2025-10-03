@@ -49,7 +49,7 @@ export default function CompanyBranchesPage() {
 
       // branch list is inside res.data.data
 
-      console.log(res);
+      console.log('res', res);
       setRows(res?.data ?? []);
       setPage(res?.numberOfPages); // <-- use res.data.page
     }
@@ -91,6 +91,7 @@ export default function CompanyBranchesPage() {
   }, [rows, query, sort]);
 
   const totalPages = Math.max(1, Math.ceil(filteredSorted.length / PAGE_SIZE));
+  // console.log('filteredSorted', filteredSorted);
   const current = useMemo(() => {
     const start = (page - 1) * PAGE_SIZE;
     return filteredSorted.slice(start, start + PAGE_SIZE);
@@ -101,47 +102,42 @@ export default function CompanyBranchesPage() {
   }, [totalPages, page]);
 
   const handleSubmit = async (data: any) => {
- 
-console.log('ddd',data)
-    
-      const submittedData={
-      name:data.name,
-      Superviosr:{
-    "firstName":data.name,
-    email: data.email?.toLowerCase(),
-      "role":"Superviosr"
-      }
-    
-  
-    
-  }
-  console.log(submittedData)
-  const res=await MakeApiCall({  
-    method:Methods.POST,
-    url:`/branch/${companyId}`,
-    body:JSON.stringify(submittedData),
-      headers:'json'
-  
-  })
-  const {members}=data
-  let body=members.map((mem:any)=>{return {
-firstName:mem.name,
-email:mem.email,
-password:'$argon2id$v=19$m=65536,t=3,p=4$vY0JEqNe0/leVDsj38qQmg$64uOvXZa8/JqhZOajVXkMvpDGXe11y0lPG20oor7D0I',
-role:Role.SELLER,
-branchId:res._id,
-jobTitle:'Employee'
+    console.log('ddd', data);
 
-
-  }})
-  console.log('body',body)
-  await MakeApiCall({
-    method: Methods.POST,
-    url: `/auth`,
-    body: JSON.stringify(body),
-    headers: "json",
-  });
-   
+    const submittedData = {
+      name: data.name,
+      Superviosr: {
+        firstName: data.name,
+        email: data.email?.toLowerCase(),
+        role: 'Superviosr',
+      },
+    };
+    console.log(submittedData);
+    const res = await MakeApiCall({
+      method: Methods.POST,
+      url: `/branch/${companyId}`,
+      body: JSON.stringify(submittedData),
+      headers: 'json',
+    });
+    const { members } = data;
+    let body = members.map((mem: any) => {
+      return {
+        firstName: mem.name,
+        email: mem.email,
+        password:
+          '$argon2id$v=19$m=65536,t=3,p=4$vY0JEqNe0/leVDsj38qQmg$64uOvXZa8/JqhZOajVXkMvpDGXe11y0lPG20oor7D0I',
+        role: Role.SELLER,
+        branchId: res._id,
+        jobTitle: 'Employee',
+      };
+    });
+    console.log('body', body);
+    await MakeApiCall({
+      method: Methods.POST,
+      url: `/auth`,
+      body: JSON.stringify(body),
+      headers: 'json',
+    });
 
     // setStep(step + 1); // if you want to move wizard forward
     setShowSuccess(true);
@@ -209,7 +205,7 @@ jobTitle:'Employee'
 
         {/* Table */}
         <div className='overflow-hidden rounded-lg'>
-          <AdminBranchesTable rows={current} />
+          <AdminBranchesTable rows={current} companyId={companyId} />
         </div>
 
         {/* Pagination */}

@@ -17,25 +17,20 @@ import { Company } from '@/app/_componentes/CompaniesTable';
 export default function CompanyDetailsPage() {
   const { companyId } = useParams<{ companyId: string }>();
   const router = useRouter();
-  const [company, setCompany] = React.useState<Company>({} as Company)
-React.useLayoutEffect(()=>{
- async function getCompany(){
+  const [company, setCompany] = React.useState<Company>({} as Company);
+  React.useLayoutEffect(() => {
+    async function getCompany() {
+      const company = await MakeApiCall({
+        method: Methods.GET,
+        url: `/company/company/${companyId}`,
+      });
 
-
-  const company=await MakeApiCall({
-    method:Methods.GET,
-    url:`/company/company/${companyId}`
-
-  })
-  
-  console.log(company)
-  setCompany(company)
-
-}
-getCompany()
-},[])
+      console.log(company);
+      setCompany(company);
+    }
+    getCompany();
+  }, []);
   // Mock entity (replace with real data)
-  
 
   const [tab, setTab] = React.useState<'overview' | 'branches' | 'sales'>(
     'overview'
@@ -80,8 +75,6 @@ getCompany()
   }
 
   return (
- 
-  
     <div className=''>
       <main className='mx-auto py-6'>
         {/* OVERVIEW TAB */}
@@ -93,8 +86,6 @@ getCompany()
                 <h2 className='text-lg font-semibold text-gray-900'>
                   Manager’s Information
                 </h2>
-             
-             
               </div>
 
               <div className='grid gap-6 sm:grid-cols-2'>
@@ -138,7 +129,7 @@ getCompany()
                     Branches
                   </div>
                   <div className='mt-1 text-gray-900'>
-                    { company?.branches?.length} Branches
+                    {company?.branches?.length} Branches
                   </div>
                 </div>
                 <div>
@@ -167,7 +158,6 @@ getCompany()
       </main>
 
       {/* Modals */}
-       
 
       <UpdateSuccessModal
         open={showUpdateSuccess}
@@ -188,5 +178,5 @@ getCompany()
         onBack={() => router.push('/admin/companies')}
       />
     </div>
-  ) 
+  );
 }

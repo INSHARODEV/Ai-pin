@@ -19,7 +19,13 @@ function formatDateLong(date: Date) {
   }).format(date);
 }
 
-export function AdminBranchesTable({ rows }: { rows: BranchRow[] }) {
+export function AdminBranchesTable({
+  rows,
+  companyId,
+}: {
+  rows: BranchRow[];
+  companyId: string;
+}) {
   const headers = [
     'Branch',
     'Date Created',
@@ -28,7 +34,7 @@ export function AdminBranchesTable({ rows }: { rows: BranchRow[] }) {
     'Details',
   ];
 
-  console.log(rows);
+  console.log('rows', rows);
   const data: TableCell[][] = rows.map(b => [
     b.name,
     formatDateLong(b.dateCreated),
@@ -37,7 +43,7 @@ export function AdminBranchesTable({ rows }: { rows: BranchRow[] }) {
     {
       kind: 'link',
       label: 'View details',
-      href: `/admin/companies/${b.companyId ?? ''}/branches/${b.id}`,
+      href: `/admin/companies/${companyId}/branches/${b.id}`,
     },
   ]);
 
