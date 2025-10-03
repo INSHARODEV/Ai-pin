@@ -1,45 +1,39 @@
-'use client'
- import Step from './Step'
-import Logo from './icons/Logo'
+'use client';
+import Step from './Step';
+import Logo from './icons/Logo';
 
 const companySetup = {
-  "Company-Setup-(required)": "Company Setup (required)",
-  "Branches Setup": "Branches Setup",
-  "Sales Team Setup": "Sales Team Setup"
+  'Company Setup (required)': 'Company Setup (required)',
+  'Branches Setup': 'Branches Setup',
+  'Sales Team Setup': 'Sales Team Setup',
+};
+
+export const routes = (id: string, index: number) => {
+  const allRoutes = [
+    'forms/company-form',
+    `forms/branch-form/${id}`,
+    `forms/sales-form/${id}`,
+  ];
+
+  return allRoutes[index];
+};
+export interface Params {
+  step: number;
 }
-export const routes=(id:string,index:number)=>{
-  const allRoutes=[
- 'forms/company-form',
-  `forms/branch-form/${id}`,
-`forms/sales-form/${id}`
-]
 
-return allRoutes[index]}
-export interface Params{
-  step:number
-  
-}
-
-export default function FormSidebar({step }:Params) {
- 
-
+export default function FormSidebar({ step }: Params) {
   return (
-    <div className="   flex flex-col my-5  p-10" >
+    <div className='flex flex-col gap-4 p-10'>
+      <Logo />
 
- <Logo/>
-
-      <h1 className="text-2xl font-semibold text-center mb-7">Adding a new Company</h1>
+      <h1 className='text-4xl w-fit font-semibold'>
+        Adding a new <br />
+        Company
+      </h1>
 
       {Object.entries(companySetup).map(([key, label], index) => (
-        <Step
-          key={key}
-          step={index}
-          currentStep={step}
-       
-        label= {key}
-       
-        />
+        <Step key={key} step={index} currentStep={step} label={key} />
       ))}
     </div>
-  )
+  );
 }

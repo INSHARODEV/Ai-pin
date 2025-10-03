@@ -1,19 +1,20 @@
-"use client";
-
-import React, { createContext, useContext, ReactNode } from "react";
-import { useForm, SubmitHandler, FieldValues } from "react-hook-form";
+'use client';
+import React, { createContext, useContext, ReactNode } from 'react';
+import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 
 type FormContextType<T extends FieldValues> = {
-  register: ReturnType<typeof useForm<T>>["register"];
-  errors: ReturnType<typeof useForm<T>>["formState"]["errors"];
+  register: ReturnType<typeof useForm<T>>['register'];
+  errors: ReturnType<typeof useForm<T>>['formState']['errors'];
   loading?: boolean;
+  isValid: boolean;
 };
 
 const FormContext = createContext<FormContextType<any> | null>(null);
 
 function useFormContextSafe<T extends FieldValues>() {
   const ctx = useContext(FormContext);
-  if (!ctx) throw new Error("InputForm subcomponent must be used inside <InputForm>");
+  if (!ctx)
+    throw new Error('InputForm subcomponent must be used inside <InputForm>');
   return ctx as FormContextType<T>;
 }
 
@@ -30,11 +31,18 @@ function InputForm<T extends FieldValues>({
   loading,
   children,
 }: InputFormProps<T>) {
-  const { register, handleSubmit, formState: { errors } } = useForm<T>({ defaultValues  }as any);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<T>({
+    defaultValues,
+    mode: 'onChange', // Enable validation on change
+  } as any);
 
   return (
-    <FormContext.Provider value={{ register, errors, loading }}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+    <FormContext.Provider value={{ register, errors, loading, isValid }}>
+      <form onSubmit={handleSubmit(onSubmit)} className='space-y-5'>
         {children}
       </form>
     </FormContext.Provider>
@@ -46,32 +54,39 @@ interface InputFieldProps {
   name: string;
   label?: string;
   type?: string;
-  placeHolder?:string
+  placeHolder?: string;
   required?: boolean;
-  disabled?:boolean
+  disabled?: boolean;
 }
 
-function InputField({ name, label, type = "text", required ,placeHolder,disabled}: InputFieldProps) {
+function InputField({
+  name,
+  label,
+  type = 'text',
+  required,
+  placeHolder,
+  disabled,
+}: InputFieldProps) {
   const { register, errors } = useFormContextSafe<any>();
   const error = errors[name]?.message as string | undefined;
 
   return (
     <div>
-      <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+      <label htmlFor={name} className='block text-sm font-medium text-gray-700'>
         {label}
       </label>
       <input
-      disabled={disabled}
-      placeholder={placeHolder}
+        disabled={disabled}
+        placeholder={placeHolder}
         type={type}
         {...register(name, { required })}
         className={`mt-1 block w-full px-3 py-2 border ${
-          error ? "border-red-500" : "border-gray-100"
+          error ? 'border-red-500' : 'border-gray-100'
         } rounded-md shadow-xsm focus:outline-none focus:ring-2 ${
-          error ? "focus:ring-red-500" : "focus:ring-blue-500"
+          error ? 'focus:ring-red-500' : 'focus:ring-blue-500'
         }`}
       />
-      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+      {error && <p className='text-red-500 text-sm mt-1'>{error}</p>}
     </div>
   );
 }
@@ -81,17 +96,19 @@ interface SubmitButtonProps {
   label?: string;
 }
 
-function SubmitButton({ label = "Submit" }: SubmitButtonProps) {
+function SubmitButton({ label = 'Submit' }: SubmitButtonProps) {
   const { loading } = useFormContextSafe<any>();
   return (
     <button
-      type="submit"
+      type='submit'
       className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white ${
-        loading ? "bg-gray-300 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 cursor-pointer"
+        loading
+          ? 'bg-gray-300 cursor-not-allowed'
+          : 'bg-blue-600 hover:bg-blue-700 cursor-pointer'
       } focus:outline-none focus:ring-2 focus:ring-blue-500`}
       disabled={loading}
     >
-      {loading ? "Loading..." : label}
+      {loading ? 'Loading...' : label}
     </button>
   );
 }
@@ -101,3 +118,6 @@ InputForm.Input = InputField;
 InputForm.SubmitButton = SubmitButton;
 
 export default InputForm;
+
+// Export the context hook for external use
+export { useFormContextSafe };
