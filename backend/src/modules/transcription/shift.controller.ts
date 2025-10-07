@@ -20,28 +20,28 @@ export class ShiftController{
       @Query(PaginationPipe) { fields, limit, queryStr, skip, sort, page, popultae }: QueryString,
       @Req() req: Request
     ) {
-    //   if (!queryStr?.emp && !queryStr?.branchId) {
-    //     throw new BadRequestException('You must provide emp or branchId to fetch shifts.');
-    //   }
+      if (!queryStr?.emp && !queryStr?.branchId) {
+        throw new BadRequestException('You must provide emp or branchId to fetch shifts.');
+      }
     
-    //   const filter: any = {};
+      const filter: any = {};
     
-    //   if (queryStr.emp) {
-    //     if (!isValidObjectId(queryStr.emp)) {
-    //       throw new BadRequestException('Invalid employee ID format.');
-    //     }
-    //     filter.emp = queryStr.emp;
-    //   }
+      if (queryStr.emp) {
+        if (!isValidObjectId(queryStr.emp)) {
+          throw new BadRequestException('Invalid employee ID format.');
+        }
+        filter.emp = queryStr.emp;
+      }
     
-    //  else if (queryStr.branchId) {
-    //     if (!isValidObjectId(queryStr.branchId)) {
-    //       throw new BadRequestException('Invalid branch ID format.');
-    //     }
-    //     filter.branchId = queryStr.branchId;
-    //   }else{
-    //     filter.branchId=undefined
-    //     filter.emp=undefined
-    //   }
+     else if (queryStr.branchId) {
+        if (!isValidObjectId(queryStr.branchId)) {
+          throw new BadRequestException('Invalid branch ID format.');
+        }
+        filter.branchId = queryStr.branchId;
+      }else{
+        filter.branchId=undefined
+        filter.emp=undefined
+      }
     
       const data = await this.shiftService.getAll({
         fields,

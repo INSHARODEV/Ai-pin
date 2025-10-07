@@ -12,10 +12,10 @@ import {
 } from './schemas/transcitionSchema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BackblazeCloudService } from './BazePlaceUploadService';
-import { AudioGateway } from './transcripe.gatway';
-import { shiftService } from './shift.service';
+ import { shiftService } from './shift.service';
 import { shiftRepo } from './shift.repo';
 import { ShiftController } from './shift.controller';
+import { AudioGateway } from './gateway2.0';
 
 @Module({
   imports: [
@@ -30,10 +30,11 @@ import { ShiftController } from './shift.controller';
     AssmbleyAI,
     ChatGpt,
     TranscriptionRepo,
-    AudioGateway,
+   // AudioGateway,
     BackblazeCloudService,
     shiftService,
     shiftRepo,
+ 
   ],
 })
 export class TranscriptionModule {}
