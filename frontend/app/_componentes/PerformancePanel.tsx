@@ -1,25 +1,73 @@
+'use client';
+
 import { ChevronDown, Check, X } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AudioPlayer } from './AudioPlayer';
 
-interface Props {
+type Props = {
   transcription?: any;
-}
+  /** Forces placeholder. If omitted, placeholder shows when no transcription. */
+  showPlaceholder?: boolean;
+};
 
-export const MainDashboard = ({ transcription }: Props) => {
+export const MainDashboard: React.FC<Props> = ({
+  transcription,
+  showPlaceholder,
+}) => {
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [complianceOpen, setComplianceOpen] = useState(false);
   const [engagementOpen, setEngagementOpen] = useState(false);
-useEffect(()=>{
 
+  useEffect(() => {
+    // debug
+    // console.log('transcription', transcription);
+  }, [transcription]);
 
-console.log('transcription',transcription)
-
-},[])
   const compliance = transcription?.turns?.[0]?.compliance_flags ?? {};
   const engagement = transcription?.turns?.[0]?.engagement_metrics ?? {};
 
+  const shouldShowPlaceholder = showPlaceholder || !transcription;
+
+  if (shouldShowPlaceholder) {
+    // Placeholder matches your Figma (0% card + dimmed blocks)
+    return (
+      <main className='flex-1 px-6 overflow-y-auto'>
+        <section className='mb-6 shadow-custom rounded-2xl bg-[#FEFEFE]'>
+          <div className='p-6 flex items-center justify-between'>
+            <div className='flex items-center gap-4'>
+              <div className='w-14 h-14 bg-[#22C55E1A] rounded-full' />
+              <div>
+                <p className='text-sm text-muted-foreground'>
+                  Overall Performance:
+                </p>
+                <p className='text-3xl font-bold'>0%</p>
+              </div>
+            </div>
+            <span className='inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500'>
+              —
+            </span>
+          </div>
+        </section>
+
+        {[
+          'Conversation Recording',
+          'Conversation Summary',
+          'Compliance & Behavior',
+          'Engagement Metrics',
+        ].map(label => (
+          <section key={label} className='mb-3'>
+            <div className='w-full px-6 py-4 rounded-2xl bg-[#FEFEFE] shadow-custom flex items-center justify-between opacity-60'>
+              <h3 className='text-lg font-semibold'>{label}</h3>
+              <div className='w-4 h-4' />
+            </div>
+          </section>
+        ))}
+      </main>
+    );
+  }
+
+  // Real content
   return (
     <main className='flex-1 px-6 overflow-y-auto'>
       {/* Performance */}
@@ -147,7 +195,6 @@ console.log('transcription',transcription)
             </div>
           </div>
         )}
-        {/* Audio Player */}
       </section>
     </main>
   );

@@ -14,7 +14,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { MakeApiCall, Methods } from '../actions';
- 
+
 type NamedItem = { _id: string; name: string };
 
 const ManagerDashboardLayout = () => {
@@ -44,7 +44,7 @@ const ManagerDashboardLayout = () => {
   useEffect(() => {
     async function getBranches() {
       if (!userId) return; // Null check for userId
-      
+
       try {
         const res = await MakeApiCall({
           method: Methods.GET,
@@ -57,7 +57,7 @@ const ManagerDashboardLayout = () => {
         console.error('Error fetching branches:', error);
       }
     }
-    
+
     getBranches();
   }, [userId]); // Dependency on userId
 
@@ -192,7 +192,7 @@ const ManagerDashboardLayout = () => {
         </Link>
 
         {/* Transcription */}
-        <Link href='/branch/transcription/1'>
+        <Link href='/branch/transcription'>
           <div className={`${getNavClasses('/branch/transcription')} mb-6`}>
             <div className='flex items-center gap-3'>
               <FileText

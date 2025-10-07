@@ -28,10 +28,18 @@ const SupervisorDashboardLayout = () => {
 
   const [openEmployees, setOpenEmployees] = useState(true);
 
-  // Route-aware active flags
+  // ---- Route-aware flags
   const isOverviewActive = pathname === '/branch';
   const isTranscriptionActive = pathname.startsWith('/branch/transcription');
-  const isEmployeesActive = pathname.startsWith('/branch/employees');
+
+  // Extract current employee id from the URL: /branch/employees/[id]
+  const segments = pathname.split('/').filter(Boolean); // e.g. ['branch','employees','123']
+  const isEmployeesSection =
+    segments[0] === 'branch' && segments[1] === 'employees';
+  const currentEmployeeId = isEmployeesSection ? (segments[2] ?? null) : null;
+
+  // Highlight parent "Employees" only when exactly on /branch/employees (no [id])
+  const isEmployeesActive = pathname === '/branch/employees';
 
   const getNavClasses = (active: boolean) =>
     `py-2 px-4 transition-colors cursor-pointer rounded-r-lg ${
@@ -40,6 +48,13 @@ const SupervisorDashboardLayout = () => {
 
   const getTextClasses = (active: boolean) =>
     active ? 'text-[#0D70C8] font-semibold' : 'text-muted-foreground';
+
+  const getEmployeeItemClasses = (active: boolean) =>
+    `transition-colors ${
+      active
+        ? 'text-[#0D70C8] font-semibold'
+        : 'text-gray-400 hover:text-[#0D70C8]'
+    }`;
 
   return (
     <div className='py-10 bg-white text-gray-400 flex flex-col'>
@@ -67,7 +82,7 @@ const SupervisorDashboardLayout = () => {
         </Link>
 
         {/* Transcription */}
-        <Link href='/branch/transcription/1'>
+        <Link href='/branch/transcription'>
           <div className={`${getNavClasses(isTranscriptionActive)} mb-6`}>
             <div className='flex items-center gap-3'>
               <FileText
@@ -135,15 +150,18 @@ const SupervisorDashboardLayout = () => {
       {/* Collapsible list */}
       {openEmployees && (
         <div className='flex flex-col gap-8 pl-12 pt-6'>
-          {employees.map(item => (
-            <Link
-              key={item._id}
-              href={`/branch/transcription/${item._id}`}
-              className='text-gray-400 hover:text-[#0D70C8] transition-colors'
-            >
-              {item.name}
-            </Link>
-          ))}
+          {employees.map(item => {
+            const isActiveItem = currentEmployeeId === item._id;
+            return (
+              <Link
+                key={item._id}
+                href={`/branch/employees/${item._id}`}
+                className={getEmployeeItemClasses(isActiveItem)}
+              >
+                {item.name}
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
