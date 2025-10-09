@@ -6,6 +6,7 @@ import Logo from './icons/Logo';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { logout } from '../utils/logout';
+import { useUser } from '../hooks/useUser';
 
 export interface SalesHeaderProps {
   userName?: string;
@@ -18,7 +19,8 @@ export default function SalesHeader({
 }: SalesHeaderProps) {
   const [showLogout, setShowLogout] = React.useState(false);
   const router = useRouter();
-
+ const{ user,userLoaded}= useUser()
+ 
   const handleIconClick = () => {
     setShowLogout(!showLogout);
   };
@@ -41,10 +43,10 @@ export default function SalesHeader({
         <div className='relative flex items-center gap-4'>
           <div className='flex items-center gap-3'>
             <span className='flex h-8 w-8 items-center justify-center rounded-full bg-teal-500 text-lg font-bold text-white'>
-              {userName.charAt(0)}
+              {userLoaded?user.firstName.charAt(0).toUpperCase():"S"}
             </span>
 
-            <span className='font-semibold text-gray-900'>{userName}</span>
+            <span className='font-semibold text-gray-900'>{userLoaded?user.firstName:'Sales'}</span>
           </div>
           <button
             onClick={handleIconClick}

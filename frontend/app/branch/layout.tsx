@@ -23,34 +23,34 @@ export const useShiftsContext = () => useContext(ShiftsContext);
 interface LayoutProps {
   children: ReactNode;
 }
-
 // Component to render the appropriate sidebar based on role
 const RoleBasedSidebar = ({ role, user }: { role: Role; user: any }) => {
   switch (role) {
     case 'ADMIN':
       // Admin gets the full manager dashboard with all features
       return <ManagerDashboardLayout />;
-    case 'MANAGER':
-      return <ManagerDashboardLayout />;
-    case 'SUPERVISOR':
-      return <SupervisorDashboardLayout />;
-    // case 'SELLER':
-    //   // Seller gets limited supervisor dashboard or you can create a separate one
-    //   return <SupervisorDashboardLayout />;
-    default:
-      // Default fallback to supervisor layout
-      return <SupervisorDashboardLayout />;
-  }
-};
-
-export default function Layout({ children }: LayoutProps) {
+      case 'MANAGER':
+        return <ManagerDashboardLayout />;
+        case 'SUPERVISOR':
+          return <SupervisorDashboardLayout />;
+          // case 'SELLER':
+          //   // Seller gets limited supervisor dashboard or you can create a separate one
+          //   return <SupervisorDashboardLayout />;
+          default:
+            // Default fallback to supervisor layout
+            return <SupervisorDashboardLayout />;
+          }
+        };
+        
+        export default function Layout({ children }: LayoutProps) {
+  const [page,setPage]=useState(1)
  
 
   const {user,userLoaded}=useUser()
 
  
 
-  const shiftsData = useShifts(user);
+  const shiftsData = useShifts(`limit=14&page=${page}`);
 
   // Don't render anything until user data is loaded
   if (!userLoaded) {

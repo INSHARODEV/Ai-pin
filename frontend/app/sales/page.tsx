@@ -10,15 +10,13 @@ import { StatCard } from '../_componentes/reusable/StatCard';
 
 export default function Page() {
   const [user, setUser] = useState<any>(null);
+  const [userLoaded, setUserLoaded] = useState<any>(false);
   const [Recording, setRecording] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
-  const query = useMemo(
-    () => (user ? { branchId: user.branchId } : {}),
-    [user?.branchId]
-  );
+  const [page,setpage]=useState(1 as any)
+ 
    
-  const { rating, shifts, performanceDelta } = useShifts(query);
-
+  const { rating, shifts, performanceDelta ,numberOfPages} = useShifts(`page=${page}&limit=14`);
   const formatTime = (total: number) => {
     const h = Math.floor(total / 3600);
     const m = Math.floor((total % 3600) / 60);
@@ -27,6 +25,7 @@ export default function Page() {
   };
 
   useEffect(() => {
+    setpage(1)
     if (!Recording) {
       setElapsedTime(0);
       return;
@@ -40,6 +39,7 @@ export default function Page() {
     if (stored) {
       setUser(JSON.parse(stored));
     }
+    setUserLoaded(true)
   }, []);
 
   return (
@@ -47,9 +47,18 @@ export default function Page() {
       <main className='px-6 py-8'>
         <div className='mb-8'>
           <h1 className='mb-2 text-3xl font-bold text-gray-900'>
-            Welcome Name!
+    Welcome   {userLoaded?user.firstName:"Sales"}
           </h1>
-          <p className='text-gray-600'>12th Aug 2025, 12:45 PM</p>
+          <p className="text-gray-600">
+  {new Intl.DateTimeFormat('en', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  }).format(new Date())}
+</p>
         </div>
         <section className='mb-8 grid grid-cols-1 gap-6 md:grid-cols-3'>
           <StatCard
@@ -94,7 +103,7 @@ export default function Page() {
           </div>
         </section>
 
-        <ShiftsTable shifts={shifts} />
+        <ShiftsTable shifts={shifts} numberOfPages={numberOfPages} page={page} setPage={setpage}/>
       </main>
     </div>
   );

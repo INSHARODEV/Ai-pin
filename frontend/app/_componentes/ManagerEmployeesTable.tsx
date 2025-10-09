@@ -40,7 +40,6 @@ const statusFromPerf = (label: PerfLabel): StatusColor =>
   label === 'High' ? 'green' : label === 'Critical' ? 'red' : 'orange';
 
 export default function ManagerEmployeesTable({
- 
   emptyMessage,
   open,
   setOpen,
@@ -49,6 +48,8 @@ export default function ManagerEmployeesTable({
   const [userId, setuserId] = React.useState('');
   const [employees, setEmployees] = React.useState([]);
   const [v, setBranch] = React.useState([]);
+  const [numberOfPages,setNumberOfPages]=React.useState(1)
+  const [page,setpage]=React.useState(1)
   const headers = [
     'Status',
     'Employee Name',
@@ -79,14 +80,17 @@ export default function ManagerEmployeesTable({
       if (!userId) return; // Null check for userId
       
       try {
-        const res = await MakeApiCall({
+        const  data 
+          = await MakeApiCall({
           method: Methods.GET,
           url: `/company/${userId}/comapny`, // Using userId instead of hardcoded ID
         });
-        if(res._id) return
-        setcompanyId(res._id);
-        setBranch(res.branchs);
-        console.log('branches only', res.branchs);
+        if(!data._id) return
+        setNumberOfPages(numberOfPages)
+        setpage(page)
+        setcompanyId(data._id);
+        setBranch(data.branchs);
+        console.log('branches only', data.branchs);
       } catch (error) {
         console.error('Error fetching company:', error);
       }
@@ -98,7 +102,9 @@ export default function ManagerEmployeesTable({
 
 
   React.useEffect(() => {
+    
     async function getAllEmployees() {
+      console.log('companyId',companyId)
       if (!companyId) return; // Null check for companyId
       
       try {
@@ -198,5 +204,5 @@ export default function ManagerEmployeesTable({
     />
   );
 
-  return <Table headers={headers} data={rows} emptyMessage={fallbackEmpty} />;
+  return <Table headers={headers} data={rows} emptyMessage={fallbackEmpty}  numberOfPages={numberOfPages} page={1} setPage={1}/>;
 }

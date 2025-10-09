@@ -1,6 +1,7 @@
 // components/reusable/Table.tsx
 import * as React from 'react';
 import { Badge } from '../ui/Badge';
+import { number } from 'zod';
 
 type StatusColor = 'green' | 'red' | 'orange' | 'gray';
 
@@ -19,11 +20,14 @@ export type TableCell = PlainCell | LinkCell | BadgeCell | StatusCell;
 
 export interface TableProps {
   headers: string[];
+  numberOfPages:number;
+  setPage:any,
+page:number
   data: Array<Array<TableCell>>;
   emptyMessage?: React.ReactNode;
 }
 
-export default function Table({ headers, data, emptyMessage }: TableProps) {
+export default function Table({ headers, data, emptyMessage,numberOfPages,page,setPage }: TableProps) {
   const getPerformanceBadgeVariant = (performance: string) => {
     switch (performance) {
       case 'High':
@@ -40,7 +44,8 @@ export default function Table({ headers, data, emptyMessage }: TableProps) {
         return 'secondary';
     }
   };
-
+console.log('ta table',numberOfPages,
+ )
   const getStatusDot = (status: StatusColor) => {
     const colors: Record<StatusColor, string> = {
       green: 'bg-green-500',
@@ -138,8 +143,25 @@ export default function Table({ headers, data, emptyMessage }: TableProps) {
               </tr>
             ))
           )}
+       
         </tbody>
+      
       </table>
+      <div className="flex justify-center gap-2 mt-4">
+  {Array.from({ length: numberOfPages }).map((_, i) => (
+    <button
+      key={i}
+      onClick={() => setPage(i + 1)}
+      className={`px-3 py-1 rounded-md text-sm ${
+        page === i + 1
+          ? 'bg-blue-600 text-white'
+          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+      }`}
+    >
+      {i + 1}
+    </button>
+  ))}
+</div>
     </div>
   );
 }

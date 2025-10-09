@@ -5,11 +5,17 @@ import Link from 'next/link';
 
 interface Props {
   shifts: Shift[];
+  numberOfPages:number
+  page:number;
+  setPage:any
   emptyMessage?: React.ReactNode;
 }
 
 export default function ManagerLastShiftsTable({
   shifts,
+  numberOfPages,
+page,
+setPage,
   emptyMessage,
 }: Props) {
   const headers = [
@@ -41,8 +47,8 @@ export default function ManagerLastShiftsTable({
 
     const branchName =
       (shift as any).branchName ?? shift.fullName ?? 'Branch Name';
-    const branchHref = `/branch/${(shift as any).branchId ?? shift.empId ?? ''}`;
-
+    const branchHref = `/branch/branches/${(shift as any).branchId ?? shift.empId ?? ''}`;
+console.log('last shfit',shift.date)
     return [
       { kind: 'status', value: statusColor }, // left colored dot
       branchName,
@@ -60,5 +66,5 @@ export default function ManagerLastShiftsTable({
     ];
   });
 
-  return <Table headers={headers} data={rows} emptyMessage={emptyMessage} />;
+  return <Table headers={headers} data={rows} emptyMessage={emptyMessage} numberOfPages={numberOfPages}   setPage={setPage} page={page}/>;
 }

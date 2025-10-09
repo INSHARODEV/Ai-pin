@@ -6,8 +6,13 @@ import SupervisorLastShiftsTable from '../_componentes/SupervisorLastShiftsTable
 import ManagerLastShiftsTable from '../_componentes/ManagerLastShiftsTable';
 import { useShiftsContext } from './layout';
 import EmptyState from '../_componentes/EmptyState';
+import { useShifts } from '../hooks/useShifts';
+import { useState } from 'react';
+import { useUser } from '../hooks/useUser';
 
 export default function Page() {
+  const [page,setPage]=useState(1)
+  const {user,userLoaded}=useUser()
   const {
     shifts,
     rating,
@@ -15,11 +20,11 @@ export default function Page() {
     emps,
     isLoading,
     error,
-    userLoaded,
-    user,
-  } = useShiftsContext();
-
+   
+    numberOfPages 
+  } = useShifts(`page=${page}&limit=14`);
   const userRole = user?.role;
+  console.log('gting datsssa',shifts)
   const isUserLoading = !userLoaded;
   const isDataLoading = isLoading || isUserLoading;
 
@@ -56,7 +61,7 @@ export default function Page() {
   }
 
   const hasData = Array.isArray(shifts) && shifts.length > 0;
-
+console.log('gting data ',numberOfPages)
   // Decide the message:
   const emptyMessage =
     emps === 0 ? (
@@ -120,10 +125,16 @@ export default function Page() {
           <SupervisorLastShiftsTable
             shifts={hasData ? shifts : []}
             emptyMessage={emptyMessage}
+            numberOfPages={numberOfPages}
+            page={page}
+            setPage={setPage}
           />
         )}
         {(userRole === 'MANAGER' || userRole === 'ADMIN') && (
           <ManagerLastShiftsTable
+          numberOfPages={numberOfPages}
+          page={page}
+          setPage={setPage}
             shifts={hasData ? shifts : []}
             emptyMessage={emptyMessage}
           />

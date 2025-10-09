@@ -6,12 +6,18 @@ import { Shift } from '../types';
 import Link from 'next/link';
 
 interface Props {
+  numberOfPages:any
+  setPage:any
+  page:any
   shifts: Shift[];
   emptyMessage?: React.ReactNode; // NEW
 }
 
 export default function SupervisorLastShiftsTable({
   shifts,
+  numberOfPages,
+  setPage,
+  page,
   emptyMessage,
 }: Props) {
   const headers = ['Name', 'Date', 'Time', 'Shift Performance', 'Details'];
@@ -35,5 +41,5 @@ React.useEffect(()=>{
     <Link href={`/employee-profile/${shift.empId}`}>Details</Link>,
   ]);
 
-  return <Table headers={headers} data={rows} emptyMessage={emptyMessage} />;
+  return <Table headers={headers} data={rows} emptyMessage={emptyMessage} numberOfPages={numberOfPages}  page={page} setPage={setPage}/>;
 }

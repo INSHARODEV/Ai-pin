@@ -4,11 +4,13 @@ import { Shift } from '../types';
 import { MakeApiCall, Methods } from '../actions';
 import { getChunckedDatat } from '../utils/checuked';
 import { Role } from '../../../shard/src';
+import { useUser } from './useUser';
 
 export const useShifts = (queryString: any) => {
+
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [numberOfPages, setNumberOfPages] = useState(1);
-  const [currentPageNumber, setCurrentPage] = useState(1);
+  const [page, setPage] = useState(1);
   const [rating, setRating] = useState<number>(0);
   const [firstGroup, setFirstGroup] = useState<Shift[]>([]);
   const [secondGroup, setSecondGroup] = useState<Shift[]>([]);
@@ -20,16 +22,17 @@ export const useShifts = (queryString: any) => {
 }[]>();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const {user, userLoaded }=useUser()
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-  console.log(queryString)
+  console.log('queryString',queryString)
     // If you ONLY want to fetch when branchId exists, early-return until it's present:
     if (!queryString) {
       // Reset to clean empty state while we wait for user/branch
       setShifts([]);
       setNumberOfPages(1);
-      setCurrentPage(1);
+      setPage(1);
       setRating(0);
       setFirstGroup([]);
       setSecondGroup([]);
@@ -41,15 +44,15 @@ export const useShifts = (queryString: any) => {
       return;
     }
 
-    async function getShifts(usrr: any) {
+    async function getShifts(usrr: any,qs:string) {
       setIsLoading(true);
       setError(null);
-   
-      const url = usrr.role === Role.MANAGER
+ 
+      const url =  JSON.parse((localStorage.getItem('user')) as any).role=== Role.MANAGER
       ? `/company/branchs/shifts`
       : '/shift';
 
-   console.log('url',url)
+ 
      
  
       try {
@@ -57,12 +60,15 @@ export const useShifts = (queryString: any) => {
         const   {data,numberOfPages,page} = await MakeApiCall({
           url,
           method: Methods.GET,
+          queryString:  qs ,
+
         });
-        console.log('all shifts',data)
+     console.log('url;ll',url)
         const fetchedShifts = (data as Shift[]) ?? [];
+        console.log('all shifts',queryString)
         setShifts(fetchedShifts);
         setNumberOfPages(numberOfPages ?? 1);
-     setCurrentPage(page ?? 1);
+     setPage(page ?? 1);
 
         // Unique employees
         const allEmps = [  
@@ -90,7 +96,7 @@ export const useShifts = (queryString: any) => {
           const avg = sum / fetchedShifts.length;
           let r=Number((Math.min(5, avg / 20)).toFixed(2))
           setRating(r);
-          console.log('rating',r)
+          console.log('rating',Number((Math.min(5, avg / 20)).toFixed(2)))
         }
 
         // Chunk data
@@ -113,15 +119,17 @@ export const useShifts = (queryString: any) => {
         setIsLoading(false);
       }
     }
-
-    getShifts(queryString);
+console.log('user,usr',JSON.parse((localStorage.getItem('user')) as any).role)
+    getShifts(user,queryString);
  
   }, [JSON.stringify(queryString)]); // stable dep for object
 
   return {
     shifts,
     numberOfPages,
-    currentPageNumber,
+    page ,
+    setPage 
+    ,
     rating,
     firstGroup,
     secondGroup,
