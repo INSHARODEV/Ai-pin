@@ -54,7 +54,7 @@ export class TranscriptionService {
       fields: '',
     });
 
-    // ✅ Resolve audio_url for each transcription
+   // ✅ Resolve audio_url for each transcription
     const resolved = await Promise.all(
       (data.data as Transcript[]).map(async (d) => {
         const audioUrl = await this.backblazeCloudService.getSignedFileUrl(
@@ -67,7 +67,7 @@ export class TranscriptionService {
     data.data = resolved;
 
     this.logger.verbose(
-      `Fetched ${resolved.length} transcriptions for user ${userEmail}`,
+   `Fetched ${resolved.length} transcriptions for user ${userEmail}`,
     );
 
     return data;

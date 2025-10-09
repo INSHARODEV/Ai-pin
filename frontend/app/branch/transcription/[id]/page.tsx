@@ -56,7 +56,7 @@ const Index = () => {
     async function getTranscriptions() {
       const res = await MakeApiCall({
         method: Methods.GET,
-        url: `/trasncriptions?empId=${id}&start=${startDate?.toISOString()}&end=${endDate?.toISOString()}`,
+        url: `/transcriptions?empId=${id}&start=${startDate?.toISOString()}&end=${endDate?.toISOString()}`,
       });
   
       if (res?.data) {

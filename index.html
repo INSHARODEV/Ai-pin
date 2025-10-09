@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Pin Database ERD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            overflow-x: auto;
+        }
+        
+        .container {
+            min-width: 1400px;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+        }
+        
+        .erd-container {
+            position: relative;
+            width: 100%;
+            height: 1200px;
+        }
+        
+        .entity {
+            position: absolute;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 8px;
+            min-width: 280px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .entity-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 1.2em;
+            text-align: center;
+            border-radius: 6px 6px 0 0;
+        }
+        
+        .entity-body {
+            padding: 0;
+        }
+        
+        .field {
+            padding: 10px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 0.9em;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .field:last-child {
+            border-bottom: none;
+        }
+        
+        .field-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .field-type {
+            color: #666;
+            font-style: italic;
+        }
+        
+        .pk {
+            background-color: #fff3cd;
+        }
+        
+        .fk {
+            background-color: #d1ecf1;
+        }
+        
+        .pk .field-name::before {
+            content: "🔑 ";
+        }
+        
+        .fk .field-name::after {
+            content: " FK";
+            font-size: 0.7em;
+            color: #0c5460;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        
+        /* Entity Positions */
+        .user-entity { top: 50px; left: 50px; }
+        .admin-entity { top: 50px; left: 400px; }
+        .manager-entity { top: 50px; left: 750px; }
+        .supervisor-entity { top: 350px; left: 400px; }
+        .seller-entity { top: 350px; left: 750px; }
+        
+        .company-entity { top: 50px; left: 1100px; }
+        .branch-entity { top: 350px; left: 1100px; }
+        
+        .shift-entity { top: 650px; left: 50px; }
+        .transcript-entity { top: 650px; left: 450px; }
+        .turn-entity { top: 650px; left: 850px; }
+        
+        .compliance-entity { top: 950px; left: 650px; }
+        .engagement-entity { top: 950px; left: 1050px; }
+        
+        /* Relationship Lines */
+        svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .entity {
+            z-index: 1;
+        }
+        
+        line {
+            stroke: #667eea;
+            stroke-width: 2;
+        }
+        
+        .inheritance-line {
+            stroke: #f093fb;
+            stroke-width: 3;
+            stroke-dasharray: 5,5;
+        }
+        
+        text {
+            font-size: 12px;
+            fill: #333;
+            font-weight: bold;
+        }
+        
+        .legend {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+        
+        .legend h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        
+        .legend-color {
+            width: 30px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 4px;
+        }
+        
+        .line-example {
+            width: 40px;
+            height: 2px;
+            margin-right: 10px;
+        }
+        
+        .solid-line { background: #667eea; }
+        .dashed-line { 
+            background: repeating-linear-gradient(
+                to right,
+                #f093fb,
+                #f093fb 5px,
+                transparent 5px,
+                transparent 10px
+            );
+            height: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗄️ AI Pin System - Entity Relationship Diagram</h1>
+        
+        <div class="erd-container">
+            <!-- SVG for relationship lines -->
+            <svg>
+                <!-- User to discriminators (inheritance) -->
+                <line x1="190" y1="220" x2="490" y2="220" class="inheritance-line"/>
+                <line x1="490" y1="220" x2="490" y2="100" class="inheritance-line"/>
+                <line x1="490" y1="220" x2="840" y2="100" class="inheritance-line"/>
+                <line x1="490" y1="220" x2="490" y2="350" class="inheritance-line"/>
+                <line x1="490" y1="350" x2="840" y2="350" class="inheritance-line"/>
+                <text x="350" y="210">inherits</text>
+                
+                <!-- Manager to Company -->
+                <line x1="890" y1="120" x2="1100" y2="120"/>
+                <text x="950" y="110">manages 1</text>
+                
+                <!-- Company to Branch -->
+                <line x1="1240" y1="280" x2="1240" y2="350"/>
+                <text x="1250" y="320">has many</text>
+                
+                <!-- Supervisor to Branch -->
+                <line x1="540" y1="450" x2="1100" y2="450"/>
+                <text x="750" y="440">supervises 1</text>
+                
+                <!-- Seller to Branch -->
+                <line x1="890" y1="450" x2="1100" y2="450"/>
+                <text x="950" y="470">works at 1</text>
+                
+                <!-- Seller to Shift -->
+                <line x1="890" y1="520" x2="890" y2="650"/>
+                <line x1="890" y1="650" x2="190" y2="650"/>
+                <text x="450" y="640">has many shifts</text>
+                
+                <!-- Shift to Transcript -->
+                <line x1="330" y1="800" x2="450" y2="800"/>
+                <text x="340" y="790">contains many</text>
+                
+                <!-- Transcript to Turn -->
+                <line x1="730" y1="800" x2="850" y2="800"/>
+                <text x="740" y="790">has many</text>
+                
+                <!-- Turn to Compliance -->
+                <line x1="990" y1="900" x2="790" y2="950"/>
+                <text x="850" y="930">has</text>
+                
+                <!-- Turn to Engagement -->
+                <line x1="1030" y1="900" x2="1150" y2="950"/>
+                <text x="1050" y="930">has</text>
+            </svg>
+            
+            <!-- USER Entity -->
+            <div class="entity user-entity">
+                <div class="entity-header">USER (Base)</div>
+                <div class="entity-body">
+                    <div class="field pk">
+                        <span class="field-name">_id</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">firstName</span>
+                        <span class="field-type">string</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">lastName</span>
+                        <span class="field-type">string</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">email</span>
+                        <span class="field-type">string (unique)</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">password</span>
+                        <span class="field-type">string</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">otp</span>
+                        <span class="field-type">string</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">role</span>
+                        <span class="field-type">enum</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">slug</span>
+                        <span class="field-type">string</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">isActive</span>
+                        <span class="field-type">boolean</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ADMIN Entity -->
+            <div class="entity admin-entity">
+                <div class="entity-header">ADMIN</div>
+                <div class="entity-body">
+                    <div class="field">
+                        <span class="field-name">...extends USER</span>
+                        <span class="field-type"></span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">permissions</span>
+                        <span class="field-type">string[]</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- MANAGER Entity -->
+            <div class="entity manager-entity">
+                <div class="entity-header">MANAGER</div>
+                <div class="entity-body">
+                    <div class="field">
+                        <span class="field-name">...extends USER</span>
+                        <span class="field-type"></span>
+                    </div>
+                    <div class="field fk">
+                        <span class="field-name">companyId</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">phoneNumber</span>
+                        <span class="field-type">string</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SUPERVISOR Entity -->
+            <div class="entity supervisor-entity">
+                <div class="entity-header">SUPERVISOR</div>
+                <div class="entity-body">
+                    <div class="field">
+                        <span class="field-name">...extends USER</span>
+                        <span class="field-type"></span>
+                    </div>
+                    <div class="field fk">
+                        <span class="field-name">branchId</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field fk">
+                        <span class="field-name">companyId</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">phoneNumber</span>
+                        <span class="field-type">string</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SELLER Entity -->
+            <div class="entity seller-entity">
+                <div class="entity-header">SELLER (Employee)</div>
+                <div class="entity-body">
+                    <div class="field">
+                        <span class="field-name">...extends USER</span>
+                        <span class="field-type"></span>
+                    </div>
+                    <div class="field fk">
+                        <span class="field-name">branchId</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field fk">
+                        <span class="field-name">companyId</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field fk">
+                        <span class="field-name">supervisorId</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">employeeCode</span>
+                        <span class="field-type">string</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">phoneNumber</span>
+                        <span class="field-type">string</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- COMPANY Entity -->
+            <div class="entity company-entity">
+                <div class="entity-header">COMPANY</div>
+                <div class="entity-body">
+                    <div class="field pk">
+                        <span class="field-name">_id</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">name</span>
+                        <span class="field-type">string</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">slug</span>
+                        <span class="field-type">string (unique)</span>
+                    </div>
+                    <div class="field fk">
+                        <span class="field-name">managerId</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">branches</span>
+                        <span class="field-type">ObjectId[]</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">isActive</span>
+                        <span class="field-type">boolean</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- BRANCH Entity -->
+            <div class="entity branch-entity">
+                <div class="entity-header">BRANCH</div>
+                <div class="entity-body">
+                    <div class="field pk">
+                        <span class="field-name">_id</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">name</span>
+                        <span class="field-type">string</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">slug</span>
+                        <span class="field-type">string</span>
+                    </div>
+                    <div class="field fk">
+                        <span class="field-name">companyId</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field fk">
+                        <span class="field-name">supervisorId</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">sellers</span>
+                        <span class="field-type">ObjectId[]</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">address</span>
+                        <span class="field-type">string</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">isActive</span>
+                        <span class="field-type">boolean</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SHIFT Entity -->
+            <div class="entity shift-entity">
+                <div class="entity-header">SHIFT</div>
+                <div class="entity-body">
+                    <div class="field pk">
+                        <span class="field-name">_id</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field fk">
+                        <span class="field-name">sellerId</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field fk">
+                        <span class="field-name">branchId</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field fk">
+                        <span class="field-name">companyId</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">startTime</span>
+                        <span class="field-type">Date</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">endTime</span>
+                        <span class="field-type">Date</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">transcripts</span>
+                        <span class="field-type">ObjectId[]</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">status</span>
+                        <span class="field-type">enum</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">totalCalls</span>
+                        <span class="field-type">number</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">averagePerformance</span>
+                        <span class="field-type">number</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- TRANSCRIPT Entity -->
+            <div class="entity transcript-entity">
+                <div class="entity-header">TRANSCRIPT</div>
+                <div class="entity-body">
+                    <div class="field pk">
+                        <span class="field-name">_id</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field fk">
+                        <span class="field-name">shiftId</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field fk">
+                        <span class="field-name">sellerId</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field fk">
+                        <span class="field-name">branchId</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field fk">
+                        <span class="field-name">companyId</span>
+                        <span class="field-type">ObjectId</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">turns</span>
+                        <span class="field-type">Turn[]</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">raw_transcript</span>
+                        <span class="field-type">string</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">performance</span>
+                        <span class="field-type">number</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">summary</span>
+                        <span class="field-type">string</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">audio_url</span>
+                        <span class="field-type">string</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">status</span>
+                        <span class="field-type">enum</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">duration</span>
+                        <span class="field-type">number</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">aiAnalysis</span>
+                        <span class="field-type">object</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- TURN Entity -->
+            <div class="entity turn-entity">
+                <div class="entity-header">TURN (Embedded)</div>
+                <div class="entity-body">
+                    <div class="field">
+                        <span class="field-name">transcription</span>
+                        <span class="field-type">string</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">speaker_label</span>
+                        <span class="field-type">enum</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">tone_sentiment</span>
+                        <span class="field-type">enum</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">sales_script_adherence</span>
+                        <span class="field-type">number</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">compliance_flags</span>
+                        <span class="field-type">ComplianceFlags</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">engagement_metrics</span>
+                        <span class="field-type">EngagementMetrics</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">timestamp</span>
+                        <span class="field-type">Date</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- COMPLIANCE FLAGS Entity -->
+            <div class="entity compliance-entity">
+                <div class="entity-header">COMPLIANCE_FLAGS</div>
+                <div class="entity-body">
+                    <div class="field">
+                        <span class="field-name">profanity</span>
+                        <span class="field-type">boolean</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">rude_language</span>
+                        <span class="field-type">boolean</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">non_compliant_promises</span>
+                        <span class="field-type">boolean</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">unapproved_discounts</span>
+                        <span class="field-type">boolean</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">missed_greeting</span>
+                        <span class="field-type">boolean</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ENGAGEMENT METRICS Entity -->
+            <div class="entity engagement-entity">
+                <div class="entity-header">ENGAGEMENT_METRICS</div>
+                <div class="entity-body">
+                    <div class="field">
+                        <span class="field-name">talk_ratio_rep_pct</span>
+                        <span class="field-type">number</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">talk_ratio_cust_pct</span>
+                        <span class="field-type">number</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">empathy_word_count</span>
+                        <span class="field-type">number</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">avg_response_time</span>
+                        <span class="field-type">number</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">upselling_attempted</span>
+                        <span class="field-type">boolean</span>
+                    </div>
+                    <div class="field">
+                        <span class="field-name">upselling_successful</span>
+                        <span class="field-type">boolean</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <h3>Legend</h3>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #fff3cd;"></div>
+                <span>Primary Key (PK)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #d1ecf1;"></div>
+                <span>Foreign Key (FK)</span>
+            </div>
+            <div class="legend-item">
+                <div class="line-example solid-line"></div>
+                <span>Relationship</span>
+            </div>
+            <div class="legend-item">
+                <div class="line-example dashed-line"></div>
+                <span>Inheritance</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -14,7 +14,8 @@ export class Shift {
   @Prop({ type: mongoose.Schema.ObjectId, ref: 'Branch' })
   branchId: MongoDbId;
 
- 
+ @Prop()
+ status:string
  
 }
 @Schema({ _id: false })

@@ -15,7 +15,7 @@ export class CompanyService {
  async create(createCompanyDto: CreateCompanyDto,{role ,firstName   }:Partial<createUserDto>,
    
   ) {
-    //this.logger.verbose(`${createCompanyDto.name} is being created at  `,CompanyService.name)
+ 
     try{
       const hashedPassword = await argon2.hash(`changeMe`);
       let data=await this.comapntRepo.create(  createCompanyDto )
@@ -51,6 +51,10 @@ export class CompanyService {
   async findOne(id: string,{role ,firstName   }:Partial<createUserDto>) {
     this.logger.verbose(`retrivng company   by ${firstName}  . role : ${role}`)
     return await  this.comapntRepo.findOneById(id,'branchs')
+  }
+  async findOneNotPopulated(id: string,{role ,firstName   }:Partial<createUserDto>) {
+    this.logger.verbose(`retrivng company   by ${firstName}  . role : ${role}`)
+    return await  this.comapntRepo.findOneById(id)
   }
 async findOneBybranchAndCompanyId(companyId:any, branchId:any){
   this .logger.warn(` retrinvg hte comapny assoited with this id ${companyId.slice(0,4)}... and branch id stats with  ${branchId }...`)
@@ -92,8 +96,8 @@ async findByMangerId(companyId:any,  ){
     return await  this.comapntRepo.updateOne(id,updateCompanyDto)
 
   }
-  remove(id: number) {
-    return `This action removes a #${id} company`;
+  async remove(id: string) {
+    return await this.comapntRepo.deleteOne(id)
   }
   
 }

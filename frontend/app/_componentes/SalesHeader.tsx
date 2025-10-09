@@ -11,7 +11,7 @@ export interface SalesHeaderProps {
   userName?: string;
   onLogout?: () => void;
 }
-
+ 
 export default function SalesHeader({
   userName = 'Full Name',
   onLogout,
@@ -34,7 +34,7 @@ export default function SalesHeader({
         {/* Left side */}
         <div className='flex items-center space-x-3'>
           <Logo />
-          <span className='text-xl font-semibold text-gray-900'>AI Pin</span>
+       
         </div>
 
         {/* Right side */}

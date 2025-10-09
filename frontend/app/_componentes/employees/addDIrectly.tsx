@@ -6,13 +6,14 @@ import { Plus } from 'lucide-react';
 import { useShiftsContext } from '@/app/branch/layout';
 import AddEmployeeModal from './AddEmployeeModal';
 import AddEmployeeSuccess from './AddEmployeeSuccess';
+import AddEmployeeModalDirectly from './addempmde';
 
 interface AddEmployeeButtonProps {
   open: boolean;
   setOpen: (open: boolean) => void;
 }
 
-export default function AddEmployeeButton({
+export default function AddEmployeeButtonDireclty({
   open,
   setOpen,
 }: AddEmployeeButtonProps) {
@@ -25,19 +26,7 @@ export default function AddEmployeeButton({
     | undefined;
 
   // Derive branch list from context if available
-  const branches: string[] = React.useMemo(() => {
-    console.log('emps',emps)
-    const raw = Array.isArray(emps)
-      ? emps
-      : Array.isArray(emps?.data)
-        ? emps.data
-        : Array.isArray(emps?.items)
-          ? emps.items
-          : [];
-    const set = new Set<string>();
-    raw.forEach((e: any) => e?.branchName && set.add(String(e.branchName)));
-    return Array.from(set);
-  }, [emps]);
+ 
 
   const [success, setSuccess] = React.useState<null | {
     name: string;
@@ -55,11 +44,12 @@ export default function AddEmployeeButton({
       </button>
 
       {/* Create modal */}
-      <AddEmployeeModal
+      <AddEmployeeModalDirectly  
+     
         isOpen={open}
         role={role}
-        branches={branches}
-        defaultBranch={user?.branchName}
+       
+       
         onClose={() => setOpen(false)}
         onSuccess={payload => {
           setOpen(false);

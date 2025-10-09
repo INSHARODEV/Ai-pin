@@ -5,9 +5,9 @@ export class CreateShiftDton{
 
     emp:MongoDbId
     @IsOptional()
-    
+    startTime:any
     transciptionsId?:MongoDbId 
-     
+    status:any
     @IsDefined()
     @IsString()
     branchId:MongoDbId 

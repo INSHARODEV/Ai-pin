@@ -1,4 +1,5 @@
-// components/SupervisorLastShiftsTable.tsx
+// components/SupervisorLastShiftsTable.
+'use client'
 import * as React from 'react';
 import Table, { type TableCell } from './reusable/Table';
 import { Shift } from '../types';
@@ -14,7 +15,10 @@ export default function SupervisorLastShiftsTable({
   emptyMessage,
 }: Props) {
   const headers = ['Name', 'Date', 'Time', 'Shift Performance', 'Details'];
-
+React.useEffect(()=>{
+  console.log('shifts',shifts[0])
+ 
+},[])
   const rows: TableCell[][] = (shifts ?? []).map(shift => [
     shift.fullName,
     shift.date,

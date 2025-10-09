@@ -23,6 +23,7 @@ const contentTypes = {
 };
 
 export async function MakeApiCall({ url, method, body, queryString, headers }: Params) {
+  console.log('here',body)
   try {
     const customHeaders: Record<string, string> = {
       "Authorization": `Bearer ${localStorage?.getItem("accessToken")}`,

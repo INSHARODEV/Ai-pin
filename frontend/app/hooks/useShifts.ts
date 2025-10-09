@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Shift } from '../types';
 import { MakeApiCall, Methods } from '../actions';
 import { getChunckedDatat } from '../utils/checuked';
+import { Role } from '../../../shard/src';
 
 export const useShifts = (queryString: any) => {
   const [shifts, setShifts] = useState<Shift[]>([]);
@@ -40,31 +41,28 @@ export const useShifts = (queryString: any) => {
       return;
     }
 
-    async function getShifts(qs: any) {
+    async function getShifts(usrr: any) {
       setIsLoading(true);
       setError(null);
+   
+      const url = usrr.role === Role.MANAGER
+      ? `/company/branchs/shifts`
+      : '/shift';
 
-      const params = new URLSearchParams();
-      Object.entries(qs).forEach(([key, value]) => {
-        if (typeof value === 'object') {
-          params.set(key, JSON.stringify(value));
-        } else {
-          params.set(key, String(value));
-        }
-      });
-
-      const query = `${params.toString()}`;
+   console.log('url',url)
+     
+ 
       try {
-        const { numberOfPages, page, data } = await MakeApiCall({
-          url: '/shift',
+      
+        const   {data,numberOfPages,page} = await MakeApiCall({
+          url,
           method: Methods.GET,
-          queryString: query,
         });
         console.log('all shifts',data)
         const fetchedShifts = (data as Shift[]) ?? [];
         setShifts(fetchedShifts);
         setNumberOfPages(numberOfPages ?? 1);
-        setCurrentPage(page ?? 1);
+     setCurrentPage(page ?? 1);
 
         // Unique employees
         const allEmps = [  
@@ -80,17 +78,19 @@ export const useShifts = (queryString: any) => {
         } else if (fetchedShifts.length >= 7) {
           const performances = fetchedShifts
             .slice(0, 6)
-            .map((shift) => Number(shift.performance));
+            .map((shift) => Number(shift.performance || 0));
           const sum = performances.reduce((a, b) => a + b, 0);
-          setRating(sum / 7);
-        } else if (fetchedShifts.length > 0) {
+          const avg = sum / 7;
+          setRating(Math.min(5, avg / 20)); // scale 0–100 → 0–5
+        } else {
           const sum = fetchedShifts.reduce(
             (acc, s) => acc + Number(s.performance || 0),
             0
           );
-          setRating(sum / fetchedShifts.length);
-        } else {
-          setRating(0);
+          const avg = sum / fetchedShifts.length;
+          let r=Number((Math.min(5, avg / 20)).toFixed(2))
+          setRating(r);
+          console.log('rating',r)
         }
 
         // Chunk data
@@ -105,7 +105,7 @@ export const useShifts = (queryString: any) => {
                 .map(s => Number(s.performance || 0))
                 .reduce((a, b) => a + b, 0) / arr.length
             : 0;
-        setPerformanceDelta(avg(first) - avg(second));
+        setPerformanceDelta(Math.ceil(avg(first) - avg(second)));
       } catch (err: any) {
         console.error('Failed to fetch shifts:', err);
         setError(err?.message || 'Failed to fetch shifts');

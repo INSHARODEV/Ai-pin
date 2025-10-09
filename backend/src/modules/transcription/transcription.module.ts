@@ -15,7 +15,7 @@ import { BackblazeCloudService } from './BazePlaceUploadService';
  import { shiftService } from './shift.service';
 import { shiftRepo } from './shift.repo';
 import { ShiftController } from './shift.controller';
-import { AudioGateway } from './gateway2.0';
+import { AudioGateway } from './transcripe.gatway';
 
 @Module({
   imports: [
@@ -30,7 +30,7 @@ import { AudioGateway } from './gateway2.0';
     AssmbleyAI,
     ChatGpt,
     TranscriptionRepo,
-   // AudioGateway,
+  AudioGateway,
     BackblazeCloudService,
     shiftService,
     shiftRepo,

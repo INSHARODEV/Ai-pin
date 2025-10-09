@@ -13,6 +13,7 @@ import ManagerDashboardLayout from '../_componentes/ManagerDashboardLayout';
 import BreanchHeader from '../_componentes/BreanchHeader';
 import { useShifts } from '../hooks/useShifts';
 import { RoleGuard } from '../_guards/role-guard';
+import { useUser } from '../hooks/useUser';
 
 type Role = 'MANAGER' | 'SUPERVISOR' | 'ADMIN' | 'SELLER';
 
@@ -43,24 +44,13 @@ const RoleBasedSidebar = ({ role, user }: { role: Role; user: any }) => {
 };
 
 export default function Layout({ children }: LayoutProps) {
-  const [user, setUser] = useState<any>(null);
-  const [userLoaded, setUserLoaded] = useState(false);
+ 
 
-  useEffect(() => {
-    const stored = localStorage.getItem('user');
-    if (stored) {
-      const userData = JSON.parse(stored);
-      setUser(userData);
-    }
-    setUserLoaded(true);
-  }, []);
+  const {user,userLoaded}=useUser()
 
-  const query = useMemo(
-    () => (user ? { branchId: user.branchId } : null),
-    [user?.branchId]
-  );
+ 
 
-  const shiftsData = useShifts(query ?? {});
+  const shiftsData = useShifts(user);
 
   // Don't render anything until user data is loaded
   if (!userLoaded) {

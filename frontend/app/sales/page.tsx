@@ -5,7 +5,7 @@ import * as React from 'react';
 import { ShiftsTable } from '../_componentes/ShiftsTable';
 import { useState, useEffect, useMemo } from 'react';
 import { useShifts } from '../hooks/useShifts';
-import { Recorder } from '../_componentes/Recorder';
+import {  Recorder } from '../_componentes/Recorder';
 import { StatCard } from '../_componentes/reusable/StatCard';
 
 export default function Page() {
@@ -54,14 +54,16 @@ export default function Page() {
         <section className='mb-8 grid grid-cols-1 gap-6 md:grid-cols-3'>
           <StatCard
             title='Rating'
-            value={rating}
+            value={`${rating}/5`}
+        
             description='For the last 7 shifts'
             variant={rating > 2.5 ? 'green' : 'red'}
           />
 
           <StatCard
+  
             title='Skill Improvement'
-            value={performanceDelta}
+            value={`${performanceDelta}%`}
             icon=''
             description='Change in performance'
             variant={

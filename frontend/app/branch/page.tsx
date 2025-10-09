@@ -87,13 +87,17 @@ export default function Page() {
         <section className='mb-8 grid grid-cols-1 gap-6 md:grid-cols-3'>
           <StatCard
             title='Rating'
-            value={rating}
+            value={`+${rating}/5`}
             description='For the last 7 shifts'
             variant={rating > 2.5 ? 'green' : 'red'}
+      
           />
+                 
+              
           <StatCard
             title='Skill Improvement'
-            value={performanceDelta}
+            value={`+${performanceDelta}%`}
+         
             variant={
               performanceDelta > 0
                 ? 'green'
@@ -106,6 +110,7 @@ export default function Page() {
           <StatCard
             title='Employees'
             value={emps}
+          
             description='Unique employees with shifts'
             variant='blue'
           />

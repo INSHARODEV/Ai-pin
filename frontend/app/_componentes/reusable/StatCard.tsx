@@ -9,6 +9,7 @@ interface StatCardProps {
   title: string;
   value: string | number;
   description: string;
+ 
   variant: Variant;
   icon?: React.ReactNode; // only required if variant = "blue"
 }
@@ -22,6 +23,7 @@ const variantStyles: Record<Variant, string> = {
 
 export function StatCard({
   title,
+ 
   value,
   description,
   variant,
@@ -59,7 +61,7 @@ export function StatCard({
       <div className='px-6 py-4 flex flex-col gap-4'>
         <h3 className='text-xl font-semibold'>{title}</h3>
         <div className='flex items-center justify-between'>
-          <p className='text-3xl font-semibold text-gray-900'>{value}</p>
+          <p className='text-3xl font-semibold text-gray-900'>{value} </p>
           {variantIcon && (
             <div className={`${variantStyles[variant]} p-2 rounded-full`}>
               {variantIcon}

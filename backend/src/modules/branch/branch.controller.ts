@@ -214,10 +214,11 @@ export class BranchController {
     email: req['user']['email'],
     firstName: req['user']['firstName'],
   });
+  console.log(branch,'breanchsss')
   const salesCount=await this.empRepo.count({branchId:id,role:Role.SELLER})
   const sellers=await this.empRepo.find({queryStr:{branchId:id,role:Role.SELLER},limit:100000000,fields:'',popultae:'',skip:0,sort:'asc',page:1})
   const supervisor=await this.empRepo.findOne({branchId:id,role:Role.SUPERVISOR})
-  const shifts=await this.shift.find({queryStr:{branchId:id},limit:100000000,fields:'updatedAt',popultae:'',skip:0,sort:'asc',page:1})
+  const shifts=await this.shift.find({queryStr:{branchId:id},limit:100000000,fields:'updatedAt createdAt',popultae:{ path: 'emp',select: '_id'},skip:0,sort:'asc',page:1})
   console.log('emps')
   
    return {...branch as any,supervisor,sellers:sellers.data,salesCount,shifts:shifts.data}

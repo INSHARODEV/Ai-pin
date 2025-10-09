@@ -8,6 +8,7 @@ import { SalseDataInteceptor } from "./interceptors/data.interceptor";
 import { isValidObjectId } from "mongoose";
 import { Shift } from "./schemas/transcitionSchema";
 import { PaginatedData } from "src/common/types/paginateData.type";
+import { Role } from "src/shared/ROLES";
  
 @Controller('shift')
 @UseGuards(AuthGuard)
@@ -20,33 +21,15 @@ export class ShiftController{
       @Query(PaginationPipe) { fields, limit, queryStr, skip, sort, page, popultae }: QueryString,
       @Req() req: Request
     ) {
-      if (!queryStr?.emp && !queryStr?.branchId) {
-        throw new BadRequestException('You must provide emp or branchId to fetch shifts.');
-      }
-    
-      const filter: any = {};
-    
-      if (queryStr.emp) {
-        if (!isValidObjectId(queryStr.emp)) {
-          throw new BadRequestException('Invalid employee ID format.');
-        }
-        filter.emp = queryStr.emp;
-      }
-    
-     else if (queryStr.branchId) {
-        if (!isValidObjectId(queryStr.branchId)) {
-          throw new BadRequestException('Invalid branch ID format.');
-        }
-        filter.branchId = queryStr.branchId;
-      }else{
-        filter.branchId=undefined
-        filter.emp=undefined
-      }
-    
+ 
+      const qs =
+      req['user'].role === Role.SELLER
+        ? { emp: req['user']._id }
+        : { branchId: req['user'].branchId };
       const data = await this.shiftService.getAll({
         fields,
         limit,
-        queryStr,
+        queryStr:qs,
         skip,
         sort,
         page,
@@ -56,13 +39,13 @@ export class ShiftController{
       if (!data || (data.data as Shift[]).length === 0) {
         return  {data:[],numberOfPages:0,page:0}as PaginatedData
       }
-    
+    console.log('dataaa',data)
       return data;
     }
     @Get(':id')
    async getOneShfit(@Param('id' ) id:string){
        
-    console.log( 'rssssssssssssssssssssssssssssssssss')
+
     return       await this.shiftService.getOne(id)
     }
 

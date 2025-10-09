@@ -220,7 +220,7 @@ manager:{
         onClose={() => setShowDeleteConfirm(false)}
         companyName={company.companyName}
         onConfirm={async () => {
-          // TODO: call delete API
+          await MakeApiCall({method:Methods.DELETE,url:`/company/${companyId}`})
           setShowDeleteConfirm(false);
           setShowDeleteSuccess(true);
         }}

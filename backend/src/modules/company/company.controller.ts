@@ -30,6 +30,9 @@ import { EmpoyeeRepo, UsersRepo } from '../auth/auth.repo';
 import { PaginatedData } from 'src/common/types/paginateData.type';
 import { PaginationPipe } from 'src/common/pipes/pagination.pipe';
 import { map } from 'rxjs/operators';
+import { Branch } from '../branch/schemas/branch.schema';
+import { shiftService } from '../transcription/shift.service';
+import { SalseDataInteceptor } from '../transcription/interceptors/data.interceptor';
 
 @UseGuards(AuthGuard)
 @Controller('company')
@@ -37,6 +40,7 @@ export class CompanyController {
   constructor(
     private readonly companyService: CompanyService,
     private readonly EmpoyeeRepo: EmpoyeeRepo,
+    private readonly shiftService:shiftService
   ) {}
 
   @Post()
@@ -201,6 +205,22 @@ export class CompanyController {
   @Delete(':id')
   @UseGuards(RoleMixin([Role.MANAGER, Role.ADMIN]))
   remove(@Param('id') id: string) {
-    return this.companyService.remove(+id);
+    return this.companyService.remove(id);
+  }
+  @Get('branchs/shifts')
+  @UseInterceptors(SalseDataInteceptor)
+  async getshiftsReatedlTOACoampny( 
+@Req( ) req:Request,
+@Query(PaginationPipe)
+qstr: QueryString,
+
+){
+  const company=await this.companyService.findByMangerId(req['user']._id) as Company
+ 
+  
+    let { branchs } = company;
+   const d=     await this.shiftService.getAll({...qstr,queryStr: { branchId: { $in: branchs } }})
+   console.log(d)
+   return d
   }
 }

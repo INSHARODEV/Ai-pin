@@ -352,13 +352,13 @@ export default function BranchPage() {
   // Map shifts to table rows
   const rows: BranchShiftRow[] = useMemo(() => {
     if (!branche.shifts || !Array.isArray(branche.shifts)) return [];
-    
+ 
     return branche.shifts
       .slice(0, 8)
       .map((shift: any, i: number) => {
         // Find the employee for this shift
-        const employee = branche.sellers?.find((seller: any) => seller._id === shift.emp);
-        
+        const employee = branche.sellers?.find((seller: any) => seller._id === shift.emp._id);
+        console.log('herrrrrrrrrrrr',employee)
         return {
           id: String(shift._id),
           name: employee ? employee.firstName : 'Unknown Employee',
@@ -378,6 +378,7 @@ export default function BranchPage() {
           status: (i % 5 === 0 ? 'gray' : (['green', 'orange', 'red'] as const)[i % 3]),
         };
       });
+  
   }, [branche.shifts, branche.sellers]);
 
   // Calculate performance metrics
@@ -497,15 +498,17 @@ export default function BranchPage() {
           <div className='mt-5 grid gap-4 md:grid-cols-2'>
             <StatCard
               title='Overall Performance Rating'
-              value={getPerformanceRating()}
+              value={`+${getPerformanceRating()}/5`}
               description='Average Across All Branches'
               variant='green'
+          
             />
             <StatCard
               title='Performance Change'
               value={`+${getPerformanceChange()}%`}
               description='This week vs Last week'
               variant='green'
+            
             />
           </div>
         </div>
