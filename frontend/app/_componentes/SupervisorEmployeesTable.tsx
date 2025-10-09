@@ -181,5 +181,5 @@ export default function SupervisorEmployeesTable({
     />
   );
 
-  return <Table headers={headers} data={rows} emptyMessage={fallbackEmpty} />;
+  return <Table headers={headers} data={rows} numberOfPages={1} page={1} setPage={1} emptyMessage={fallbackEmpty} />;
 }

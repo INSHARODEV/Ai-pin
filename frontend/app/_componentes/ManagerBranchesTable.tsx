@@ -97,5 +97,5 @@ export default function ManagerBranchesTable({
     />
   );
 
-  return <Table headers={headers} data={rows} emptyMessage={fallbackEmpty} />;
+  return <Table headers={headers} data={rows} emptyMessage={fallbackEmpty}  numberOfPages={1} page={1} setPage={1}/>;
 }

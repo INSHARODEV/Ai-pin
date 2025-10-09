@@ -41,5 +41,5 @@ export function AdminBranchesTable({ rows }: { rows: BranchRow[] }) {
     },
   ]);
 
-  return <Table headers={headers} data={data} />;
+  return <Table headers={headers} data={data} numberOfPages={1} setPage={1} page={1}/>;
 }

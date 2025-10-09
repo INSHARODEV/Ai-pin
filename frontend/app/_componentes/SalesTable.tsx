@@ -71,5 +71,5 @@ export function SalesTable({
     </button>,
   ]);
 
-  return <Table headers={headers} data={data} />;
+  return <Table headers={headers} data={data}  numberOfPages={1} page={1} setPage={1}/>;
 }

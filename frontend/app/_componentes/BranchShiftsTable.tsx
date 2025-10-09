@@ -81,6 +81,6 @@ export default function BranchShiftsTable({
   );
 
   return (
-    <Table headers={headers} data={mapRows} emptyMessage={fallbackEmpty} />
+    <Table headers={headers} data={mapRows} emptyMessage={fallbackEmpty}  numberOfPages={1} page={1} setPage={1}/>
   );
 }

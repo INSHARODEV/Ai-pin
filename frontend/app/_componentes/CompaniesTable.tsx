@@ -45,5 +45,5 @@ export function CompaniesTable({ rows }: { rows: Company[] }) {
     { kind: 'link', label: 'View details', href: `/admin/companies/${c.id}` },
   ]);
 
-  return <Table headers={headers} data={data} />;
+  return <Table headers={headers} data={data} numberOfPages={1} page={1} setPage={1} />;
 }
