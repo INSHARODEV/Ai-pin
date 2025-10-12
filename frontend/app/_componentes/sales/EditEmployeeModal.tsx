@@ -14,7 +14,7 @@ export default function EditEmployeeModal({
   open: boolean;
   onClose: () => void;
   branches: any;
-  initial: { branch: string; name: string; email: string,id:any } | null;
+  initial: { branch: string; name: string; email: string,id:any, sellerId?:String} | null;
   onUpdate: (data: {
     branch: string;
     name: string;

@@ -23,6 +23,7 @@ import { MakeApiCall, Methods } from '@/app/actions';
 import { Branch } from '../../../../../../../shard/src';
 import { data } from '../../../../../utils/staticData';
 import { ur } from 'zod/v4/locales';
+ 
 
 const PAGE_SIZE = 7;
 
@@ -172,26 +173,29 @@ export default function CompanySalesPage() {
     setAddSuccessOpen(true);
   }
 
-  async function handleUpdate(data: {
-    branch: string;
-    name: string;
-    email: string;
-  }) {
+  async function handleUpdate(data :any  ) {
     if (!editTarget) return;
     setRows(prev =>
       prev.map(r => (r.id === editTarget.id ? { ...r, ...data } : r))
     );
+    console.log('editing',editTarget)
+    console.log('editing')
     setEditOpen(false);
-    // You can reuse your global "UpdateSuccessModal" if you prefer
+    const obj={
+      firstName:editTarget.name,
+      email:editTarget.email,
+    }
+    await  MakeApiCall({url:`/users/${editTarget.salllerId}`,method:Methods.PATCH,body:JSON.stringify(obj),headers:"json"})
   }
 
   async function handleDelete() {
     console.log('delTarget',delTarget)
-    await MakeApiCall({url:`/users/${delTarget?.salllerId}`,method:Methods.DELETE})
     if (!delTarget) return;
     setRows(prev => prev.filter(r => r.id !== delTarget.id));
     setDelOpen(false);
     setDelSuccessOpen(true);
+    await MakeApiCall({url:`/users/${delTarget?.salllerId}`,method:Methods.DELETE})
+  
   }
 
   return (
@@ -272,12 +276,14 @@ export default function CompanySalesPage() {
           <SalesTable
             rows={current}
             onEdit={row => {
+              console.log('row',row)
               setEditTarget(row);
               setEditOpen(true);
             }}
             onDelete={row => {
               setDelTarget(row);
               setDelOpen(true);
+
             }}
           />
         </div>
@@ -351,7 +357,8 @@ export default function CompanySalesPage() {
                 branch: editTarget.branch,
                 name: editTarget.name,
                 email: editTarget.email,
-                id:editTarget.email
+                id:editTarget.email,
+                sellerId:(editTarget as any).sallerId 
               }
             : null
         }

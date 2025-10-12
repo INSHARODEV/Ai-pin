@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Query, Req, UseGuards } from "@nestjs/common";
+import { Controller, Delete, Get, Param, Query, Req, UseGuards ,Patch, Body} from "@nestjs/common";
  import { Role } from "src/shared/ROLES";
 import { QueryString } from "src/common/types/queryString.type";
  
@@ -8,6 +8,7 @@ import { RoleMixin } from "src/common/Mixins/role.mixin";
 import { UserService } from "./Uses-ervice";
 import { Request } from "express";
 import { EmpoyeeRepo, UsersRepo } from '../auth/auth.repo';
+import { MongoDbId } from "src/common/DTOS/mongodb-Id.dto";
 
 @Controller('users')
 export class UsersController {
@@ -27,9 +28,13 @@ export class UsersController {
     });
     
   }
+  @Patch(':id')
+  async updateUSer(@Param('id') id:MongoDbId,@Body() data:any){
+  return  await this.EmpoyeeRepo.updateOne(id,data)
+  }
   @Delete(':id')
-  async deleteUser(@Param() {id} :any){
-    await this.UsersRepo.deleteOne(id);return 'uses deleted'
+  async deleteUser(@Param('id') id :any){
+    await this.UsersRepo.deleteOne(id); 
   }
   @Get('branch/:branchId')
   async gettEMps(@Param() {branchId} :any){

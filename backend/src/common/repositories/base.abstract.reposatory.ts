@@ -136,7 +136,7 @@ console.log('here',this.model)
         { new: true },
       );
       console.log(updateData);
-      this.logger.warn(`new update doc${JSON.stringify(updateData)}`);
+      this.logger.warn(`new update doc ${JSON.stringify(updateData)}`);
       return updatedDocument;
     } catch (errror) {
       this.logger.error(
