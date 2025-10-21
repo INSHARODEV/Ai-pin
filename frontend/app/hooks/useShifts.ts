@@ -130,6 +130,7 @@ console.log('user,usr',JSON.parse((localStorage.getItem('user')) as any).role)
     page ,
     setPage 
     ,
+    setShifts,
     rating,
     firstGroup,
     secondGroup,

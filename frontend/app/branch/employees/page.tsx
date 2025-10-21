@@ -16,14 +16,13 @@ function Page() {
   
   // Get user ID from localStorage
 
- 
   const userRole = user?.role;
 
   return (
     <div className='flex flex-col gap-6 p-6'>
       <div className='flex items-center justify-between'>
         <h1 className='text-xl font-semibold text-gray-800'>Employees</h1>
-        <AddEmployeeButtonDireclty open={open} setOpen={setOpen}  />
+       { userRole === 'SUPERVISOR' ?<AddEmployeeButtonDireclty open={open} setOpen={setOpen}  />:<AddEmployeeButton open={open} setOpen={setOpen}  />}
       </div>
       <EmployeesToolbar
         onChange={state => {

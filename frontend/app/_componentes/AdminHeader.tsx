@@ -34,7 +34,7 @@ export default function AdminHeader({
         {/* Left side */}
         <div className='flex items-center space-x-3'>
           <Logo />
-          <span className='text-xl font-semibold text-gray-900'>AI Pin</span>
+          
         </div>
 
         {/* Right side */}

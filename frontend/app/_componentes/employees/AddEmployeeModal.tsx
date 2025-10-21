@@ -15,25 +15,31 @@ export default function AddEmployeeModal({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: (p: { branch: string; name: string; email: string }) => void;
+  onSuccess: (p: { branchId: string; name: string; email: string }) => void;
   role: Role;
-  branches?: string[];
+  branches?: {name:string,_id:string}[];
   defaultBranch?: string;
 }) {
   const [branchOpen, setBranchOpen] = React.useState(false);
-  const [branch, setBranch] = React.useState<string>(
-    defaultBranch || branches[0] || ''
-  );
+  const [branchId, setBranchId] = React.useState<string>('');
+  const [branchName, setBranchName] = React.useState<string>('');
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (!branch && (defaultBranch || branches[0])) {
-      setBranch(defaultBranch || branches[0] || '');
+    if (branches && branches.length > 0) {
+      const defaultBranchObj = branches.find(b => b.name === defaultBranch);
+      if (defaultBranchObj) {
+        setBranchId(defaultBranchObj._id);
+        setBranchName(defaultBranchObj.name);
+      } else {
+        setBranchId(branches[0]._id);
+        setBranchName(branches[0].name);
+      }
     }
-  }, [branches, defaultBranch, branch]);
+  }, [branches, defaultBranch]);
 
   // Close on ESC
   React.useEffect(() => {
@@ -49,7 +55,7 @@ export default function AddEmployeeModal({
 
   const canPickBranch = role === 'MANAGER' || role === 'ADMIN';
   const emailValid = !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const isValid = !!name && !!branch && emailValid && !submitting;
+  const isValid = !!name && !!branchId && emailValid && !submitting;
 
   const submit = async () => {
     setError(null);
@@ -59,7 +65,7 @@ export default function AddEmployeeModal({
       await new Promise(r => setTimeout(r, 700));
       if (email.toLowerCase().includes('used'))
         throw new Error('Email already used');
-      onSuccess({ branch, name, email });
+      onSuccess({ branchId, name, email });
       setName('');
       setEmail('');
     } catch (e: any) {
@@ -84,7 +90,7 @@ export default function AddEmployeeModal({
       aria-modal='true'
       role='dialog'
     >
-      {/* stop propagation so clicks inside don’t bubble to the backdrop */}
+      {/* stop propagation so clicks inside don't bubble to the backdrop */}
       <div
         className='w-full max-w-xl rounded-2xl bg-white shadow-xl'
         onMouseDown={e => e.stopPropagation()}
@@ -124,26 +130,27 @@ export default function AddEmployeeModal({
                   onClick={() => setBranchOpen(v => !v)}
                   className='flex w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200'
                 >
-                  <span className={branch ? '' : 'text-gray-400'}>
-                    {branch || 'Choose branch'}
+                  <span className={branchName ? '' : 'text-gray-400'}>
+                    {branchName || 'Choose branch'}
                   </span>
                   <ChevronDown className='h-4 w-4 text-gray-400' />
                 </button>
 
                 {branchOpen && (
                   <div className='absolute z-10 mt-1 w-full rounded-2xl border border-gray-200 bg-white p-2 shadow-lg'>
-                    {[...branches].map(b => (
+                    {branches.map(b => (
                       <button
-                        key={b}
+                        key={b._id}
                         onClick={() => {
-                          setBranch(b);
+                          setBranchId(b._id);
+                          setBranchName(b.name);
                           setBranchOpen(false);
                         }}
                         className={`block w-full rounded-xl px-4 py-3 text-left hover:bg-gray-50 ${
-                          branch === b ? 'bg-blue-100 text-blue-700' : ''
+                          branchId === b._id ? 'bg-blue-100 text-blue-700' : ''
                         }`}
                       >
-                        {b}
+                        {b.name}
                       </button>
                     ))}
                   </div>
@@ -151,7 +158,7 @@ export default function AddEmployeeModal({
               </div>
             ) : (
               <input
-                value={branch}
+                value={branchName}
                 readOnly
                 className='w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-700'
                 placeholder='Branch'

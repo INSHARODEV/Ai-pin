@@ -7,6 +7,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useShifts } from '../hooks/useShifts';
 import {  Recorder } from '../_componentes/Recorder';
 import { StatCard } from '../_componentes/reusable/StatCard';
+import { MakeApiCall, Methods } from '../actions';
 
 export default function Page() {
   const [user, setUser] = useState<any>(null);
@@ -16,7 +17,7 @@ export default function Page() {
   const [page,setpage]=useState(1 as any)
  
    
-  const { rating, shifts, performanceDelta ,numberOfPages} = useShifts(`page=${page}&limit=14`);
+  let { rating, shifts,setShifts, performanceDelta ,numberOfPages} = useShifts(`page=${page}&limit=14`);
   const formatTime = (total: number) => {
     const h = Math.floor(total / 3600);
     const m = Math.floor((total % 3600) / 60);
@@ -25,9 +26,17 @@ export default function Page() {
   };
 
   useEffect(() => {
+    async function refetchSHifts( ) {
+      const {data}=await MakeApiCall({method:Methods.GET,url:'/shift',queryString:'page=${page}&limit=14'})
+     
+      setShifts(data)
+      console.log('return shifts',shifts )
+      
+    }
     setpage(1)
     if (!Recording) {
       setElapsedTime(0);
+      refetchSHifts( ) 
       return;
     }
     const id = setInterval(() => setElapsedTime(t => t + 1), 1000);

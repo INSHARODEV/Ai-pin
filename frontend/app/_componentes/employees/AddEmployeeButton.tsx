@@ -1,11 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 
 import { useShiftsContext } from '@/app/branch/layout';
 import AddEmployeeModal from './AddEmployeeModal';
 import AddEmployeeSuccess from './AddEmployeeSuccess';
+import { MakeApiCall, Methods } from '@/app/actions';
 
 interface AddEmployeeButtonProps {
   open: boolean;
@@ -23,21 +24,20 @@ export default function AddEmployeeButton({
     | 'SUPERVISOR'
     | 'SELLER'
     | undefined;
+const[branchs,setBrancs]=useState([] as any)
+ 
+  useEffect(()=>{
+ 
+    async function getData(){
 
-  // Derive branch list from context if available
-  const branches: string[] = React.useMemo(() => {
-    console.log('emps',emps)
-    const raw = Array.isArray(emps)
-      ? emps
-      : Array.isArray(emps?.data)
-        ? emps.data
-        : Array.isArray(emps?.items)
-          ? emps.items
-          : [];
-    const set = new Set<string>();
-    raw.forEach((e: any) => e?.branchName && set.add(String(e.branchName)));
-    return Array.from(set);
-  }, [emps]);
+      const {branchs}=await MakeApiCall({url:`/company/${user._id}/comapny`,method:Methods.GET})
+      
+      setBrancs(branchs.map(b=>{return{name:b.name,_id:b._id}}))
+      console.log('alllllllllll',branchs.map(b=>{return{name:b.name,_id:b._id}}))
+    }
+
+    getData()
+  },[])
 
   const [success, setSuccess] = React.useState<null | {
     name: string;
@@ -58,10 +58,28 @@ export default function AddEmployeeButton({
       <AddEmployeeModal
         isOpen={open}
         role={role}
-        branches={branches}
+        branches={branchs}
         defaultBranch={user?.branchName}
         onClose={() => setOpen(false)}
-        onSuccess={payload => {
+        onSuccess={async payload => {
+          const submittedData = {
+            firstName: payload.name,
+            email: payload.email?.toLowerCase(),
+            role: "SELLER",
+            jobTitle: "Employee",
+            password: "changeMe",
+            branchId:payload.branchId,
+          };
+       
+      
+          console.log("Submitting:", submittedData);
+      
+          await MakeApiCall({
+            method: Methods.POST,
+            url: `/auth`,
+            body: JSON.stringify(submittedData),
+            headers: "json",
+          });
           setOpen(false);
           setSuccess({ name: payload.name, email: payload.email });
         }}

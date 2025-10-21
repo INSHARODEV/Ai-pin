@@ -186,7 +186,7 @@ export class CompanyController {
   }
   @Get(':mangerId/comapny')
   findOneByMangerId(@Param('mangerId') id: string, @Req() req: Request) {
-    return this.companyService.findByMangerId(id, 
+    return this.companyService.findByMangerId(id,
     );
   }
   @Patch(':id')

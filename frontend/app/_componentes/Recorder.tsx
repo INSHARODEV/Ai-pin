@@ -1080,7 +1080,7 @@ export const Recorder = ({ setRecording }: RecorderProps) => {
         {onShift ? <MdSquare /> : ''}
       </button>
       
-      {onShift && (
+      {/* {onShift && (
         <div className='mt-2 p-2 bg-gray-100 rounded text-xs text-gray-600'>
           <div>Status: {socketStatus}</div>
           <div>Chunks sent: {audioChunksSent}</div>
@@ -1089,7 +1089,7 @@ export const Recorder = ({ setRecording }: RecorderProps) => {
             ({audioChunksRef.current.length} audio chunks stored)
           </div>
         </div>
-      )}
+      )} */}
       
       {error && (
         <div className='p-3 bg-red-100 border border-red-300 text-red-700 rounded-md text-sm mt-2'>

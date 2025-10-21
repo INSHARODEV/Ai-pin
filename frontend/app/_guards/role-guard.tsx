@@ -32,7 +32,7 @@ const DEFAULT_FOR_ROLE: Record<string, string> = {
   ADMIN: '/admin',
 };
 
-const PUBLIC_PATHS = new Set<string>(['/login', '/']);
+const PUBLIC_PATHS = new Set<string>(['/login',]);
 
 export function RoleGuard({ children }: { children: ReactNode }) {
   const router = useRouter();

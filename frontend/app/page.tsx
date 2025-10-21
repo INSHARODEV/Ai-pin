@@ -1,11 +1,15 @@
-  // 'use client';
+ 
 
+import { useEffect } from "react";
 import RealTIme from "./_componentes/RealTIme";
 
- 
+import { useRouter } from "next/navigation"; // ✅ FIX
+import LoginPage from "./(auth)/login/page";
+
 export default function Page() {
+ 
   return (
-    <RealTIme />
+    <LoginPage/>
   )
 }
 // import { useEffect, useMemo, useState } from 'react';
