@@ -819,7 +819,7 @@ export const Recorder = ({ setRecording }: RecorderProps) => {
   const initializeWebSocket = () => {
     console.log('🔌 Initializing WebSocket connection...');
     
-    const socket = io('http://localhost:8000', {
+    const socket = io(process.env.NEXT_PUBLIC_BASE_URL, {
       transports: ['websocket'],
       reconnection: true,
       reconnectionAttempts: 5,

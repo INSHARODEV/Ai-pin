@@ -32,9 +32,8 @@ const[branchs,setBrancs]=useState([] as any)
 
       const {branchs}=await MakeApiCall({url:`/company/${user._id}/comapny`,method:Methods.GET})
       
-      setBrancs(branchs.map(b=>{return{name:b.name,_id:b._id}}))
-      console.log('alllllllllll',branchs.map(b=>{return{name:b.name,_id:b._id}}))
-    }
+      setBrancs(branchs.map((b:any)=>{return{name:b.name,_id:b._id}}))
+     }
 
     getData()
   },[])
