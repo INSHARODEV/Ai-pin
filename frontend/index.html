@@ -1,0 +1,160 @@
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+ </head>
+ <body>
+    <div className="w-full h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-8 overflow-auto">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold text-white mb-8 text-center">NoSQL Database Schema (Document-Based)</h1>
+          
+          <svg viewBox="0 0 1400 900" className="w-full" style={{ minHeight: '900px' }}>
+            <defs>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+              
+              <linearGradient id="userGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style={{stopColor: '#6366f1', stopOpacity: 1}} />
+                <stop offset="100%" style={{stopColor: '#4f46e5', stopOpacity: 1}} />
+              </linearGradient>
+              
+              <linearGradient id="habitGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style={{stopColor: '#ec4899', stopOpacity: 1}} />
+                <stop offset="100%" style={{stopColor: '#db2777', stopOpacity: 1}} />
+              </linearGradient>
+              
+              <linearGradient id="levelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style={{stopColor: '#10b981', stopOpacity: 1}} />
+                <stop offset="100%" style={{stopColor: '#059669', stopOpacity: 1}} />
+              </linearGradient>
+              
+              <linearGradient id="perfGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style={{stopColor: '#f59e0b', stopOpacity: 1}} />
+                <stop offset="100%" style={{stopColor: '#d97706', stopOpacity: 1}} />
+              </linearGradient>
+            </defs>
+            
+            {/* Connection Lines */}
+            <line x1="350" y1="300" x2="350" y2="500" stroke="#64748b" strokeWidth="2" strokeDasharray="5,5" opacity="0.5"/>
+            <line x1="350" y1="300" x2="900" y2="500" stroke="#64748b" strokeWidth="2" strokeDasharray="5,5" opacity="0.5"/>
+            <line x1="350" y1="300" x2="620" y2="650" stroke="#64748b" strokeWidth="2" strokeDasharray="5,5" opacity="0.5"/>
+            <line x1="900" y1="580" x2="1180" y2="650" stroke="#64748b" strokeWidth="2" strokeDasharray="5,5" opacity="0.5"/>
+            
+            {/* Reference Labels */}
+            <text x="360" y="400" fill="#94a3b8" fontSize="12" fontStyle="italic">embeds</text>
+            <text x="580" y="420" fill="#94a3b8" fontSize="12" fontStyle="italic">embeds</text>
+            <text x="450" y="500" fill="#94a3b8" fontSize="12" fontStyle="italic">references</text>
+            <text x="1000" y="620" fill="#94a3b8" fontSize="12" fontStyle="italic">references</text>
+            
+            {/* USER COLLECTION */}
+            <g filter="url(#glow)">
+              <rect x="50" y="50" width="600" height="250" rx="10" fill="url(#userGrad)" stroke="#818cf8" strokeWidth="2"/>
+              <text x="350" y="80" textAnchor="middle" fill="white" fontSize="20" fontWeight="bold">USER COLLECTION</text>
+              <line x1="60" y1="95" x2="640" y2="95" stroke="#818cf8" strokeWidth="1"/>
+              
+              <text x="70" y="120" fill="white" fontSize="14" fontWeight="bold">_id: userId</text>
+              <text x="70" y="140" fill="#e0e7ff" fontSize="13">name: string</text>
+              <text x="70" y="158" fill="#e0e7ff" fontSize="13">email: string (indexed)</text>
+              <text x="70" y="176" fill="#e0e7ff" fontSize="13">gender: enum</text>
+              <text x="70" y="194" fill="#e0e7ff" fontSize="13">password: string</text>
+              <text x="70" y="212" fill="#e0e7ff" fontSize="13">FCM_token: string</text>
+              <text x="70" y="230" fill="#e0e7ff" fontSize="13">isActive: date</text>
+              <text x="70" y="248" fill="#e0e7ff" fontSize="13">createdAt: ISODate</text>
+              <text x="70" y="266" fill="#e0e7ff" fontSize="13">currentLevelId: ref</text>
+              
+              <text x="380" y="120" fill="#fde047" fontSize="14" fontWeight="bold">Embedded: ssoProvider</text>
+              <text x="390" y="140" fill="#e0e7ff" fontSize="12">provider: enum</text>
+              <text x="390" y="156" fill="#e0e7ff" fontSize="12">providerId: string</text>
+              
+              <text x="380" y="185" fill="#fde047" fontSize="14" fontWeight="bold">Embedded: profile</text>
+              <text x="390" y="205" fill="#e0e7ff" fontSize="12">imageUrl, location</text>
+              <text x="390" y="221" fill="#e0e7ff" fontSize="12">allowNotification: bool</text>
+              <text x="390" y="237" fill="#e0e7ff" fontSize="12">streak: object</text>
+              <text x="390" y="253" fill="#e0e7ff" fontSize="12">pausehabits, levelId</text>
+            </g>
+            
+            {/* HABIT COLLECTION */}
+            <g filter="url(#glow)">
+              <rect x="700" y="450" width="450" height="200" rx="10" fill="url(#habitGrad)" stroke="#f472b6" strokeWidth="2"/>
+              <text x="925" y="480" textAnchor="middle" fill="white" fontSize="20" fontWeight="bold">HABIT COLLECTION</text>
+              <line x1="710" y1="495" x2="1140" y2="495" stroke="#f472b6" strokeWidth="1"/>
+              
+              <text x="720" y="520" fill="white" fontSize="14" fontWeight="bold">_id: habitId</text>
+              <text x="720" y="540" fill="#fce7f3" fontSize="13">userId: ref</text>
+              <text x="720" y="558" fill="#fce7f3" fontSize="13">name: string</text>
+              <text x="720" y="576" fill="#fce7f3" fontSize="13">proof: string</text>
+              <text x="720" y="594" fill="#fce7f3" fontSize="13">xp: number</text>
+              <text x="720" y="612" fill="#fce7f3" fontSize="13">icon, reminders, location</text>
+              <text x="720" y="630" fill="#fce7f3" fontSize="13">category: enum</text>
+              
+              <text x="980" y="520" fill="#fde047" fontSize="14" fontWeight="bold">Embedded: levels</text>
+              <text x="990" y="540" fill="#fce7f3" fontSize="12">levelId: ref</text>
+              <text x="990" y="556" fill="#fce7f3" fontSize="12">habitId: habitId</text>
+              <text x="990" y="572" fill="#fce7f3" fontSize="12">isDone: boolean</text>
+              <text x="990" y="595" fill="#cbd5e1" fontSize="11" fontStyle="italic">(was habit_level table)</text>
+            </g>
+            
+            {/* LEVEL COLLECTION */}
+            <g filter="url(#glow)">
+              <rect x="1050" y="650" width="300" height="120" rx="10" fill="url(#levelGrad)" stroke="#34d399" strokeWidth="2"/>
+              <text x="1200" y="680" textAnchor="middle" fill="white" fontSize="20" fontWeight="bold">LEVEL COLLECTION</text>
+              <line x1="1060" y1="695" x2="1340" y2="695" stroke="#34d399" strokeWidth="1"/>
+              
+              <text x="1070" y="720" fill="white" fontSize="14" fontWeight="bold">_id: levelId</text>
+              <text x="1070" y="740" fill="#d1fae5" fontSize="13">level: number (unique)</text>
+              <text x="1070" y="758" fill="#d1fae5" fontSize="13">points: number</text>
+            </g>
+            
+            {/* DAILY_PERFORMANCE COLLECTION */}
+            <g filter="url(#glow)">
+              <rect x="50" y="500" width="450" height="150" rx="10" fill="url(#perfGrad)" stroke="#fbbf24" strokeWidth="2"/>
+              <text x="275" y="530" textAnchor="middle" fill="white" fontSize="20" fontWeight="bold">DAILY_PERFORMANCE</text>
+              <line x1="60" y1="545" x2="490" y2="545" stroke="#fbbf24" strokeWidth="1"/>
+              
+              <text x="70" y="570" fill="white" fontSize="14" fontWeight="bold">_id: performanceId</text>
+              <text x="70" y="590" fill="#fef3c7" fontSize="13">userId: ref</text>
+              <text x="70" y="608" fill="#fef3c7" fontSize="13">date: ISODate (indexed)</text>
+              <text x="70" y="626" fill="#fef3c7" fontSize="13">xpGained: number</text>
+              <text x="70" y="644" fill="#fef3c7" fontSize="13">levelId: ref</text>
+              
+              <text x="320" y="590" fill="#cbd5e1" fontSize="11" fontStyle="italic">Time-series optimized</text>
+              <text x="320" y="608" fill="#cbd5e1" fontSize="11" fontStyle="italic">Could use bucketing</text>
+            </g>
+            
+            {/* Legend */}
+            <g>
+              <rect x="50" y="720" width="400" height="150" rx="8" fill="#1e293b" stroke="#475569" strokeWidth="2"/>
+              <text x="250" y="745" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">Design Patterns</text>
+              <line x1="60" y1="755" x2="440" y2="755" stroke="#475569" strokeWidth="1"/>
+              
+              <text x="70" y="780" fill="#22d3ee" fontSize="13">Embedded: Data accessed together</text>
+              <text x="70" y="800" fill="#a78bfa" fontSize="13">References: Shared/normalized data</text>
+              <text x="70" y="820" fill="#fbbf24" fontSize="13">Separate Collections: Large/time-series</text>
+              <text x="70" y="840" fill="#4ade80" fontSize="13">Indexed: Common query patterns</text>
+              <text x="70" y="860" fill="#94a3b8" fontSize="11" fontStyle="italic">Optimized for read performance</text>
+            </g>
+            
+            {/* Notes */}
+            <g>
+              <rect x="550" y="720" width="450" height="150" rx="8" fill="#1e293b" stroke="#475569" strokeWidth="2"/>
+              <text x="775" y="745" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">Key Benefits</text>
+              <line x1="560" y1="755" x2="990" y2="755" stroke="#475569" strokeWidth="1"/>
+              
+              <text x="570" y="780" fill="#86efac" fontSize="13">No joins needed for common queries</text>
+              <text x="570" y="800" fill="#86efac" fontSize="13">Fast user profile + habits retrieval</text>
+              <text x="570" y="820" fill="#86efac" fontSize="13">Flexible schema evolution</text>
+              <text x="570" y="840" fill="#86efac" fontSize="13">Horizontal scaling ready</text>
+              <text x="570" y="860" fill="#fca5a5" fontSize="11">Trade-off: Some data duplication</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+ </body>
+ </html>

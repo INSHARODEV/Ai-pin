@@ -87,7 +87,7 @@ export const useShifts = (queryString: any) => {
             .map((shift) => Number(shift.performance || 0));
           const sum = performances.reduce((a, b) => a + b, 0);
           const avg = sum / 7;
-          setRating(Math.min(5, avg / 20)); // scale 0–100 → 0–5
+          setRating(Math.round(Math.min(5, avg / 20))); // scale 0–100 → 0–5
         } else {
           const sum = fetchedShifts.reduce(
             (acc, s) => acc + Number(s.performance || 0),

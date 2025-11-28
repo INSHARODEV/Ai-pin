@@ -140,7 +140,8 @@ export class TranscriptionController {
   ) {}
 
   @Post('shift')
-  async createShift(@Req() req: Request) {
+  async createShift(@Req() req: Request,@Body() startTime:any) {
+    console.log('startTime',startTime)
     try {
       console.log('branchsid',req['user'])
       const branchId = req['user']['branchId'] as MongoDbId;
@@ -149,7 +150,7 @@ export class TranscriptionController {
       const shift = await this.shiftService.createShift({
         emp: empId,
         branchId:branchId,
-        startTime: new Date(),
+         startTime,
         status: 'active',
       });
       
